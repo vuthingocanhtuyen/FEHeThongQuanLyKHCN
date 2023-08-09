@@ -17,7 +17,7 @@ import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
 import ButttonInputSearch from '../../components/ButtonInputSearch/ButttonInputSearch'
-const ChucNang = () => {
+const PhamViNhom = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -466,10 +466,8 @@ const ChucNang = () => {
 
     return (
         <div>
-            <WrapperHeader>Quản lý chức năng</WrapperHeader>
-            <div style={{ width: '350px', float: 'right' }}>
-                Quyền<ButttonInputSearch />
-            </div>
+            <WrapperHeader>Phạm vi nhóm</WrapperHeader>
+
 
             <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
@@ -684,4 +682,4 @@ const ChucNang = () => {
     )
 }
 
-export default ChucNang
+export default PhamViNhom

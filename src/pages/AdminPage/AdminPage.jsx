@@ -35,9 +35,8 @@ import TonGiao from '../QuanLyDanhMuc/DanhMucChung/TonGiao'
 import KhuVucUT from '../QuanLyDanhMuc/DanhMucChung/KhuVucUT'
 import CheDoUT from '../QuanLyDanhMuc/DanhMucChung/CheDoUT'
 import CapNhatHSCB from '../QuanLyQuanNhan/HoSoCanBo/CapNhatHSCB';
-import Quyen from '../Quyen_ChucNang/Quyen';
-import ChucNang from '../Quyen_ChucNang/ChucNang';
-import NhomNguoiDung from '../Quyen_ChucNang/NhomNguoiDung';
+
+
 
 
 
@@ -48,21 +47,26 @@ import TabDaoTao from '../QuanLyQuanNhan/CongTacGiangDay/TabDaoTao';
 import QTKhenThuong from '../QuanLyQuanNhan/HoSoCanBo/QTKhenThuong';
 import QTKyLuat from '../QuanLyQuanNhan/HoSoCanBo/QTKyLuat';
 import ThongTinCaNhan from '../QuanLyQuanNhan/CongTacGiangDay/ThongTinCaNhan';
+
+import PhanQuyenNSD from '../Quyen_ChucNang/PhanQuyenNSD';
+import TabQuyen from '../Quyen_ChucNang/TabQuyen';
+
+
 const AdminPage = () => {
   const user = useSelector((state) => state?.user)
   const userIsAdmin = user?.isAdmin === 'admin';
   const managementChildren = [
     getItem('Đổi mật khẩu', 'changepassword', <LockOutlined />),
     getItem('Người dùng', 'users2', <UserOutlined />)
-];
-if (userIsAdmin) {
-  managementChildren.push(
+  ];
+  if (userIsAdmin) {
+    managementChildren.push(
       getItem('Tham số hệ thống', 'systemparams', <AppstoreAddOutlined />),
       getItem('Nhóm quyền', 'quyen', <LockOutlined />),
       getItem('Nhóm chức năng', 'module', <AppstoreAddOutlined />),
       getItem('Nhóm người dùng', 'people', <LockOutlined />)
-  );
-}
+    );
+  }
   const items = [
     {
       label: 'Hệ thống',
@@ -70,12 +74,24 @@ if (userIsAdmin) {
       icon: <AppstoreOutlined />,
       children: [
         {
-          label: 'Quản lý',
-          key: 'management',
+          label: 'Hệ thống',
+          key: 'id',
           icon: <SettingOutlined />,
-          children: managementChildren
+          children: [
+            getItem('Đổi mật khẩu', 'changepassword', <LockOutlined />),
+            getItem('Tham số hệ thống', 'systemparams', <AppstoreAddOutlined />),
+          ]
         },
-        getItem('Người dùng', 'users', <UserOutlined />),
+        {
+          label: 'Quản lý NSD và Quyền',
+          key: 'management',
+          icon: <UserOutlined />,
+          children: [
+            getItem('Quản lý phân quyền', 'quyen', <LockOutlined />),
+            getItem('Phân quyền NSD', 'people', <AppstoreAddOutlined />),
+          ]
+        },
+
       ],
     },
 
@@ -177,14 +193,14 @@ if (userIsAdmin) {
         getItem('Báo cáo nhanh số lượng/ ngành', 'slnganh', <UserOutlined />),
       ],
     },
-    {
-      label: 'Quản lý nghiệp vụ',
-      key: 'quanlynghiepvu',
-      icon: <AppstoreOutlined />,
-      children: [
-        getItem('Quản lý giảng dạy nghiên cứu', 'giangday', <AppstoreAddOutlined />)
-      ],
-    },
+    // {
+    //   label: 'Quản lý nghiệp vụ',
+    //   key: 'quanlynghiepvu',
+    //   icon: <AppstoreOutlined />,
+    //   children: [
+    //     getItem('Quản lý giảng dạy nghiên cứu', 'giangday', <AppstoreAddOutlined />)
+    //   ],
+    // },
   ];
 
   const [keySelected, setKeySelected] = useState('');
@@ -247,23 +263,20 @@ if (userIsAdmin) {
         return (
           <DoiMatKhau />
         )
-      case 'quyen':
-        return (
-          <Quyen />
-        )
 
-      case 'module':
-        return (
-          <ChucNang />
-        )
       case 'systemparams':
         return (
           <Param />
         )
 
+      //quan ly nsd và quyền
+      case 'quyen':
+        return (
+          <TabQuyen />
+        )
       case 'people':
         return (
-          <NhomNguoiDung />
+          <PhanQuyenNSD />
         )
 
       case 'users':
