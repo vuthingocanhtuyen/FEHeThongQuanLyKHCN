@@ -16,8 +16,8 @@ import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
-
-const NhomNguoiDung = () => {
+import ButttonInputSearch from '../../components/ButtonInputSearch/ButttonInputSearch'
+const PhamViDuLieu = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -466,7 +466,11 @@ const NhomNguoiDung = () => {
 
     return (
         <div>
-            <WrapperHeader>Quản lý nhóm người dùng</WrapperHeader>
+            <WrapperHeader>Phạm vi dữ liệu chức năng</WrapperHeader>
+            {/* <div style={{ width: '350px', float: 'right' }}>
+                Quyền<ButttonInputSearch />
+            </div> */}
+
             <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
             </div>
@@ -680,4 +684,4 @@ const NhomNguoiDung = () => {
     )
 }
 
-export default NhomNguoiDung
+export default PhamViDuLieu
