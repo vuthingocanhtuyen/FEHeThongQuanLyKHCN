@@ -50,6 +50,7 @@ import ThongTinCaNhan from '../QuanLyQuanNhan/CongTacGiangDay/ThongTinCaNhan';
 
 import PhanQuyenNSD from '../Quyen_ChucNang/PhanQuyenNSD';
 import TabQuyen from '../Quyen_ChucNang/TabQuyen';
+import TaiChiTiet from '../QuanLyQuanNhan/CongTacGiangDay/TaiChiTiet';
 
 
 const AdminPage = () => {
@@ -383,7 +384,7 @@ const AdminPage = () => {
         )
       case 'chitiettai':
         return (
-          <AdminProduct />
+          <TaiChiTiet />
         )
       case 'taidaotao':
         return (

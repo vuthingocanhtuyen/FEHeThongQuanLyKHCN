@@ -7,6 +7,7 @@ import HuongDanNCKH from './TaiNghienCuu/HuongDanNCKH';
 import GiaiThuongNCKH from './TaiNghienCuu/GiaiThuongNCKH';
 import SangChe from './TaiNghienCuu/SangChe';
 import HoatDongKhac from './TaiNghienCuu/HoatDongKhac';
+import BienSoan from './TaiNghienCuu/BienSoan';
 const { TabPane } = Tabs;
 
 function TabNghienCuu() {
@@ -18,10 +19,13 @@ function TabNghienCuu() {
             <TabPane tab="Đề tài NCKH" key="2">
                 <DeTaiNCKH />
             </TabPane>
-            <TabPane tab="Hướng dẫn NCKH" key="3">
+            <TabPane tab="Biên soạn" key="3">
+                <BienSoan />
+            </TabPane>
+            <TabPane tab="Hướng dẫn NCKH" key="4">
                 <HuongDanNCKH />
             </TabPane>
-            <TabPane tab="Giải thưởng NCKH" key="4">
+            <TabPane tab="Giải thưởng NCKH" key="5">
                 <GiaiThuongNCKH />
             </TabPane>
             <TabPane tab="Sáng chế" key="6">

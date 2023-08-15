@@ -26,6 +26,10 @@ import QTDang from './QTDang'
 import QTQuanHam from './QTQuanHam'
 import QTCDCMKT from './QTCDCMKT'
 import QTHocTapKhac from './QTHocTapKhac'
+import QTNgoaiNgu from './QTNgoaiNgu'
+import DaiHoc from './DaiHoc'
+import SauDaiHoc from './SauDaiHoc'
+import TinhTrangCT from './TinhTrangCT'
 
 
 
@@ -224,7 +228,7 @@ const CapNhatHSCB = () => {
 
 
 
-                <div style={{ width: '600px', margin: '0 auto', height: '400px', float: 'right', textAlign: 'left', padding: '10px', background: 'back' }}>
+                <div style={{ width: '500px', margin: '0 auto', height: '400px', float: 'right', textAlign: 'left', padding: '10px', background: 'back' }}>
                     <Loading isLoading={isLoading}>
                         <WrapperContentProfile>
                             <WrapperInput>
@@ -356,12 +360,25 @@ const CapNhatHSCB = () => {
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTDaoTao />
+                <QTNgoaiNgu />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <DaiHoc />
+            </div>
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <SauDaiHoc />
+            </div>
+            <br />
+
+            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QTCongTac />
             </div><br />
+            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <TinhTrangCT />
+            </div>
+            <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QTDang />
             </div>
@@ -378,9 +395,9 @@ const CapNhatHSCB = () => {
                 <QTHocTapKhac />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+            {/* <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QTCapBac />
-            </div>
+            </div> */}
         </div>
     )
 }
