@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'antd';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import TaiGiangDay from './TaiDaoTao/TaiGiangDay';
 import TaiHuongDan from './TaiDaoTao/TaiHuongDan';
 import TaiKhaoThi from './TaiDaoTao/TaiKhaoThi';

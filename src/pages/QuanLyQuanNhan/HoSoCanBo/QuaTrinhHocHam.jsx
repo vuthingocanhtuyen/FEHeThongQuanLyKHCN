@@ -243,25 +243,25 @@ const QuaTrinhHocHam = () => {
 
     const columns = [
         {
-            title: 'Name',
+            title: 'STT',
             dataIndex: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
             ...getColumnSearchProps('name')
         },
         {
-            title: 'Email',
+            title: 'Quyết định',
             dataIndex: 'email',
             sorter: (a, b) => a.email.length - b.email.length,
             ...getColumnSearchProps('email')
         },
         {
-            title: 'Address',
+            title: 'Ngày quyết định',
             dataIndex: 'address',
             sorter: (a, b) => a.address.length - b.address.length,
             ...getColumnSearchProps('address')
         },
         {
-            title: 'Admin',
+            title: 'Học hàm',
             dataIndex: 'isAdmin',
             filters: [
                 {
@@ -275,13 +275,13 @@ const QuaTrinhHocHam = () => {
             ],
         },
         {
-            title: 'Phone',
+            title: 'Cao nhất',
             dataIndex: 'phone',
             sorter: (a, b) => a.phone - b.phone,
             ...getColumnSearchProps('phone')
         },
         {
-            title: 'Action',
+            title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
