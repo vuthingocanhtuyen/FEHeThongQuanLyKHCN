@@ -67,6 +67,6 @@ export const deleteManyQuanNhan = async (data, access_token) => {
 };
 
 export const getAllType = async () => {
-  const res = await axios.get(`${process.env.REACT_APP_API_URL}/quannhan/all-types`);
+  const res = await axios.get(`${process.env.REACT_APP_API_URL}/quannhan/all-type`);
   return res.data;
 };

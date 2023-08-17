@@ -479,7 +479,7 @@ const DanhSachNhom = () => {
                     };
                 }} />
             </div>
-            <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm thông tin nhóm quản trị" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -491,7 +491,7 @@ const DanhSachNhom = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Name"
+                            label="Mã"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -499,7 +499,7 @@ const DanhSachNhom = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Type"
+                            label="Tên"
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
@@ -514,66 +514,14 @@ const DanhSachNhom = () => {
                         </Form.Item>
                         {stateProduct.type === 'add_type' && (
                             <Form.Item
-                                label='New type'
+                                label='Đơn Vị'
                                 name="newType"
                                 rules={[{ required: true, message: 'Please input your type!' }]}
                             >
                                 <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
                             </Form.Item>
                         )}
-                        <Form.Item
-                            label="Count inStock"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
-                        >
-                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Description"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Rating"
-                            name="rating"
-                            rules={[{ required: true, message: 'Please input your count rating!' }]}
-                        >
-                            <InputComponent value={stateProduct.rating} onChange={handleOnchange} name="rating" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Discount"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
-                        >
-                            <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateProduct?.image && (
-                                    <img src={stateProduct?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
-                        </Form.Item>
+                        
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Submit
