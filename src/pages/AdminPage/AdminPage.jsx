@@ -51,6 +51,16 @@ import ThongTinCaNhan from '../QuanLyQuanNhan/CongTacGiangDay/ThongTinCaNhan';
 import PhanQuyenNSD from '../Quyen_ChucNang/PhanQuyenNSD';
 import TabQuyen from '../Quyen_ChucNang/TabQuyen';
 import TaiChiTiet from '../QuanLyQuanNhan/CongTacGiangDay/TaiChiTiet';
+import DMDonVi from '../QuanLyDonVi/DMDonVi';
+import HoSoCanBo from '../QuanLyDonVi/HoSoCanBo';
+import QuanLyNhuCauBC from '../QuanLyDonVi/QuanLyNhuCauBC';
+import DieuChuyenCanBo from '../QuanLyDonVi/DieuChuyenCanBo';
+
+import TKBienChe from '../ChiHuyDieuHanh/TKBienChe';
+import TKCapBac from '../ChiHuyDieuHanh/TKCapBac';
+import TKCDKH from '../ChiHuyDieuHanh/TKCDKH';
+import TKDoTuoi from '../ChiHuyDieuHanh/TKDoTuoi';
+import TKNganh from '../ChiHuyDieuHanh/TKNganh';
 
 
 const AdminPage = () => {
@@ -177,7 +187,6 @@ const AdminPage = () => {
       children: [
         getItem('Danh mục đơn vị', 'donvi', <LogoutOutlined />),
         getItem('Hồ sơ cán bộ', 'hscb', <LockOutlined />),
-        getItem('Tìm kiếm hồ sơ cán bộ', 'timkiemhscb', <AppstoreAddOutlined />),
         getItem('Quản lý nhu cầu/biên chế', 'quanlynhucaubc', <UserOutlined />),
         getItem('Điểu chuyển cán bộ', 'dieuchuyen', <UserOutlined />),
       ],
@@ -187,11 +196,11 @@ const AdminPage = () => {
       key: 'chihuydieuhanh',
       icon: <AppstoreOutlined />,
       children: [
-        getItem('Báo cáo nhanh số lượng/ biên chế', 'slbc', <LogoutOutlined />),
-        getItem('Báo cáo nhanh số lượng/ cấp bậc', 'slcb', <LockOutlined />),
-        getItem('Báo cáo nhanh số lượng/ CD-KH', 'slcdkh', <AppstoreAddOutlined />),
-        getItem('Báo cáo nhanh số lượng/ độ tuổi', 'sldotuoi', <UserOutlined />),
-        getItem('Báo cáo nhanh số lượng/ ngành', 'slnganh', <UserOutlined />),
+        getItem('Báo cáo biên chế', 'slbc', <LogoutOutlined />),
+        getItem('Báo cáo cấp bậc', 'slcb', <LockOutlined />),
+        getItem('Báo cáo CD-KH', 'slcdkh', <AppstoreAddOutlined />),
+        getItem('Báo cáo độ tuổi', 'sldotuoi', <UserOutlined />),
+        getItem('Báo cáo ngành', 'slnganh', <UserOutlined />),
       ],
     },
     // {
@@ -400,7 +409,48 @@ const AdminPage = () => {
 
       case 'donvi':
         return (
-          <Free />
+          <DMDonVi />
+        )
+
+      case 'hscb':
+        return (
+          <HoSoCanBo />
+        )
+      case 'quanlynhucaubc':
+        return (
+          <QuanLyNhuCauBC />
+        )
+
+      case 'dieuchuyen':
+        return (
+          <DieuChuyenCanBo />
+        )
+
+
+      // chỉ huy điều hành
+      case 'slbc':
+        return (
+          <TKBienChe />
+        )
+
+
+      case 'slcb':
+        return (
+
+          <TKCapBac />
+        )
+      case 'slcdkh':
+        return (
+          <TKCDKH />
+        )
+      case 'sldotuoi':
+        return (
+          <TKDoTuoi />
+        )
+
+      case 'slnganh':
+        return (
+          <TKNganh />
         )
 
 
