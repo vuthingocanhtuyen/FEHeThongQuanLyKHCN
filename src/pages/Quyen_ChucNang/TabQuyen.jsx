@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import 'antd/dist/antd.min.css'
+import 'antd/dist/antd.css'
 
 import DanhSachNhom from './DanhSachNhom';
 import PhamViNhom from './PhamViNhom';

@@ -19,7 +19,7 @@ import * as ProductService from '../../../services/ProductService'
 import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 
-const QTHocTapKhac = () => {
+const SauDaiHoc = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -280,43 +280,76 @@ const QTHocTapKhac = () => {
             ...getColumnSearchProps('name')
         },
         {
-            title: 'Tên',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            title: 'Loại bằng',
+            dataIndex: 'price',
+            sorter: (a, b) => a.price - b.price,
+            filters: [
+                {
+                    text: '>= 50',
+                    value: '>=',
+                },
+                {
+                    text: '<= 50',
+                    value: '<=',
+                }
+            ],
+            onFilter: (value, record) => {
+                if (value === '>=') {
+                    return record.price >= 50
+                }
+                return record.price <= 50
+            },
         },
         {
-            title: 'Loại',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            title: 'Lĩnh vực',
+            dataIndex: 'rating',
+            sorter: (a, b) => a.rating - b.rating,
+            filters: [
+                {
+                    text: '>= 3',
+                    value: '>=',
+                },
+                {
+                    text: '<= 3',
+                    value: '<=',
+                }
+            ],
+            onFilter: (value, record) => {
+                if (value === '>=') {
+                    return Number(record.rating) >= 3
+                }
+                return Number(record.rating) <= 3
+            },
+        },
+        {
+            title: 'Tên luận văn',
+            dataIndex: 'type',
         },
         {
             title: 'Trường',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            dataIndex: 'type',
+        },
+        {
+            title: 'Quốc gia',
+            dataIndex: 'type',
         },
         {
             title: 'Năm nhận',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'type',
         },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'type',
+        },
+
         {
             title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
     ];
+
+
 
 
     const dataTable = products?.data?.length && products?.data?.map((product) => {
@@ -471,7 +504,7 @@ const QTHocTapKhac = () => {
 
     return (
         <div>
-            <WrapperHeader>Quá trình học tập khác</WrapperHeader>
+            <WrapperHeader>Sau đại học</WrapperHeader>
             <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm </Button>
             </div>
@@ -486,7 +519,7 @@ const QTHocTapKhac = () => {
                 }} />
             </div>
             {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm quá trình  học tập khác" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm bằng sau đại học" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -498,7 +531,7 @@ const QTHocTapKhac = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Tên"
+                            label="Lĩnh vực"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -506,7 +539,7 @@ const QTHocTapKhac = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại"
+                            label="Loại bằng"
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
@@ -529,19 +562,34 @@ const QTHocTapKhac = () => {
                             </Form.Item>
                         )}
                         <Form.Item
-                            label="Trường"
+                            label="Tên luận văn"
                             name="countInStock"
                             rules={[{ required: true, message: 'Please input your count inStock!' }]}
                         >
                             <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm nhận"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Trường"
+                            name="price"
+                            rules={[{ required: true, message: 'Please input your count price!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
                         </Form.Item>
+                        <Form.Item
+                            label="Quốc gia"
+                            name="description"
+                            rules={[{ required: true, message: 'Please input your count description!' }]}
+                        >
+                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Năm nhận"
+                            name="rating"
+                            rules={[{ required: true, message: 'Please input your count rating!' }]}
+                        >
+                            <InputComponent value={stateProduct.rating} onChange={handleOnchange} name="rating" />
+                        </Form.Item>
+
 
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
@@ -554,7 +602,7 @@ const QTHocTapKhac = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật quá trình  học tập khác' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Cập nhật bằng sau đại học' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
@@ -566,7 +614,7 @@ const QTHocTapKhac = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Tên "
+                            label="Lĩnh vực"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -574,27 +622,40 @@ const QTHocTapKhac = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại"
+                            label="Loại bằng"
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
                             <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
                         </Form.Item>
                         <Form.Item
-                            label="Trường"
+                            label="Tên luận văn"
                             name="countInStock"
                             rules={[{ required: true, message: 'Please input your count inStock!' }]}
                         >
                             <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm nhận"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Trường"
+                            name="price"
+                            rules={[{ required: true, message: 'Please input your count price!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Quốc gia"
+                            name="description"
+                            rules={[{ required: true, message: 'Please input your count description!' }]}
+                        >
+                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Năm nhận"
+                            name="rating"
+                            rules={[{ required: true, message: 'Please input your count rating!' }]}
+                        >
+                            <InputComponent value={stateProductDetails.rating} onChange={handleOnchangeDetails} name="rating" />
+                        </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -604,13 +665,13 @@ const QTHocTapKhac = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa quá trình  học tập khác" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            <ModalComponent title="Xóa bằng sau đại học" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa quá trình  học tập khác này không?</div>
+                    <div>Bạn có chắc xóa bằng sau đại học này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
     )
 }
 
-export default QTHocTapKhac
+export default SauDaiHoc

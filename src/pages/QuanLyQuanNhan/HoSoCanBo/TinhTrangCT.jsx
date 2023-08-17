@@ -19,7 +19,7 @@ import * as ProductService from '../../../services/ProductService'
 import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 
-const QTHocTapKhac = () => {
+const TinhTrangCT = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 
@@ -280,19 +280,19 @@ const QTHocTapKhac = () => {
             ...getColumnSearchProps('name')
         },
         {
-            title: 'Tên',
+            title: 'Quyết định',
             dataIndex: 'email',
             sorter: (a, b) => a.email.length - b.email.length,
             ...getColumnSearchProps('email')
         },
         {
-            title: 'Loại',
+            title: 'Ngày quyết định',
             dataIndex: 'address',
             sorter: (a, b) => a.address.length - b.address.length,
             ...getColumnSearchProps('address')
         },
         {
-            title: 'Trường',
+            title: 'Trạng thái công tác',
             dataIndex: 'isAdmin',
             filters: [
                 {
@@ -305,8 +305,16 @@ const QTHocTapKhac = () => {
                 }
             ],
         },
+
         {
-            title: 'Năm nhận',
+            title: 'Kết thúc',
+            dataIndex: 'phone',
+            sorter: (a, b) => a.phone - b.phone,
+            ...getColumnSearchProps('phone')
+        },
+
+        {
+            title: 'Trạng thái',
             dataIndex: 'phone',
             sorter: (a, b) => a.phone - b.phone,
             ...getColumnSearchProps('phone')
@@ -317,6 +325,7 @@ const QTHocTapKhac = () => {
             render: renderAction
         },
     ];
+
 
 
     const dataTable = products?.data?.length && products?.data?.map((product) => {
@@ -471,7 +480,7 @@ const QTHocTapKhac = () => {
 
     return (
         <div>
-            <WrapperHeader>Quá trình học tập khác</WrapperHeader>
+            <WrapperHeader>Tình trạng công tác</WrapperHeader>
             <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm </Button>
             </div>
@@ -486,7 +495,7 @@ const QTHocTapKhac = () => {
                 }} />
             </div>
             {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm quá trình  học tập khác" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm quá trình thực hiện công tác" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -498,7 +507,7 @@ const QTHocTapKhac = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Tên"
+                            label="Số quyết định"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -506,7 +515,7 @@ const QTHocTapKhac = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại"
+                            label="Ngày quyết định"
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
@@ -529,19 +538,21 @@ const QTHocTapKhac = () => {
                             </Form.Item>
                         )}
                         <Form.Item
-                            label="Trường"
+                            label="Tình trạng thực hiện công việc"
                             name="countInStock"
                             rules={[{ required: true, message: 'Please input your count inStock!' }]}
                         >
                             <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm nhận"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Ngày kết thúc"
+                            name="price"
+                            rules={[{ required: true, message: 'Please input your count price!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
                         </Form.Item>
+
+
 
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
@@ -554,7 +565,7 @@ const QTHocTapKhac = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật quá trình  học tập khác' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Cập nhật quá trình thực hiện công tác' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
@@ -566,7 +577,7 @@ const QTHocTapKhac = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Tên "
+                            label="Số quyết định"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -574,25 +585,25 @@ const QTHocTapKhac = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại"
+                            label="Ngày quyết định"
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
                             <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
                         </Form.Item>
                         <Form.Item
-                            label="Trường"
+                            label="Tình trạng thực hiện công việc"
                             name="countInStock"
                             rules={[{ required: true, message: 'Please input your count inStock!' }]}
                         >
                             <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm nhận"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Ngày kết thúc"
+                            name="price"
+                            rules={[{ required: true, message: 'Please input your count price!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
                         </Form.Item>
 
 
@@ -604,13 +615,13 @@ const QTHocTapKhac = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa quá trình  học tập khác" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            <ModalComponent title="Xóa tình trạng công tác " open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa quá trình  học tập khác này không?</div>
+                    <div>Bạn có chắc xóa tình trạng công tác này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
     )
 }
 
-export default QTHocTapKhac
+export default TinhTrangCT

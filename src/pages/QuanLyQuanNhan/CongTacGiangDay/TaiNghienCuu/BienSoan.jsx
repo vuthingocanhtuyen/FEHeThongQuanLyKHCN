@@ -18,8 +18,9 @@ import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as ProductService from '../../../../services/ProductService'
 import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import LikeButtonComponent from '../../../../components/LikeButtonComponent/LikeButtonComponent'
 
-const BaiBaoKH = () => {
+const BienSoan = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [isModalOpenChild, setIsModalOpenChild] = useState(false);
@@ -281,7 +282,7 @@ const BaiBaoKH = () => {
             ...getColumnSearchProps('name')
         },
         {
-            title: 'Tiêu đề bài báo',
+            title: 'Tiêu đề',
             dataIndex: 'price',
             sorter: (a, b) => a.price - b.price,
             filters: [
@@ -322,12 +323,13 @@ const BaiBaoKH = () => {
                 return Number(record.rating) <= 3
             },
         },
+
         {
-            title: 'Tạp chí',
+            title: 'Loại',
             dataIndex: 'type',
         },
         {
-            title: 'Loại',
+            title: 'Vai trò',
             dataIndex: 'type',
         },
         {
@@ -368,8 +370,13 @@ const BaiBaoKH = () => {
             dataIndex: 'type',
         },
         {
-            title: 'Điểm nghiên cứu',
+            title: 'Vai trò',
             dataIndex: 'type',
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            render: renderAction
         },
 
     ];
@@ -386,7 +393,7 @@ const BaiBaoKH = () => {
             dataIndex: 'type',
         },
         {
-            title: 'Tên giáo viên',
+            title: 'Tên',
             dataIndex: 'type',
         },
         {
@@ -576,7 +583,7 @@ const BaiBaoKH = () => {
                 }} />
             </div>
             {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm báo cáo khoa học" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm thông tin sách, tài liệu tham khảo" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -588,7 +595,7 @@ const BaiBaoKH = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Tên bài"
+                            label="Tên"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -596,7 +603,7 @@ const BaiBaoKH = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại tạp chí, hội thảo"
+                            label="Loại tài liệu"
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
@@ -619,85 +626,35 @@ const BaiBaoKH = () => {
                             </Form.Item>
                         )}
                         <Form.Item
-                            label="Tên tạp chí, hội thảo"
+                            label="Số trang"
                             name="countInStock"
                             rules={[{ required: true, message: 'Please input your count inStock!' }]}
                         >
                             <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
                         </Form.Item>
                         <Form.Item
-                            label="Số tạp chí (ISBN)"
+                            label="Mã xuất bản"
                             name="price"
                             rules={[{ required: true, message: 'Please input your count price!' }]}
                         >
                             <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
                         </Form.Item>
                         <Form.Item
-                            label="Điểm tối đa"
+                            label="Ngày xuất bản"
                             name="description"
                             rules={[{ required: true, message: 'Please input your count description!' }]}
                         >
                             <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
                         </Form.Item>
                         <Form.Item
-                            label="Kinh phí hỗ trợ"
+                            label="Số tác giả"
                             name="rating"
                             rules={[{ required: true, message: 'Please input your count rating!' }]}
                         >
                             <InputComponent value={stateProduct.rating} onChange={handleOnchange} name="rating" />
                         </Form.Item>
                         <Form.Item
-                            label="Ngạch xét chứuc danh"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Tập số - volume"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Số tạp chí - number"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Trang bài viết"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Thời điểm xuất bản"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Số tác giả"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
                             label="Các tác giả"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Liên kết"
                             name="discount"
                             rules={[{ required: true, message: 'Please input your discount of product!' }]}
                         >
@@ -718,12 +675,20 @@ const BaiBaoKH = () => {
                             <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
                         </Form.Item>
                         <Form.Item
-                            label="Ngôn ngữ báo"
+                            label="Ngôn ngữ sách"
                             name="discount"
                             rules={[{ required: true, message: 'Please input your discount of product!' }]}
                         >
                             <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
                         </Form.Item>
+                        <Form.Item
+                            label="Nhóm nghiên cứu"
+                            name="discount"
+                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
+                        >
+                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
+                        </Form.Item>
+
                         <Form.Item
 
                             name="image"
@@ -742,29 +707,14 @@ const BaiBaoKH = () => {
                                 )}
                             </WrapperUploadFile>
                         </Form.Item>
-                        <Form.Item
-                            label="Thuộc đề tài"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Nhóm nghiên cứu"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
+
                         {/* Ô hiện thứ 2 */}
                         <div style={{ marginTop: '20px' }}>
                             <div style={{ float: 'right' }}>
                                 <Button style={{ background: '#00BB00' }} onClick={() => setIsModalOpenChild(true)}>Thêm công việc</Button>
                             </div>
                             <br />
-                            <div >
-                                <h3>Các hình thức công việc</h3>
-                            </div>
+
                             <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns2} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
                                 return {
                                     onClick: event => {
@@ -785,6 +735,20 @@ const BaiBaoKH = () => {
                                     >
                                         <Form.Item
                                             label="Tên giáo viên"
+                                            name="name"
+                                            rules={[{ required: true, message: 'Please input your name!' }]}
+                                        >
+                                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Vai trò"
+                                            name="name"
+                                            rules={[{ required: true, message: 'Please input your name!' }]}
+                                        >
+                                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Trang"
                                             name="name"
                                             rules={[{ required: true, message: 'Please input your name!' }]}
                                         >
@@ -1117,4 +1081,4 @@ const BaiBaoKH = () => {
     )
 }
 
-export default BaiBaoKH
+export default BienSoan
