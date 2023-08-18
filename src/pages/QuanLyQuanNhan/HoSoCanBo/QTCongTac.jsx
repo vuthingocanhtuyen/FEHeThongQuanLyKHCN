@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
 import { useSelector } from 'react-redux';
 import * as QuaTrinhCongTacService from '../../../services/QuaTrinhCongTacService';
-
+import { WrapperHeader } from './style'
 const QTCongTac = () => {
   const [data, setData] = useState([]);
   const [stateQuaTrinhCongTacDetails, setStateQuaTrinhCongTac] = useState({});
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); 
-  const user = useSelector((state) => state?.user); 
+  const [isLoading, setIsLoading] = useState(false);
+  const user = useSelector((state) => state?.user);
   const fetchGetDetailsQuaTrinhCongTac = async () => {
     try {
       console.log('User _id:', user.QuanNhanId);
@@ -18,27 +18,28 @@ const QTCongTac = () => {
       if (resQuaTrinhCongTac?.data) {
         const quanNhanId = resQuaTrinhCongTac.data._id;
         console.log('tesst:', resQuaTrinhCongTac?.data);
-      if (resQuaTrinhCongTac?.data) {
-        setStateQuaTrinhCongTac({
-          QuaTrinhCongTacId: resQuaTrinhCongTac?.data[0]?.QuaTrinhCongTacId,
-          QuanNhanId: resQuaTrinhCongTac?.data[0]?.QuanNhanId,
-          SoQuyetDinh: resQuaTrinhCongTac?.data[0]?.SoQuyetDinh,
-          NgayQuyetDinh: resQuaTrinhCongTac?.data[0]?.NgayQuyetDinh,
-          ChucVu: resQuaTrinhCongTac?.data[0]?.ChucVu,
-          DonVi: resQuaTrinhCongTac?.data[0]?.DonVi,
-          KetThuc: resQuaTrinhCongTac?.data[0]?.KetThuc,
-          DonViSinhHoatHocThuat: resQuaTrinhCongTac?.data[0]?.DonViSinhHoatHocThuat,
-          TrangThai: resQuaTrinhCongTac?.data[0]?.TrangThai,
-          edituser: resQuaTrinhCongTac?.data[0]?.edituser,
-          edittime: resQuaTrinhCongTac?.data[0]?.edittime,
-          GhiChu: resQuaTrinhCongTac?.data[0]?.GhiChu,
-        });
-        setData(resQuaTrinhCongTac.data);
+        if (resQuaTrinhCongTac?.data) {
+          setStateQuaTrinhCongTac({
+            QuaTrinhCongTacId: resQuaTrinhCongTac?.data[0]?.QuaTrinhCongTacId,
+            QuanNhanId: resQuaTrinhCongTac?.data[0]?.QuanNhanId,
+            SoQuyetDinh: resQuaTrinhCongTac?.data[0]?.SoQuyetDinh,
+            NgayQuyetDinh: resQuaTrinhCongTac?.data[0]?.NgayQuyetDinh,
+            ChucVu: resQuaTrinhCongTac?.data[0]?.ChucVu,
+            DonVi: resQuaTrinhCongTac?.data[0]?.DonVi,
+            KetThuc: resQuaTrinhCongTac?.data[0]?.KetThuc,
+            DonViSinhHoatHocThuat: resQuaTrinhCongTac?.data[0]?.DonViSinhHoatHocThuat,
+            TrangThai: resQuaTrinhCongTac?.data[0]?.TrangThai,
+            edituser: resQuaTrinhCongTac?.data[0]?.edituser,
+            edittime: resQuaTrinhCongTac?.data[0]?.edittime,
+            GhiChu: resQuaTrinhCongTac?.data[0]?.GhiChu,
+          });
+          setData(resQuaTrinhCongTac.data);
+        }
+        console.log('Updated data:', data);
+        console.log('Dữ liệu từ API:', resQuaTrinhCongTac);
+        setIsLoadingUpdate(false);
       }
-      console.log('Updated data:', data); 
-      console.log('Dữ liệu từ API:', resQuaTrinhCongTac);
-      setIsLoadingUpdate(false);
-    }} catch (error) {
+    } catch (error) {
       console.log('Error while fetching quan nhan details:', error);
       setIsLoadingUpdate(false);
     }
@@ -54,47 +55,47 @@ const QTCongTac = () => {
   }, [user]);
   const columns = [
     {
-      title: 'QuanNhanId',
+      title: 'STT',
       dataIndex: 'QuanNhanId',
       key: 'QuanNhanId',
     },
     {
-      title: 'SoQuyetDinh',
+      title: 'Số quyết định',
       dataIndex: 'SoQuyetDinh',
       key: 'SoQuyetDinh',
     },
     {
-      title: 'NgayQuyetDinh',
+      title: 'Ngày quyết định',
       dataIndex: 'NgayQuyetDinh',
       key: 'NgayQuyetDinh',
     },
     {
-      title: 'ChucVu',
+      title: 'Chứuc vụ',
       dataIndex: 'ChucVu',
       key: 'ChucVu',
     },
     {
-      title: 'DonVi',
+      title: 'Đơn vị',
       dataIndex: 'DonVi',
       key: 'DonVi',
     },
     {
-      title: 'KetThuc',
+      title: 'Kết thúc',
       dataIndex: 'KetThuc',
       key: 'KetThuc',
     },
     {
-      title: 'DonViSinhHoatHocThuat',
+      title: 'Đơn vị sinh hoạt học thuật',
       dataIndex: 'DonViSinhHoatHocThuat',
       key: 'DonViSinhHoatHocThuat',
     },
     {
-      title: 'TrangThai',
+      title: 'Trạng thái',
       dataIndex: 'TrangThai',
       key: 'TrangThai',
     },
     {
-      title: 'GhiChu',
+      title: 'Chức năng',
       dataIndex: 'GhiChu',
       key: 'GhiChu',
     },
@@ -102,6 +103,7 @@ const QTCongTac = () => {
 
   return (
     <div>
+      <WrapperHeader>Quá trình công tác</WrapperHeader>
       {isLoading ? ( // Hiển thị thông báo đang tải
         <div>Loading...</div>
       ) : (

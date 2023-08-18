@@ -172,9 +172,9 @@ const CustomizedContent = () => {
 
     return (
 
-        <div style={{ width: '1270px', margin: '0 auto', height: '700px', padding: '10px' }}>
+        <div style={{ width: '1200px', margin: '0 auto', height: '700px', padding: '10px' }}>
 
-            <div style={{ width: '700px', margin: '0 auto', height: '700px', float: 'left', padding: '10px', background: '#fff', borderRadius: "8px" }}>
+            <div style={{ width: '650px', margin: '0 auto', height: '700px', float: 'left', padding: '10px', background: '#fff', borderRadius: "8px" }}>
 
                 <WrapperHeader>Thông tin cán bộ</WrapperHeader>
                 <Loading isLoading={isLoading}>
@@ -230,7 +230,7 @@ const CustomizedContent = () => {
 
 
 
-            <div style={{ width: '500px', margin: '0 auto', height: '700px', float: 'right', textAlign: 'left', padding: '50px', background: 'back' }}>
+            <div style={{ width: '450px', margin: '0 auto', height: '700px', float: 'right', textAlign: 'left', padding: '50px', background: 'back' }}>
 
                 <WrapperHeader>Lịch</WrapperHeader>
                 <div className='calendar-container' >
