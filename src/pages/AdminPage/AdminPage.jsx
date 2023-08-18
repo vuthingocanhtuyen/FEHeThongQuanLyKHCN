@@ -53,6 +53,7 @@ import TabQuyen from '../Quyen_ChucNang/TabQuyen';
 import TaiChiTiet from '../QuanLyQuanNhan/CongTacGiangDay/TaiChiTiet';
 import DMDonVi from '../QuanLyDonVi/DMDonVi';
 import HoSoCanBo from '../QuanLyDonVi/HoSoCanBo';
+import ChiTietQuanNhan from '../QuanLyDonVi/ChiTietQuanNhan/ChiTietQuanNhan';
 import QuanLyNhuCauBC from '../QuanLyDonVi/QuanLyNhuCauBC';
 import DieuChuyenCanBo from '../QuanLyDonVi/DieuChuyenCanBo';
 
@@ -187,6 +188,7 @@ const AdminPage = () => {
       children: [
         getItem('Danh mục đơn vị', 'donvi', <LogoutOutlined />),
         getItem('Hồ sơ cán bộ', 'hscb', <LockOutlined />),
+        getItem('Chi tiết hồ sơ cán bộ', 'cthscb', <LockOutlined />),
         getItem('Quản lý nhu cầu/biên chế', 'quanlynhucaubc', <UserOutlined />),
         getItem('Điểu chuyển cán bộ', 'dieuchuyen', <UserOutlined />),
       ],
@@ -416,6 +418,10 @@ const AdminPage = () => {
         return (
           <HoSoCanBo />
         )
+
+      case 'cthscb':
+        return (<ChiTietQuanNhan />)
+
       case 'quanlynhucaubc':
         return (
           <QuanLyNhuCauBC />
@@ -453,14 +459,6 @@ const AdminPage = () => {
           <TKNganh />
         )
 
-
-
-
-
-
-
-
-
       case 'products':
         return (
           <AdminProduct />
@@ -488,14 +486,22 @@ const AdminPage = () => {
 
 
       <HeaderComponent isHiddenSearch isHiddenCart />
-      <div style={{ display: 'flex', overflowX: 'hidden' }}>
+      <div style={{
+        display: 'flex',
+        // overflowX: 'hidden',
+
+      }}>
         <Menu
           mode="inline"
           style={{
             width: 240,
             boxShadow: '1px 1px 2px #ccc',
-            height: '100vh',
-            backgroundColor: '#222D32'
+            height: '1000vh',
+            backgroundColor: '#222D32',
+            // position: 'fixed',
+            // top: 0,
+            // left: 0,
+            // bottom: 0,
           }}
           items={items}
           onClick={handleOnCLick}
