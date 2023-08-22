@@ -1,29 +1,24 @@
-import { Button, Form, Space, Select } from 'antd'
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import TableComponent from '../../../components/TableComponent/TableComponent'
+import { Button, Form, Select, Space } from 'antd'
+import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import React, { useRef } from 'react'
 
+
+import { useState } from 'react'
 import InputComponent from '../../../components/InputComponent/InputComponent'
-import CheckBox from '../../../components/CheckBox/CheckBox'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import Loading from '../../../components/LoadingComponent/Loading'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 
 import { getBase64, renderOptions } from '../../../utils'
+import * as ProductService from '../../../services/ProductService'
+
+import { useMutationHooks } from '../../../hooks/useMutationHook'
+
 import { useEffect } from 'react'
 import * as message from '../../../components/Message/Message'
-import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
-import { useRef } from 'react'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as ProductService from '../../../services/ProductService'
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import TableNoExecl from '../../../components/TableComponent/TableNoExecl'
 
-const QTCDCMKT = () => {
+const TongHopTai = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
@@ -31,48 +26,39 @@ const QTCDCMKT = () => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const inittial = () => ({
-        HTHD: '',
-        HocVien: '',
-        Lop: '',
-        DeTai: '',
-        DateBD: '',
-        Quy: '',
-        Nam: '',
-        SoCBHD: '',
-        DinhMuc: '',
-        SoGioChuan: '',
+        name: '',
+        price: '',
+        description: '',
+        rating: '',
+        image: '',
+        type: '',
+        countInStock: '',
+        newType: '',
+        discount: '',
     })
     const [stateProduct, setStateProduct] = useState(inittial())
     const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
-
-    const job = () => ({
-        GiaoVien: '',
-        HinhThuc: '',
-        SoTiet: '',
-        SoGio: '',
-        GhiChu: '',
-    })
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan } = data
+            const { name,
+                price,
+                description,
+                rating,
+                image,
+                type,
+                countInStock, discount } = data
             const res = ProductService.createProduct({
-                HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan
+                name,
+                price,
+                description,
+                rating,
+                image,
+                type,
+                countInStock,
+                discount
             })
             return res
         }
@@ -122,17 +108,14 @@ const QTCDCMKT = () => {
         const res = await ProductService.getDetailsProduct(rowSelected)
         if (res?.data) {
             setStateProductDetails({
-                HTHD: res?.data?.HTHD,
-                HocVien: res?.data?.HocVien,
-                Lop: res?.data?.Lop,
-                DeTai: res?.data?.DeTai,
-                DateBD: res?.data?.DateBD,
-                Quy: res?.data?.Quy,
-                Nam: res?.data?.Name,
-                SoCBHD: res?.data?.SoCBHD,
-                DinhMuc: res?.data?.DinhMuc,
-                SoGioChuan: res?.data?.SoGioChuan
-
+                name: res?.data?.name,
+                price: res?.data?.price,
+                description: res?.data?.description,
+                rating: res?.data?.rating,
+                image: res?.data?.image,
+                type: res?.data?.type,
+                countInStock: res?.data?.countInStock,
+                discount: res?.data?.discount
             })
         }
         setIsLoadingUpdate(false)
@@ -275,25 +258,25 @@ const QTCDCMKT = () => {
 
     const columns = [
         {
-            title: 'STT',
+            title: 'Loại hình',
             dataIndex: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
             ...getColumnSearchProps('name')
         },
         {
-            title: 'Quyết định',
+            title: 'Thực tải',
             dataIndex: 'email',
             sorter: (a, b) => a.email.length - b.email.length,
             ...getColumnSearchProps('email')
         },
         {
-            title: 'Ngày quyết định',
+            title: 'Định mức chuẩn',
             dataIndex: 'address',
             sorter: (a, b) => a.address.length - b.address.length,
             ...getColumnSearchProps('address')
         },
         {
-            title: 'Chức danh chuyên môn kỹ thuật',
+            title: 'Đối tượng miễn giảm',
             dataIndex: 'isAdmin',
             filters: [
                 {
@@ -307,20 +290,13 @@ const QTCDCMKT = () => {
             ],
         },
         {
-            title: 'Cao nhất',
+            title: 'Yêu cầu tải',
             dataIndex: 'phone',
             sorter: (a, b) => a.phone - b.phone,
             ...getColumnSearchProps('phone')
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+
     ];
-
-
-
     const dataTable = products?.data?.length && products?.data?.map((product) => {
         return { ...product, key: product._id }
     })
@@ -402,7 +378,6 @@ const QTCDCMKT = () => {
         form.resetFields()
     };
 
-
     const onFinish = () => {
         const params = {
             name: stateProduct.name,
@@ -473,13 +448,9 @@ const QTCDCMKT = () => {
 
     return (
         <div>
-            <WrapperHeader>Quá trình chức danh chuyên môn kỹ thuật</WrapperHeader>
-            <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm </Button>
-            </div>
 
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                <TableNoExecl handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: event => {
                             setRowSelected(record._id)
@@ -487,133 +458,9 @@ const QTCDCMKT = () => {
                     };
                 }} />
             </div>
-            {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm quá trình chức danh chuyên môn kỹ thuật" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
-                <Loading isLoading={isLoading}>
 
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 6 }}
-                        wrapperCol={{ span: 18 }}
-                        onFinish={onFinish}
-                        autoComplete="on"
-                        form={form}
-                    >
-                        <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
-                            />
-                        </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
-                        <Form.Item
-                            label="Chức danh chuyên môn kỹ thuật"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Cao nhất"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <CheckBox value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
-                        </Form.Item>
-
-
-                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Thêm
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </ModalComponent>
-
-
-            <DrawerComponent title='Cập nhật quá trình chức danh chuyên môn kỹ thuật' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
-
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 6 }}
-                        wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
-                        autoComplete="on"
-                        form={form}
-                    >
-                        <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Chức danh chuyên môn kỹ thuật"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Cao nhât"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <CheckBox value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-
-
-                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Cập nhật
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </DrawerComponent>
-            <ModalComponent title="Xóa quá trình quân hàm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
-                <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa quá trình quân hàm này không?</div>
-                </Loading>
-            </ModalComponent>
         </div>
     )
 }
 
-export default QTCDCMKT
+export default TongHopTai

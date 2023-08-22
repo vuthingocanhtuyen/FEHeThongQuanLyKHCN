@@ -576,12 +576,12 @@ const HoSoCanBo = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Sửa đơn vị' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Sửa đơn vị' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="80%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
                         onFinish={onUpdateProduct}
                         autoComplete="on"

@@ -37,11 +37,6 @@ import CheDoUT from '../QuanLyDanhMuc/DanhMucChung/CheDoUT'
 import CapNhatHSCB from '../QuanLyQuanNhan/HoSoCanBo/CapNhatHSCB';
 
 
-
-
-
-
-import Free from '../../components/Free/Free'
 import TabNghienCuu from '../QuanLyQuanNhan/CongTacGiangDay/TabNghienCuu';
 import TabDaoTao from '../QuanLyQuanNhan/CongTacGiangDay/TabDaoTao';
 import QTKhenThuong from '../QuanLyQuanNhan/HoSoCanBo/QTKhenThuong';
@@ -57,11 +52,11 @@ import ChiTietQuanNhan from '../QuanLyDonVi/ChiTietQuanNhan/ChiTietQuanNhan';
 import QuanLyNhuCauBC from '../QuanLyDonVi/QuanLyNhuCauBC';
 import DieuChuyenCanBo from '../QuanLyDonVi/DieuChuyenCanBo';
 
-import TKBienChe from '../ChiHuyDieuHanh/TKBienChe';
-import TKCapBac from '../ChiHuyDieuHanh/TKCapBac';
-import TKCDKH from '../ChiHuyDieuHanh/TKCDKH';
-import TKDoTuoi from '../ChiHuyDieuHanh/TKDoTuoi';
-import TKNganh from '../ChiHuyDieuHanh/TKNganh';
+
+import TabThanhNhanTaiSan from '../QuanLyQuanNhan/HoSoCanBo/TabThanNhanTaiSan';
+import ThongKeBaoCao from '../ChiHuyDieuHanh/ThongKeNhanLuc/ThongKeBaoCao';
+import ThongKeTai from '../ChiHuyDieuHanh/ThongKeTai/ThongKeTai';
+
 
 
 const AdminPage = () => {
@@ -155,14 +150,10 @@ const AdminPage = () => {
           icon: <SettingOutlined />,
           children: [
             getItem('Cập nhật hồ sơ cán bộ', 'hosocanbo', <AppstoreAddOutlined />),
-            // getItem('In danh sách cán bộ', 'quannhans', <AppstoreAddOutlined />),
-            // getItem('Cập nhật Hồ sơ cán bộ theo đơn vị', 'capnhathscb', <AppstoreAddOutlined />),
-            // getItem('Quá trình công tác', 'congtac', <AppstoreAddOutlined />),
-            // getItem('Quá trình cấp bậc', 'capbac', <AppstoreAddOutlined />),
-            // getItem('Quá trình đào tạo', 'daotao', <AppstoreAddOutlined />),
+
             getItem('Quá trình khen thưởng', 'khenthuong', <AppstoreAddOutlined />),
             getItem('Quá trình kỷ luật', 'kyluat', <AppstoreAddOutlined />),
-            //  getItem('Tìm kiếm', 'timkiem', <AppstoreAddOutlined />),
+            getItem('Thân nhân và Tài sản', 'thannhantaisan', <AppstoreAddOutlined />),
           ]
         },
         {
@@ -194,23 +185,24 @@ const AdminPage = () => {
       ],
     },
     {
+
       label: 'Chỉ huy/ Điều hành',
       key: 'chihuydieuhanh',
-      icon: <AppstoreOutlined />,
+      icon: <LogoutOutlined />,
       children: [
-        getItem('Báo cáo biên chế', 'slbc', <LogoutOutlined />),
-        getItem('Báo cáo cấp bậc', 'slcb', <LockOutlined />),
-        getItem('Báo cáo CD-KH', 'slcdkh', <AppstoreAddOutlined />),
-        getItem('Báo cáo độ tuổi', 'sldotuoi', <UserOutlined />),
-        getItem('Báo cáo ngành', 'slnganh', <UserOutlined />),
+        getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
+        getItem('Thông kê tải', 'thongketai', <LockOutlined />),
+        // getItem('Báo cáo CD-KH', 'slcdkh', <AppstoreAddOutlined />),
+        // getItem('Báo cáo độ tuổi', 'sldotuoi', <UserOutlined />),
+        // getItem('Báo cáo ngành', 'slnganh', <UserOutlined />),
       ],
     },
     // {
-    //   label: 'Quản lý nghiệp vụ',
-    //   key: 'quanlynghiepvu',
+    //   label: 'Chỉ huy/ Điều hành',
+    //   key: 'chihuydieuhanh',
     //   icon: <AppstoreOutlined />,
     //   children: [
-    //     getItem('Quản lý giảng dạy nghiên cứu', 'giangday', <AppstoreAddOutlined />)
+    //     getItem('Báo cáo thống kê', 'giangday', <AppstoreAddOutlined />)
     //   ],
     // },
   ];
@@ -384,6 +376,10 @@ const AdminPage = () => {
         return (
           <QTKyLuat />
         )
+      case 'thannhantaisan':
+        return (
+          <TabThanhNhanTaiSan />
+        )
 
 
 
@@ -434,43 +430,44 @@ const AdminPage = () => {
 
 
       // chỉ huy điều hành
-      case 'slbc':
+      case 'thongkenhanluc':
         return (
-          <TKBienChe />
+          <ThongKeBaoCao />
+          // <TKCapBac />
         )
 
 
-      case 'slcb':
+      case 'thongketai':
         return (
 
-          <TKCapBac />
+          <ThongKeTai />
         )
-      case 'slcdkh':
-        return (
-          <TKCDKH />
-        )
-      case 'sldotuoi':
-        return (
-          <TKDoTuoi />
-        )
+      // case 'slcdkh':
+      //   return (
+      //     <TKCDKH />
+      //   )
+      // case 'sldotuoi':
+      //   return (
+      //     <TKDoTuoi />
+      //   )
 
-      case 'slnganh':
-        return (
-          <TKNganh />
-        )
+      // case 'slnganh':
+      //   return (
+      //     <TKNganh />
+      //   )
 
-      case 'products':
-        return (
-          <AdminProduct />
-        )
-      case 'orders':
-        return (
-          <OrderAdmin />
-        )
-      case 'quannhans':
-        return (
-          <AdminUser />
-        )
+      // case 'products':
+      //   return (
+      //     <AdminProduct />
+      //   )
+      // case 'orders':
+      //   return (
+      //     <OrderAdmin />
+      //   )
+      // case 'quannhans':
+      //   return (
+      //     <AdminUser />
+      //   )
       default:
         return <></>
     }
