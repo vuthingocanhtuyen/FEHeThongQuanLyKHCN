@@ -168,10 +168,8 @@ const QuanLyNhuCauBC = () => {
     const renderAction = () => {
         return (
             <div>
-                <Button style={{ color: 'black', fontSize: '15px', cursor: 'pointer' }} onClick={() => handleDetailsProduct} >Chi tiết</Button>
-                &nbsp;
-                <Button style={{ color: 'black', fontSize: '15px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} >Tải xuống</Button>
-
+                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
             </div>
         )
     }
@@ -302,9 +300,11 @@ const QuanLyNhuCauBC = () => {
         },
         {
             title: 'SL nhu cầu',
+
             dataIndex: 'phone',
             sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+
+
         },
         {
             title: 'SL biên chế',
@@ -489,19 +489,19 @@ const QuanLyNhuCauBC = () => {
                     };
                 }} />
             </div>
-            <ModalComponent forceRender title="Thêm nhu cầu biên chế" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm nhu cầu biên chế" open={isModalOpen} onCancel={handleCancel} footer={null} width="60%">
                 <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Mã đươn vị"
+                            label="Mã đơn vị"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
@@ -578,12 +578,12 @@ const QuanLyNhuCauBC = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Sửa nhu cầu, biên chế' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Sửa nhu cầu, biên chế' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="60%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
                         onFinish={onUpdateProduct}
                         autoComplete="on"

@@ -543,12 +543,12 @@ const QTQuanHam = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật quá trình quân hàm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Cập nhật quá trình quân hàm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 4 }}
                         wrapperCol={{ span: 22 }}
                         onFinish={onUpdateProduct}
                         autoComplete="on"
