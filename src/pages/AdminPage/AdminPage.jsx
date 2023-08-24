@@ -106,35 +106,35 @@ const AdminPage = () => {
     // getItem('Đơn hàng', 'orders', <ShoppingCartOutlined />),
     {
       label: 'Quản lý Danh mục',
-      key: '0',
+      key: 'quanlydanhmuc',
       icon: <AppstoreOutlined />,
       children: [
         {
           label: 'Tổ chức và nhân sự',
-          key: '7',
+          key: 'tochucnhansu',
           icon: <SettingOutlined />,
           children: [
-            getItem('Danh mục cấp bậc', '1', <AppstoreAddOutlined />),
-            getItem('Danh mục chức vụ', '2', <AppstoreAddOutlined />),
-            getItem('Danh mục học hàm', '3', <AppstoreAddOutlined />),
-            getItem('Danh mục C.Danh CMKT', '4', <AppstoreAddOutlined />),
-            getItem('Danh mục Loại đơn vị', '5', <AppstoreAddOutlined />),
-            getItem('Danh mục Hình thức Khen thưởng', '6', <AppstoreAddOutlined />),
-            getItem('Danh mục Hình thức Kỷ luật', '8', <AppstoreAddOutlined />),
+            getItem('Danh mục cấp bậc', 'capbac', <AppstoreAddOutlined />),
+            getItem('Danh mục chức vụ', 'chucvu', <AppstoreAddOutlined />),
+            getItem('Danh mục học hàm', 'hocham', <AppstoreAddOutlined />),
+            getItem('Danh mục C.Danh CMKT', 'cdcmkt', <AppstoreAddOutlined />),
+            getItem('Danh mục Loại đơn vị', 'loaidv', <AppstoreAddOutlined />),
+            getItem('Danh mục Hình thức Khen thưởng', 'khenthuong', <AppstoreAddOutlined />),
+            getItem('Danh mục Hình thức Kỷ luật', 'kyluat', <AppstoreAddOutlined />),
           ]
         },
         {
           label: 'Danh mục chung',
-          key: '9',
+          key: 'chung',
           icon: <SettingOutlined />,
           children: [
-            getItem('Danh mục Tỉnh', '10', <AppstoreAddOutlined />),
-            getItem('Danh mục Huyện', '11', <AppstoreAddOutlined />),
-            getItem('Danh mục Xã', '12', <AppstoreAddOutlined />),
-            getItem('Danh mục Dân tộc', '13', <AppstoreAddOutlined />),
-            getItem('Danh mục Tôn giáo', '14', <AppstoreAddOutlined />),
-            getItem('Danh mục Khu vực ƯT', '15', <AppstoreAddOutlined />),
-            getItem('Danh mục Chế độ ƯT', '16', <AppstoreAddOutlined />),
+            getItem('Danh mục Tỉnh', 'tinh', <AppstoreAddOutlined />),
+            getItem('Danh mục Huyện', 'huyen', <AppstoreAddOutlined />),
+            getItem('Danh mục Xã', 'xa', <AppstoreAddOutlined />),
+            getItem('Danh mục Dân tộc', 'dantoc', <AppstoreAddOutlined />),
+            getItem('Danh mục Tôn giáo', 'tongiao', <AppstoreAddOutlined />),
+            getItem('Danh mục Khu vực ƯT', 'khuvucut', <AppstoreAddOutlined />),
+            getItem('Danh mục Chế độ ƯT', 'chedout', <AppstoreAddOutlined />),
           ]
         },
       ],
@@ -290,31 +290,31 @@ const AdminPage = () => {
       //Danh mục quản lý
 
 
-      case '1':
+      case 'capbac':
         return (
           <CapBac />
         )
-      case '2':
+      case 'chucvu':
         return (
           <ChucVu />
         )
-      case '3':
+      case 'hocham':
         return (
           <HocHam />
         )
-      case '4':
+      case 'cdcmkt':
         return (
           <CDCMKT />
         )
-      case '5':
+      case 'loaidv':
         return (
           <LoaiDonVi />
         )
-      case '6':
+      case 'khenthuong':
         return (
           <KhenThuong />
         )
-      case '8':
+      case 'kyluat':
         return (
           <KyLuat />
         )
@@ -323,39 +323,39 @@ const AdminPage = () => {
 
       // Danh mục chung
 
-      case '10':
+      case 'tinh':
         return (
           <Tinh />
         )
 
-      case '11':
+      case 'huyen':
         return (
           <Huyen />
         )
 
-      case '12':
+      case 'xa':
         return (
           <Xa />
         )
 
-      case '13':
+      case 'dantoc':
         return (
           <DanToc />
         )
 
 
-      case '14':
+      case 'tongiao':
         return (
           <TonGiao />
         )
 
-      case '15':
+      case 'khuvucut':
         return (
           <KhuVucUT />
         )
 
 
-      case '16':
+      case 'chedout':
         return (
           <CheDoUT />
         )
