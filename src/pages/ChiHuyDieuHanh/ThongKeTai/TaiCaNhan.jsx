@@ -96,6 +96,18 @@ const TaiCaNhan = () => {
 
     }
     const [date, setDate] = useState(new Date());
+    
+    const optionDanToc = [
+        { value: 'option1', label: 'Option 1' },
+        { value: 'option2', label: 'Option 2' },
+        { value: 'option3', label: 'Option 3' },
+    ];
+
+    const handleChange = (value) => {
+        console.log(`selected value: ${value}`);
+    };
+
+
 
     return (
         <div>
