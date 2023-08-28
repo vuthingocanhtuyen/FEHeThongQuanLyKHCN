@@ -570,7 +570,7 @@ const TinhTrangCT = () => {
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 4 }}
                         wrapperCol={{ span: 22 }}
                         onFinish={onUpdateProduct}
                         autoComplete="on"

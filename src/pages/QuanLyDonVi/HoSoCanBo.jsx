@@ -2,6 +2,7 @@ import { Button, Form, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
 import { WrapperHeader, WrapperUploadFile } from './style'
+
 import TableComponent from '../../components/TableComponent/TableComponent'
 import { useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'

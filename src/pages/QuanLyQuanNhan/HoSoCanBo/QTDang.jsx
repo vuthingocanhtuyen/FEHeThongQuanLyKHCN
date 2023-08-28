@@ -590,12 +590,12 @@ const QTDang = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật quá trình sinh hoạt Đảng' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Cập nhật quá trình sinh hoạt Đảng' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 6 }}
                         wrapperCol={{ span: 22 }}
                         onFinish={onUpdateProduct}
                         autoComplete="on"
