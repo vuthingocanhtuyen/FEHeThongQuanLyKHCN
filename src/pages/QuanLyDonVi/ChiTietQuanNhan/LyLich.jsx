@@ -15,7 +15,7 @@ import Loading from '../../../components/LoadingComponent/Loading'
 import { Button, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import CheckboxComponent from '../../../components/CheckBox/CheckBox'
-import ComboBoxComponent from '../../../components/ComboBoxComponent/ComboBox'
+import ComboBoxComponent from '../../../components/ComboBoxComponent/ComboBoxComponent'
 
 
 const LyLich = () => {

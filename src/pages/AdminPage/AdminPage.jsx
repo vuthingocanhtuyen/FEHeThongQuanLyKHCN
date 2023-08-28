@@ -56,6 +56,7 @@ import DieuChuyenCanBo from '../QuanLyDonVi/DieuChuyenCanBo';
 import TabThanhNhanTaiSan from '../QuanLyQuanNhan/HoSoCanBo/TabThanNhanTaiSan';
 import ThongKeBaoCao from '../ChiHuyDieuHanh/ThongKeNhanLuc/ThongKeBaoCao';
 import ThongKeTai from '../ChiHuyDieuHanh/ThongKeTai/ThongKeTai';
+import HocVi from '../QuanLyDanhMuc/ToChucNhanSu/HocVi';
 
 
 
@@ -117,6 +118,7 @@ const AdminPage = () => {
             getItem('Danh mục cấp bậc', 'capbac', <AppstoreAddOutlined />),
             getItem('Danh mục chức vụ', 'chucvu', <AppstoreAddOutlined />),
             getItem('Danh mục học hàm', 'hocham', <AppstoreAddOutlined />),
+            getItem('Danh mục học vị', 'hocvi', <AppstoreAddOutlined />),
             getItem('Danh mục C.Danh CMKT', 'cdcmkt', <AppstoreAddOutlined />),
             getItem('Danh mục Loại đơn vị', 'loaidv', <AppstoreAddOutlined />),
             getItem('Danh mục Hình thức Khen thưởng', 'khenthuong', <AppstoreAddOutlined />),
@@ -301,6 +303,10 @@ const AdminPage = () => {
       case 'hocham':
         return (
           <HocHam />
+        )
+      case 'hocvi':
+        return (
+          <HocVi />
         )
       case 'cdcmkt':
         return (

@@ -1,4 +1,4 @@
-import { Button, Form, Select, Space } from 'antd'
+import { Button, Form, Checkbox, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
 import { WrapperHeader, WrapperUploadFile } from './style'
@@ -9,18 +9,15 @@ import { useState } from 'react'
 import InputComponent from '../../../components/InputComponent/InputComponent'
 
 import { getBase64, renderOptions } from '../../../utils'
-import * as ProductService from '../../../services/ProductService'
-
+import * as DanhMucXaService from '../../../services/DanhMucXaService'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import Loading from '../../../components/LoadingComponent/Loading'
 import { useEffect } from 'react'
 import * as message from '../../../components/Message/Message'
 import { useQuery } from '@tanstack/react-query'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import ButttonInputSearch from '../../../components/ButtonInputSearch/ButttonInputSearch'
-
+import ComboBoxComponent from '../../../components/ComboBoxComponent/ComboBoxComponent'
 
 const Xa = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,39 +28,27 @@ const Xa = () => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const inittial = () => ({
-        name: '',
-        price: '',
-        description: '',
-        rating: '',
-        image: '',
-        type: '',
-        countInStock: '',
-        newType: '',
-        discount: '',
+        DanhMucXaId: '',
+        TenDanhMucXa: '',
+        HienThi: false,
+        GhiChu: '',
     })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
+    const [stateDanhMucXa, setStateDanhMucXa] = useState(inittial())
+    const [stateDanhMucXaDetails, setStateDanhMucXaDetails] = useState(inittial())
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock, discount } = data
-            const res = ProductService.createProduct({
-                name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock,
-                discount
+            const { DanhMucXaId,
+                TenDanhMucXa,
+                HienThi,
+                GhiChu } = data
+            const res = DanhMucXaService.createDanhMucXa({
+                DanhMucXaId,
+                TenDanhMucXa,
+                HienThi,
+                GhiChu
             })
             return res
         }
@@ -73,7 +58,7 @@ const Xa = () => {
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = DanhMucXaService.updateDanhMucXa(
                 id,
                 token,
                 { ...rests })
@@ -86,7 +71,7 @@ const Xa = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = DanhMucXaService.deleteDanhMucXa(
                 id,
                 token)
             return res
@@ -97,30 +82,26 @@ const Xa = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = DanhMucXaService.deleteManyDanhMucXa(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+    const getAllDanhMucXas = async () => {
+        const res = await DanhMucXaService.getAllDanhMucXa()
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
+    const fetchGetDetailsDanhMucXa = async (rowSelected) => {
+        const res = await DanhMucXaService.getDetailsDanhMucXa(rowSelected)
         if (res?.data) {
-            setStateProductDetails({
-                name: res?.data?.name,
-                price: res?.data?.price,
-                description: res?.data?.description,
-                rating: res?.data?.rating,
-                image: res?.data?.image,
-                type: res?.data?.type,
-                countInStock: res?.data?.countInStock,
-                discount: res?.data?.discount
+            setStateDanhMucXaDetails({
+                DanhMucXaId: res?.data?.DanhMucXaId,
+                TenDanhMucXa: res?.data?.TenDanhMucXa,
+                HienThi: res?.data?.HienThi,
+                GhiChu: res?.data?.GhiChu,
             })
         }
         setIsLoadingUpdate(false)
@@ -128,35 +109,32 @@ const Xa = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateDanhMucXaDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateDanhMucXaDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsDanhMucXa(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsDanhMucXa = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+    const handleDelteManyDanhMucXas = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDanhMucXa.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
-        return res
-    }
+
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -164,14 +142,13 @@ const Xa = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryDanhMucXa = useQuery({ queryKey: ['danhmucxas'], queryFn: getAllDanhMucXas })
+    const { isLoading: isLoadingDanhMucXas, data: danhmucxas } = queryDanhMucXa
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsDanhMucXa} />
             </div>
         )
     }
@@ -179,12 +156,11 @@ const Xa = () => {
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -244,84 +220,39 @@ const Xa = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
 
 
     const columns = [
         {
             title: 'Mã',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            dataIndex: 'DanhMucXaId',
+            ...getColumnSearchProps('DanhMucXaId')
         },
         {
             title: 'Tên',
-            dataIndex: 'price',
-            sorter: (a, b) => a.price - b.price,
-            filters: [
-                {
-                    text: '>= 50',
-                    value: '>=',
-                },
-                {
-                    text: '<= 50',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return record.price >= 50
-                }
-                return record.price <= 50
-            },
+            dataIndex: 'TenDanhMucXa',
+            ...getColumnSearchProps('TenDanhMucXa')
         },
         {
-            title: 'Thứ tự',
-            dataIndex: 'rating',
-            sorter: (a, b) => a.rating - b.rating,
-            filters: [
-                {
-                    text: '>= 3',
-                    value: '>=',
-                },
-                {
-                    text: '<= 3',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return Number(record.rating) >= 3
-                }
-                return Number(record.rating) <= 3
-            },
+            title: 'Hiển thị',
+            dataIndex: 'HienThi',
+            render: (HienThi, record) => (
+                <Checkbox
+                    checked={HienThi}
+                    onChange={(e) => handleCheckboxChange(record._id, e.target.checked)}
+                />
+            )
         },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'type',
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Action',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
     ];
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
+    const dataTable = danhmucxas?.data?.length && danhmucxas?.data?.map((danhmucxa) => {
+        return { ...danhmucxa, key: danhmucxa._id }
     })
 
     useEffect(() => {
@@ -352,14 +283,11 @@ const Xa = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+        setStateDanhMucXaDetails({
+            DanhMucXaId: '',
+            TenDanhMucXa: '',
+            HienThi: '',
+            GhiChu: ''
         })
         form.resetFields()
     };
@@ -378,57 +306,56 @@ const Xa = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteDanhMucXa = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDanhMucXa.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+        setStateDanhMucXa({
+            DanhMucXaId: '',
+            TenDanhMucXa: '',
+            HienThi: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            DanhMucXaId: stateDanhMucXa.DanhMucXaId,
+            TenDanhMucXa: stateDanhMucXa.TenDanhMucXa,
+            HienThi: stateDanhMucXa.HienThi,
+            GhiChu: stateDanhMucXa.GhiChu
         }
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDanhMucXa.refetch()
             }
         })
     }
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
+        setStateDanhMucXa({
+            ...stateDanhMucXa,
             [e.target.name]: e.target.value
         })
     }
+    const handleCheckboxChange = (e) => {
+        const isChecked = e.target.checked;
+        setStateDanhMucXa({
+            ...stateDanhMucXa,
+            HienThi: isChecked
+        });
+    };
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
+        setStateDanhMucXaDetails({
+            ...stateDanhMucXaDetails,
             [e.target.name]: e.target.value
         })
     }
@@ -438,8 +365,8 @@ const Xa = () => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setStateProduct({
-            ...stateProduct,
+        setStateDanhMucXa({
+            ...stateDanhMucXa,
             image: file.preview
         })
     }
@@ -449,41 +376,66 @@ const Xa = () => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setStateProductDetails({
-            ...stateProductDetails,
+        setStateDanhMucXaDetails({
+            ...stateDanhMucXaDetails,
             image: file.preview
         })
     }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+    const onUpdateDanhMucXa = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateDanhMucXaDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDanhMucXa.refetch()
             }
         })
     }
 
     const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
+        setStateDanhMucXa({
+            ...stateDanhMucXa,
             type: value
         })
     }
+    const optionHuyen = [
+        { value: 'o1', label: 'Bắc Từ Liêm' },
+        { value: 'o2', label: 'Ba Đình' },
+        { value: 'o3', label: 'Long Biên' },
+    ];
+
+    const handleChangeHuyen = (value) => {
+        console.log(`selected value: ${value}`);
+    };
+    const optionTinh = [
+        { value: 'a1', label: 'Hà Nội' },
+        { value: 'a2', label: 'Hà Giang' },
+        { value: 'a3', label: 'Hà Nam' },
+    ];
+
+    const handleChangeTinh = (value) => {
+        console.log(`selected value: ${value}`);
+    };
 
     return (
         <div>
-            <WrapperHeader>Quản lý Xã</WrapperHeader>
-            <div style={{ width: '350px', float: 'right', padding: '30px' }}>
-                Quận/Huyện<ButttonInputSearch />
-            </div>
-
-            <div style={{ width: '350px', float: 'right', padding: '30px' }}>
-                Tỉnh/Thành phố<ButttonInputSearch />
-            </div>
-            <div style={{ marginTop: '10px' }}>
+            <WrapperHeader>Danh mục xã</WrapperHeader>
+            {/* <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
+            </div> */}
+            <div >
+                Tỉnh
+                &nbsp;
+                <ComboBoxComponent options={optionTinh} onChange={handleChangeTinh} style={{ width: '250px' }} > </ComboBoxComponent>
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+                &nbsp;
+
+                Huyện
+                &nbsp;
+                <ComboBoxComponent options={optionHuyen} onChange={handleChangeHuyen} style={{ width: '250px', pading: '0px 0px 0px 30px' }} > </ComboBoxComponent>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                <TableComponent handleDelteMany={handleDelteManyDanhMucXas} columns={columns} isLoading={isLoadingDanhMucXas} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: event => {
                             setRowSelected(record._id)
@@ -491,104 +443,73 @@ const Xa = () => {
                     };
                 }} />
             </div>
-            <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm mới cấp bậc" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 10 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
                         autoComplete="on"
                         form={form}
                     >
+                        {/* DanhMucXaId,
+                TenDanhMucXa,
+                HienThi,
+                GhiChu */}
                         <Form.Item
-                            label="Name"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Mã Xã"
+                            name="DanhMucXaId"
+                            rules={[{ required: true, message: 'Hãy nhập mã cấp bậc!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDanhMucXa['DanhMucXaId']}
+                                onChange={handleOnchange}
+                                name="DanhMucXaId"
+                            />
                         </Form.Item>
 
                         <Form.Item
-                            label="Type"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            label="Tên Xã"
+                            name="TenDanhMucXa"
+                            rules={[{ required: true, message: 'Hãy nhập tên cấp bậc!' }]}
                         >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDanhMucXa['TenDanhMucXa']}
+                                onChange={handleOnchange}
+                                name="TenDanhMucXa"
                             />
                         </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
                         <Form.Item
-                            label="Count inStock"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Hiển Thị"
+                            name="HienThi"
+                            valuePropName="checked"
+                            initialValue={stateDanhMucXa['HienThi']}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <Checkbox onChange={handleCheckboxChange}>Hiển thị</Checkbox>
                         </Form.Item>
                         <Form.Item
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
+                            label="Ghi chú"
+                            name="GhiChu"
+                        // rules={[{ required: true, message: 'Hãy nhập tên cấp bậc!' }]}
                         >
-                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDanhMucXa['GhiChu']}
+                                onChange={handleOnchange}
+                                name="GhiChu"
+                            />
                         </Form.Item>
-                        <Form.Item
-                            label="Description"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Rating"
-                            name="rating"
-                            rules={[{ required: true, message: 'Please input your count rating!' }]}
-                        >
-                            <InputComponent value={stateProduct.rating} onChange={handleOnchange} name="rating" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Discount"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
-                        >
-                            <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateProduct?.image && (
-                                    <img src={stateProduct?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
-                        </Form.Item>
+
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
-                                Submit
+                                Thêm
                             </Button>
                         </Form.Item>
                     </Form>
@@ -596,14 +517,14 @@ const Xa = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            {/* <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 2 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateDanhMucXa}
                         autoComplete="on"
                         form={form}
                     >
@@ -612,7 +533,7 @@ const Xa = () => {
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
+                            <InputComponent value={stateDanhMucXaDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
 
                         <Form.Item
@@ -620,42 +541,42 @@ const Xa = () => {
                             name="type"
                             rules={[{ required: true, message: 'Please input your type!' }]}
                         >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
+                            <InputComponent value={stateDanhMucXaDetails['type']} onChange={handleOnchangeDetails} name="type" />
                         </Form.Item>
                         <Form.Item
                             label="Count inStock"
                             name="countInStock"
                             rules={[{ required: true, message: 'Please input your count inStock!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateDanhMucXaDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
                         </Form.Item>
                         <Form.Item
                             label="Price"
                             name="price"
                             rules={[{ required: true, message: 'Please input your count price!' }]}
                         >
-                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
+                            <InputComponent value={stateDanhMucXaDetails.price} onChange={handleOnchangeDetails} name="price" />
                         </Form.Item>
                         <Form.Item
                             label="Description"
                             name="description"
                             rules={[{ required: true, message: 'Please input your count description!' }]}
                         >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
+                            <InputComponent value={stateDanhMucXaDetails.description} onChange={handleOnchangeDetails} name="description" />
                         </Form.Item>
                         <Form.Item
                             label="Rating"
                             name="rating"
                             rules={[{ required: true, message: 'Please input your count rating!' }]}
                         >
-                            <InputComponent value={stateProductDetails.rating} onChange={handleOnchangeDetails} name="rating" />
+                            <InputComponent value={stateDanhMucXaDetails.rating} onChange={handleOnchangeDetails} name="rating" />
                         </Form.Item>
                         <Form.Item
                             label="Discount"
                             name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
+                            rules={[{ required: true, message: 'Please input your discount of danhmucxa!' }]}
                         >
-                            <InputComponent value={stateProductDetails.discount} onChange={handleOnchangeDetails} name="discount" />
+                            <InputComponent value={stateDanhMucXaDetails.discount} onChange={handleOnchangeDetails} name="discount" />
                         </Form.Item>
                         <Form.Item
                             label="Image"
@@ -664,8 +585,8 @@ const Xa = () => {
                         >
                             <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
                                 <Button >Select File</Button>
-                                {stateProductDetails?.image && (
-                                    <img src={stateProductDetails?.image} style={{
+                                {stateDanhMucXaDetails?.image && (
+                                    <img src={stateDanhMucXaDetails?.image} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -682,10 +603,10 @@ const Xa = () => {
                         </Form.Item>
                     </Form>
                 </Loading>
-            </DrawerComponent>
-            <ModalComponent title="Xóa sản phẩm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            </DrawerComponent> */}
+            <ModalComponent title="Xóa Danh mục" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteDanhMucXa}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa sản phẩm này không?</div>
+                    <div>Bạn có chắc xóa danh mục này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
