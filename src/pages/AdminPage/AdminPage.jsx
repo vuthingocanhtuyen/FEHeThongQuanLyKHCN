@@ -9,7 +9,7 @@ import OrderAdmin from '../../components/OrderAdmin/OrderAmin';
 import * as OrderService from '../../services/OrderService'
 import * as ProductService from '../../services/ProductService'
 import * as UserService from '../../services/UserService'
-
+import * as PriorityByUserService from '../../services/PriorityByUserService';
 import CustomizedContent from './components/CustomizedContent';
 import { useSelector } from 'react-redux';
 import { useQueries } from '@tanstack/react-query';
@@ -62,19 +62,52 @@ import HocVi from '../QuanLyDanhMuc/ToChucNhanSu/HocVi';
 
 const AdminPage = () => {
   const user = useSelector((state) => state?.user)
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+  const [statePriorityDetails, setstatePriority] = useState({});
+  const [combinedData, setCombinedData] = useState([]);
   const userIsAdmin = user?.isAdmin === 'admin';
+  const [data, setData] = useState([]);
+  const fetchGetPriority = async () => {
+    try {
+      console.log('User _id:', user?.id);
+      const resPriority = await PriorityByUserService.getPriorityByUser(user.id, user.access_token);
+      const extractedData = resPriority.map(item => item.data); // Lấy ra giá trị từ thuộc tính data của mỗi đối tượng
+      const combinedData = extractedData.flat();
+      setCombinedData(combinedData);
+      // setstatePriority({
+      //   data: combinedData // Lưu mảng dữ liệu vào state
+      // });
+      
+      
+      setIsLoadingUpdate(false);
+    } catch (error) {
+      console.log('Error while fetching resPriority details:', error);
+      setIsLoadingUpdate(false);
+    }
+  };
+  useEffect(() => {
+      setIsLoadingUpdate(true);
+      fetchGetPriority();
+  }, [user.id]);
+  console.log('combinedData:', combinedData);
   const managementChildren = [
     getItem('Đổi mật khẩu', 'changepassword', <LockOutlined />),
-    getItem('Người dùng', 'users2', <UserOutlined />)
+    getItem('Tham số hệ thống', 'systemparams', <AppstoreAddOutlined />),
   ];
-  if (userIsAdmin) {
-    managementChildren.push(
-      getItem('Tham số hệ thống', 'systemparams', <AppstoreAddOutlined />),
-      getItem('Nhóm quyền', 'quyen', <LockOutlined />),
-      getItem('Nhóm chức năng', 'module', <AppstoreAddOutlined />),
-      getItem('Nhóm người dùng', 'people', <LockOutlined />)
+  const managementChildren2 = [];
+  if (combinedData.includes("EVERYONE")) {
+    managementChildren2.push(
+      getItem('Quản lý phân quyền', 'quyen', <LockOutlined />),
     );
   }
+  if (combinedData.includes("EVERYONE")) {
+    managementChildren2.push(
+      getItem('Phân quyền NSD', 'people', <AppstoreAddOutlined />)
+    );
+  }
+
+
+  
   const items = [
     {
       label: 'Hệ thống',
@@ -85,19 +118,13 @@ const AdminPage = () => {
           label: 'Hệ thống',
           key: 'id',
           icon: <SettingOutlined />,
-          children: [
-            getItem('Đổi mật khẩu', 'changepassword', <LockOutlined />),
-            getItem('Tham số hệ thống', 'systemparams', <AppstoreAddOutlined />),
-          ]
+          children: managementChildren
         },
         {
           label: 'Quản lý NSD và Quyền',
           key: 'management',
           icon: <UserOutlined />,
-          children: [
-            getItem('Quản lý phân quyền', 'quyen', <LockOutlined />),
-            getItem('Phân quyền NSD', 'people', <AppstoreAddOutlined />),
-          ]
+          children: managementChildren2
         },
 
       ],

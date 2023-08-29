@@ -2,12 +2,11 @@ import { Button, Form, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
 import { WrapperHeader, WrapperUploadFile } from './style'
-
 import TableComponent from '../../components/TableComponent/TableComponent'
 import { useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import { getBase64, renderOptions } from '../../utils'
-import * as ProductService from '../../services/ProductService'
+import * as AdminGroupService from '../../services/AdminGroupService'
 import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
 import { useEffect } from 'react'
@@ -16,49 +15,46 @@ import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
-
-const DanhSachNhom = () => {
+const DanhSachNhom = ({selectedRowId,handleselectedrow}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+    const handleRowClick = (rowData) => {
+        handleselectedrow(rowData);
+      };
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const inittial = () => ({
+        code: '',
+        codeview: '',
         name: '',
-        price: '',
-        description: '',
-        rating: '',
-        image: '',
-        type: '',
-        countInStock: '',
-        newType: '',
-        discount: '',
+        note: '',
+        edituser: '',
+        edittime: '',
+        lock: '',
+        lockdate: '',
+        whois: '',
+        unitcode: '',
+        departmentlist: '',
+        leveltitlelist: '',
+        allunit: '',
+        admin: '',
+        staff: '',
     })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
+    
+    
+    const [stateAdminGroup, setStateAdminGroup] = useState(inittial())
+    const [stateAdminGroupDetails, setStateAdminGroupDetails] = useState(inittial())
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock, discount } = data
-            const res = ProductService.createProduct({
-                name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock,
-                discount
+            const { code, codeview, name,  note,  edituser,edittime, lock, lockdate,  whois, unitcode, departmentlist, leveltitlelist, allunit, admin, staff } = data
+            const res = AdminGroupService.createAdminGroup({
+                code, codeview, name,  note,  edituser,edittime, lock, lockdate,  whois, unitcode, departmentlist, leveltitlelist, allunit, admin, staff
             })
             return res
         }
@@ -68,7 +64,7 @@ const DanhSachNhom = () => {
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = AdminGroupService.updateAdminGroup(
                 id,
                 token,
                 { ...rests })
@@ -81,7 +77,7 @@ const DanhSachNhom = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = AdminGroupService.deleteAdminGroup(
                 id,
                 token)
             return res
@@ -92,30 +88,37 @@ const DanhSachNhom = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = AdminGroupService.deleteManyAdminGroup(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+    const getAllAdminGroups = async () => {
+        const res = await AdminGroupService.getAllAdminGroup()
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
+    const fetchGetDetailsAdminGroup = async (rowSelected) => {
+        const res = await AdminGroupService.getDetailsAdminGroup(rowSelected)
         if (res?.data) {
-            setStateProductDetails({
-                name: res?.data?.name,
-                price: res?.data?.price,
-                description: res?.data?.description,
-                rating: res?.data?.rating,
-                image: res?.data?.image,
-                type: res?.data?.type,
-                countInStock: res?.data?.countInStock,
-                discount: res?.data?.discount
+            setStateAdminGroupDetails({
+                code: res?.data?.code,
+            codeview: res?.data?.codeview,
+            name: res?.data?.name,
+            note: res?.data?.note,
+            edituser: res?.data?.edituser,
+            edittime: res?.data?.edittime,
+            lock: res?.data?.lock,
+            lockdate: res?.data?.lockdate,
+            whois: res?.data?.whois,
+            unitcode: res?.data?.unitcode,
+            departmentlist: res?.data?.departmentlist,
+            leveltitlelist: res?.data?.leveltitlelist,
+            allunit: res?.data?.allunit,
+            admin: res?.data?.admin,
+            staff: res?.data?.staff,
             })
         }
         setIsLoadingUpdate(false)
@@ -123,33 +126,33 @@ const DanhSachNhom = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateAdminGroupDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateAdminGroupDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsAdminGroup(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsAdminGroup = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+    const handleDelteManyAdminGroups = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryAdminGroup.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
+    const fetchAllTypeAdminGroup = async () => {
+        const res = await AdminGroupService.getAllType()
         return res
     }
 
@@ -159,14 +162,14 @@ const DanhSachNhom = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryAdminGroup = useQuery({ queryKey: ['adminpages'], queryFn: getAllAdminGroups })
+    // const typeAdminGroup = useQuery({ queryKey: ['type-adminpage'], queryFn: fetchAllTypeAdminGroup })
+    const { isLoading: isLoadingAdminGroups, data: adminpages } = queryAdminGroup
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsAdminGroup} />
             </div>
         )
     }
@@ -239,75 +242,21 @@ const DanhSachNhom = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
     });
 
 
     const columns = [
         {
-            title: 'Mã',
+            title: 'code',
+            dataIndex: 'code',
+            sorter: (a, b) => a.code.length - b.code.length,
+            ...getColumnSearchProps('code')
+        },
+        {
+            title: 'name',
             dataIndex: 'name',
             sorter: (a, b) => a.name.length - b.name.length,
             ...getColumnSearchProps('name')
-        },
-        {
-            title: 'Tên',
-            dataIndex: 'price',
-            sorter: (a, b) => a.price - b.price,
-            filters: [
-                {
-                    text: '>= 50',
-                    value: '>=',
-                },
-                {
-                    text: '<= 50',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return record.price >= 50
-                }
-                return record.price <= 50
-            },
-        },
-        {
-            title: 'Giá trị',
-            dataIndex: 'rating',
-            sorter: (a, b) => a.rating - b.rating,
-            filters: [
-                {
-                    text: '>= 3',
-                    value: '>=',
-                },
-                {
-                    text: '<= 3',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return Number(record.rating) >= 3
-                }
-                return Number(record.rating) <= 3
-            },
-        },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'type',
         },
         {
             title: 'Action',
@@ -315,8 +264,8 @@ const DanhSachNhom = () => {
             render: renderAction
         },
     ];
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
+    const dataTable = adminpages?.data?.length && adminpages?.data?.map((adminpage) => {
+        return { ...adminpage, key: adminpage._id }
     })
 
     useEffect(() => {
@@ -347,14 +296,22 @@ const DanhSachNhom = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
+        setStateAdminGroupDetails({
+            code: '',
+            codeview: '',
             name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+            note: '',
+            edituser: '',
+            edittime: '',
+            lock: '',
+            lockdate: '',
+            whois: '',
+            unitcode: '',
+            departmentlist: '',
+            leveltitlelist: '',
+            allunit: '',
+            admin: '',
+            staff: '',
         })
         form.resetFields()
     };
@@ -373,109 +330,108 @@ const DanhSachNhom = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteAdminGroup = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryAdminGroup.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+        setStateAdminGroup({
+            code: '',
+        codeview: '',
+        name: '',
+        note: '',
+        edituser: '',
+        edittime: '',
+        lock: '',
+        lockdate: '',
+        whois: '',
+        unitcode: '',
+        departmentlist: '',
+        leveltitlelist: '',
+        allunit: '',
+        admin: '',
+        staff: '',
         })
         form.resetFields()
     };
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            code: stateAdminGroup.code,
+        codeview: stateAdminGroup.codeview,
+        name: stateAdminGroup.name,
+        note: stateAdminGroup.note,
+        edituser: stateAdminGroup.edituser,
+        edittime: stateAdminGroup.edittime,
+        lock: stateAdminGroup.lock,
+        lockdate: stateAdminGroup.lockdate,
+        whois: stateAdminGroup.whois,
+        unitcode: stateAdminGroup.unitcode,
+        departmentlist: stateAdminGroup.departmentlist,
+        leveltitlelist: stateAdminGroup.leveltitlelist,
+        allunit: stateAdminGroup.allunit,
+        admin: stateAdminGroup.admin,
+        staff: stateAdminGroup.staff,
         }
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryAdminGroup.refetch()
             }
         })
     }
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
+        setStateAdminGroup({
+            ...stateAdminGroup,
             [e.target.name]: e.target.value
         })
     }
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
+        setStateAdminGroupDetails({
+            ...stateAdminGroupDetails,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+
+    const onUpdateAdminGroup = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateAdminGroupDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryAdminGroup.refetch()
             }
         })
     }
 
     const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
+        setStateAdminGroup({
+            ...stateAdminGroup,
             type: value
         })
     }
 
     return (
+        
         <div>
             <WrapperHeader>Quản lý nhóm người dùng</WrapperHeader>
             <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                 <TableComponent handleDelteMany={handleDelteManyAdminGroups} columns={columns} isLoading={isLoadingAdminGroups} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: event => {
-                            setRowSelected(record._id)
-                        }
+                            setRowSelected(record._id);
+                            
+                            handleRowClick(record); // Truyền dữ liệu của hàng đã chọn
+                          }
+                        
                     };
                 }} />
             </div>
@@ -492,35 +448,18 @@ const DanhSachNhom = () => {
                     >
                         <Form.Item
                             label="Mã"
+                            name="code"
+                            rules={[{ required: true, message: 'Please input your code!' }]}
+                        >
+                            <InputComponent value={stateAdminGroup['code']} onChange={handleOnchange} name="code" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Tên"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent value={stateAdminGroup['name']} onChange={handleOnchange} name="name" />
                         </Form.Item>
-
-                        <Form.Item
-                            label="Tên"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
-                            />
-                        </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='Đơn Vị'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
                         
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -532,14 +471,14 @@ const DanhSachNhom = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Danh sách nhóm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 2 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateAdminGroup}
                         autoComplete="on"
                         form={form}
                     >
@@ -548,69 +487,23 @@ const DanhSachNhom = () => {
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Type"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
+                            <InputComponent value={stateAdminGroupDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Count inStock"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateAdminGroupDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
+                            <InputComponent value={stateAdminGroupDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
-                        <Form.Item
-                            label="Description"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Rating"
-                            name="rating"
-                            rules={[{ required: true, message: 'Please input your count rating!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.rating} onChange={handleOnchangeDetails} name="rating" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Discount"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.discount} onChange={handleOnchangeDetails} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
-                        >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateProductDetails?.image && (
-                                    <img src={stateProductDetails?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
-                        </Form.Item>
+                        
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Apply
@@ -619,12 +512,13 @@ const DanhSachNhom = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa sản phẩm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            <ModalComponent title="Xóa nhóm quyền" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteAdminGroup}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa sản phẩm này không?</div>
+                    <div>Bạn có chắc xóa quyền này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
+       
     )
 }
 
