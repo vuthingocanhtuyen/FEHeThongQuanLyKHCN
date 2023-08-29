@@ -1,8 +1,7 @@
 import { Button, Form, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-
+import { WrapperHeader, WrapperUploadFile } from './style' 
 import TableComponent from '../../components/TableComponent/TableComponent'
 import { useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
@@ -17,7 +16,7 @@ import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
 import ButttonInputSearch from '../../components/ButtonInputSearch/ButttonInputSearch'
-const PhamViNhom = () => {
+const PhamViNhom = ({selectedRowId,handleselectedrow}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -38,7 +37,7 @@ const PhamViNhom = () => {
     })
     const [stateProduct, setStateProduct] = useState(inittial())
     const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
+    console.log(selectedRowId)
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(

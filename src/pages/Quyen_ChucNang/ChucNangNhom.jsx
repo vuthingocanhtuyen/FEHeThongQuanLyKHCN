@@ -2,12 +2,12 @@ import { Button, Form, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
 import { WrapperHeader, WrapperUploadFile } from './style'
-
 import TableComponent from '../../components/TableComponent/TableComponent'
 import { useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
 import { getBase64, renderOptions } from '../../utils'
-import * as ProductService from '../../services/ProductService'
+import * as PriorityService from '../../services/PriorityService'
+import * as PriorityByUserService from '../../services/PriorityByUserService'
 import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
 import { useEffect } from 'react'
@@ -16,8 +16,8 @@ import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
-import ButttonInputSearch from '../../components/ButtonInputSearch/ButttonInputSearch'
-const ChucNangNhom = () => {
+const ChucNangNhom = ({selectedRowId,handleselectedrow}) => {
+    console.log(selectedRowId)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -26,39 +26,53 @@ const ChucNangNhom = () => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const inittial = () => ({
-        name: '',
-        price: '',
+        code: '',
         description: '',
-        rating: '',
-        image: '',
-        type: '',
-        countInStock: '',
-        newType: '',
-        discount: '',
+        showauth: '',
+        name: '',
+        lock: '',
+        whois: '',
+        groupcode: '',
+        syscomponentcode: '',
+        unitcode: '',
+        addn: '',
+        edit: '',
+        dele: '',
     })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
+    
+    
+    const [statePriority, setStatePriority] = useState(inittial())
+    const [statePriorityDetails, setStatePriorityDetails] = useState(inittial())
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { name,
-                price,
+            const { code,
                 description,
-                rating,
-                image,
-                type,
-                countInStock, discount } = data
-            const res = ProductService.createProduct({
+                showauth,
                 name,
-                price,
+                lock,
+                whois,
+                groupcode,
+                syscomponentcode,
+                unitcode,
+                addn,
+                edit,
+                dele, } = data
+            const res = PriorityService.createPriority({
+                code,
                 description,
-                rating,
-                image,
-                type,
-                countInStock,
-                discount
+                showauth,
+                name,
+                lock,
+                whois,
+                groupcode,
+                syscomponentcode,
+                unitcode,
+                addn,
+                edit,
+                dele,
             })
             return res
         }
@@ -68,7 +82,7 @@ const ChucNangNhom = () => {
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = PriorityService.updatePriority(
                 id,
                 token,
                 { ...rests })
@@ -81,7 +95,7 @@ const ChucNangNhom = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = PriorityService.deletePriority(
                 id,
                 token)
             return res
@@ -92,30 +106,34 @@ const ChucNangNhom = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = PriorityService.deleteManyPriority(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+    const getAllPrioritys = async () => {
+        const res = await PriorityByUserService.getPriorityByAdminGroup(selectedRowId)
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
+    const fetchGetDetailsPriority = async (rowSelected) => {
+        const res = await PriorityService.getDetailsPriority(rowSelected)
         if (res?.data) {
-            setStateProductDetails({
-                name: res?.data?.name,
-                price: res?.data?.price,
+            setStatePriorityDetails({
+                code: res?.data?.code,
                 description: res?.data?.description,
-                rating: res?.data?.rating,
-                image: res?.data?.image,
-                type: res?.data?.type,
-                countInStock: res?.data?.countInStock,
-                discount: res?.data?.discount
+                showauth: res?.data?.showauth,
+                name: res?.data?.name,
+                lock: res?.data?.lock,
+                whois: res?.data?.whois,
+                groupcode: res?.data?.groupcode,
+                syscomponentcode: res?.data?.syscomponentcode,
+                unitcode: res?.data?.unitcode,
+                addn: res?.data?.addn,
+                edit: res?.data?.edit,
+                dele: res?.data?.dele
             })
         }
         setIsLoadingUpdate(false)
@@ -123,33 +141,33 @@ const ChucNangNhom = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(statePriorityDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, statePriorityDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsPriority(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsPriority = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+    const handleDelteManyPrioritys = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryPriority.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
+    const fetchAllTypePriority = async () => {
+        const res = await PriorityService.getAllType()
         return res
     }
 
@@ -159,14 +177,20 @@ const ChucNangNhom = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryPriority = useQuery(
+        ['prioritys', selectedRowId], // Thay đổi queryKey để phản ánh selectedRowId
+        getAllPrioritys,
+        {
+            enabled: !!selectedRowId, // Kích hoạt truy vấn khi selectedRowId không null
+        }
+    );
+    // const typePriority = useQuery({ queryKey: ['type-priority'], queryFn: fetchAllTypePriority })
+    const { isLoading: isLoadingPrioritys, data: prioritys } = queryPriority
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsPriority} />
             </div>
         )
     }
@@ -239,75 +263,39 @@ const ChucNangNhom = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
     });
 
 
     const columns = [
         {
-            title: 'Mã',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            title: 'code',
+            dataIndex: 'code',
+            sorter: (a, b) => a.code.length - b.code.length,
+            ...getColumnSearchProps('code')
         },
         {
-            title: 'Tên',
-            dataIndex: 'price',
-            sorter: (a, b) => a.price - b.price,
-            filters: [
-                {
-                    text: '>= 50',
-                    value: '>=',
-                },
-                {
-                    text: '<= 50',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return record.price >= 50
-                }
-                return record.price <= 50
-            },
+            title: 'description',
+            dataIndex: 'description',
+            sorter: (a, b) => a.description.length - b.description.length,
+            ...getColumnSearchProps('description')
         },
         {
-            title: 'Giá trị',
-            dataIndex: 'rating',
-            sorter: (a, b) => a.rating - b.rating,
-            filters: [
-                {
-                    text: '>= 3',
-                    value: '>=',
-                },
-                {
-                    text: '<= 3',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return Number(record.rating) >= 3
-                }
-                return Number(record.rating) <= 3
-            },
+            title: 'addn',
+            dataIndex: 'addn',
+            // sorter: (a, b) => a.addn.length - b.addn.length,
+            ...getColumnSearchProps('addn')
         },
         {
-            title: 'Ghi chú',
-            dataIndex: 'type',
+            title: 'edit',
+            dataIndex: 'edit',
+            // sorter: (a, b) => a.edit.length - b.edit.length,
+            ...getColumnSearchProps('edit')
+        },
+        {
+            title: 'dele',
+            dataIndex: 'dele',
+            // sorter: (a, b) => a.dele.length - b.dele.length,
+            ...getColumnSearchProps('dele')
         },
         {
             title: 'Action',
@@ -315,8 +303,8 @@ const ChucNangNhom = () => {
             render: renderAction
         },
     ];
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
+    const dataTable = prioritys?.data?.length && prioritys?.data?.map((priority) => {
+        return { ...priority, key: priority._id }
     })
 
     useEffect(() => {
@@ -347,14 +335,19 @@ const ChucNangNhom = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
+        setStatePriorityDetails({
+            code: '',
             description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+            showauth: '',
+            name: '',
+            lock: '',
+            whois: '',
+            groupcode: '',
+            syscomponentcode: '',
+            unitcode: '',
+            addn: '',
+            edit: '',
+            dele: '',
         })
         form.resetFields()
     };
@@ -373,117 +366,105 @@ const ChucNangNhom = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeletePriority = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryPriority.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
+        setStatePriority({
+            code: '',
             description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+            showauth: '',
+            name: '',
+            lock: '',
+            whois: '',
+            groupcode: '',
+            syscomponentcode: '',
+            unitcode: '',
+            addn: '',
+            edit: '',
+            dele: '',
         })
         form.resetFields()
     };
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            code: statePriority.code,
+            description: statePriority.description,
+            showauth: statePriority.showauth,
+            name: statePriority.name,
+            lock: statePriority.lock,
+            whois: statePriority.whois,
+            groupcode: statePriority.groupcode,
+            syscomponentcode: statePriority.syscomponentcode,
+            unitcode: statePriority.unitcode,
+            addn: statePriority.addn,
+            edit: statePriority.edit,
+            dele: statePriority.dele,
         }
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryPriority.refetch()
             }
         })
     }
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
-            [e.target.name]: e.target.value
+        setStatePriority({
+            ...statePriority,
+            [e.target.code]: e.target.value
         })
     }
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
-            [e.target.name]: e.target.value
+        setStatePriorityDetails({
+            ...statePriorityDetails,
+            [e.target.code]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+
+    const onUpdatePriority = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...statePriorityDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryPriority.refetch()
             }
         })
     }
 
     const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
+        setStatePriority({
+            ...statePriority,
             type: value
         })
     }
 
     return (
+        
         <div>
-            <WrapperHeader>Quản lý chức năng nhóm</WrapperHeader>
-            {/* <div style={{ width: '350px', float: 'right' }}>
-                Quyền<ButttonInputSearch />
-            </div> */}
-
+            <WrapperHeader>Quản lý nhóm người dùng</WrapperHeader>
             <div style={{ marginTop: '10px' }}>
                 <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                 <TableComponent handleDelteMany={handleDelteManyPrioritys} columns={columns} isLoading={isLoadingPrioritys} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: event => {
-                            setRowSelected(record._id)
-                        }
+                            setRowSelected(record._id);
+                            
+                          }
+                        
                     };
                 }} />
             </div>
-            <ModalComponent forceRender title="Tạo sản phẩm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm thông tin nhóm quản trị" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -495,89 +476,20 @@ const ChucNangNhom = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Name"
+                            label="Mã"
+                            name="code"
+                            rules={[{ required: true, message: 'Please input your code!' }]}
+                        >
+                            <InputComponent value={statePriority['code']} onChange={handleOnchange} name="code" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Tên"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent value={statePriority['name']} onChange={handleOnchange} name="name" />
                         </Form.Item>
-
-                        <Form.Item
-                            label="Type"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
-                            />
-                        </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
-                        <Form.Item
-                            label="Count inStock"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
-                        >
-                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Description"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Rating"
-                            name="rating"
-                            rules={[{ required: true, message: 'Please input your count rating!' }]}
-                        >
-                            <InputComponent value={stateProduct.rating} onChange={handleOnchange} name="rating" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Discount"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProduct.discount} onChange={handleOnchange} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
-                        >
-                            <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateProduct?.image && (
-                                    <img src={stateProduct?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
-                        </Form.Item>
+                        
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Submit
@@ -588,14 +500,14 @@ const ChucNangNhom = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Danh sách nhóm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 2 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdatePriority}
                         autoComplete="on"
                         form={form}
                     >
@@ -604,69 +516,23 @@ const ChucNangNhom = () => {
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Type"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
+                            <InputComponent value={statePriorityDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Count inStock"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={statePriorityDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
+                            <InputComponent value={statePriorityDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
-                        <Form.Item
-                            label="Description"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Rating"
-                            name="rating"
-                            rules={[{ required: true, message: 'Please input your count rating!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.rating} onChange={handleOnchangeDetails} name="rating" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Discount"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of product!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.discount} onChange={handleOnchangeDetails} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
-                        >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateProductDetails?.image && (
-                                    <img src={stateProductDetails?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
-                        </Form.Item>
+                        
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Apply
@@ -675,12 +541,13 @@ const ChucNangNhom = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa sản phẩm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            <ModalComponent title="Xóa nhóm quyền" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeletePriority}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa sản phẩm này không?</div>
+                    <div>Bạn có chắc xóa quyền này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
+       
     )
 }
 
