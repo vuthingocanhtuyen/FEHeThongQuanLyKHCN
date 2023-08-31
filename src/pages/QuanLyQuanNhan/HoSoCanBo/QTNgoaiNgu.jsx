@@ -7,7 +7,7 @@ import InputComponent from '../../../components/InputComponent/InputComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import Loading from '../../../components/LoadingComponent/Loading'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-
+import * as QuanNhanService from '../../../services/QuanNhanService'
 import { getBase64, renderOptions } from '../../../utils'
 import { useEffect } from 'react'
 import * as message from '../../../components/Message/Message'
@@ -19,7 +19,28 @@ import * as ProductService from '../../../services/ProductService'
 import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 
-const QTNgoaiNgu = () => {
+const QTNgoaiNgu = ({ quannhanId }) => {
+
+
+    const onChange = () => { }
+
+    const fetchGetDetailsQuanNhan = async (context) => {
+        const id = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhan:", id)
+        if (id) {
+            const res = await QuanNhanService.getDetailsQuanNhan(id)
+            console.log("qn:", res.data)
+            return res.data
+        }
+
+    }
+
+    // const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    //  console.log("chi tiet quan nhan:", quannhanDetails)
+
+    // const handleOnchangeHoTen = (value) => {
+    //     setHoten(hoten)
+    // }
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 

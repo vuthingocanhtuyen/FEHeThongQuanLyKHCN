@@ -30,10 +30,16 @@ const Huyen = () => {
     const inittial = () => ({
         DanhMucHuyenId: '',
         TenDanhMucHuyen: '',
+        TenDanhMucTinh: '',
         HienThi: false,
         GhiChu: '',
     })
-    const [stateDanhMucHuyen, setStateDanhMucHuyen] = useState(inittial())
+    //   const [stateDanhMucHuyen, setStateDanhMucHuyen] = useState(inittial())
+    const [stateDanhMucHuyen, setStateDanhMucHuyen] = useState({
+        TenDanhMucTinh: 'Hà Nội', // replace defaultValue with your desired default value
+    });
+
+
     const [stateDanhMucHuyenDetails, setStateDanhMucHuyenDetails] = useState(inittial())
 
     const [form] = Form.useForm();
@@ -42,11 +48,13 @@ const Huyen = () => {
         (data) => {
             const { DanhMucHuyenId,
                 TenDanhMucHuyen,
+                TenDanhMucTinh,
                 HienThi,
                 GhiChu } = data
             const res = DanhMucHuyenService.createDanhMucHuyen({
                 DanhMucHuyenId,
                 TenDanhMucHuyen,
+                TenDanhMucTinh,
                 HienThi,
                 GhiChu
             })
@@ -100,6 +108,7 @@ const Huyen = () => {
             setStateDanhMucHuyenDetails({
                 DanhMucHuyenId: res?.data?.DanhMucHuyenId,
                 TenDanhMucHuyen: res?.data?.TenDanhMucHuyen,
+                TenDanhMucTinh: res?.data?.TenDanhMucTinh,
                 HienThi: res?.data?.HienThi,
                 GhiChu: res?.data?.GhiChu,
             })
@@ -126,15 +135,10 @@ const Huyen = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyDanhMucHuyens = (ids) => {
-        mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
-            onSettled: () => {
-                queryDanhMucHuyen.refetch()
-            }
-        })
+    const fetchAllTypeTinh = async () => {
+        const res = await DanhMucHuyenService.getAllTypeHuyenTinh()
+        return res
     }
-
-
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -143,6 +147,7 @@ const Huyen = () => {
 
 
     const queryDanhMucHuyen = useQuery({ queryKey: ['danhmuchuyens'], queryFn: getAllDanhMucHuyens })
+    const queryDanhMucTinh = useQuery({ queryKey: ['danhmuchuyen-tinh'], queryFn: fetchAllTypeTinh })
     const { isLoading: isLoadingDanhMucHuyens, data: danhmuchuyens } = queryDanhMucHuyen
     const renderAction = () => {
         return (
@@ -231,10 +236,12 @@ const Huyen = () => {
             ...getColumnSearchProps('DanhMucHuyenId')
         },
         {
-            title: 'Tên',
+            title: 'Tên huyện',
             dataIndex: 'TenDanhMucHuyen',
             ...getColumnSearchProps('TenDanhMucHuyen')
         },
+
+
         {
             title: 'Hiển thị',
             dataIndex: 'HienThi',
@@ -245,15 +252,11 @@ const Huyen = () => {
                 />
             )
         },
-        // {
-        //     title: 'Action',
-        //     dataIndex: 'action',
-        //     render: renderAction
-        // },
+
     ];
-    const dataTable = danhmuchuyens?.data?.length && danhmuchuyens?.data?.map((danhmuchuyen) => {
-        return { ...danhmuchuyen, key: danhmuchuyen._id }
-    })
+    // const dataTable = danhmuchuyens?.data?.length && danhmuchuyens?.data?.map((danhmuchuyen) => {
+    //     return { ...danhmuchuyen, key: danhmuchuyen._id }
+    // })
 
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
@@ -286,6 +289,7 @@ const Huyen = () => {
         setStateDanhMucHuyenDetails({
             DanhMucHuyenId: '',
             TenDanhMucHuyen: '',
+            TenDanhMucTinh: '',
             HienThi: '',
             GhiChu: ''
         })
@@ -319,32 +323,13 @@ const Huyen = () => {
         setStateDanhMucHuyen({
             DanhMucHuyenId: '',
             TenDanhMucHuyen: '',
+            TenDanhMucTinh: '',
             HienThi: '',
             GhiChu: '',
         })
         form.resetFields()
     };
 
-    const onFinish = () => {
-        const params = {
-            DanhMucHuyenId: stateDanhMucHuyen.DanhMucHuyenId,
-            TenDanhMucHuyen: stateDanhMucHuyen.TenDanhMucHuyen,
-            HienThi: stateDanhMucHuyen.HienThi,
-            GhiChu: stateDanhMucHuyen.GhiChu
-        }
-        mutation.mutate(params, {
-            onSettled: () => {
-                queryDanhMucHuyen.refetch()
-            }
-        })
-    }
-
-    const handleOnchange = (e) => {
-        setStateDanhMucHuyen({
-            ...stateDanhMucHuyen,
-            [e.target.name]: e.target.value
-        })
-    }
     const handleCheckboxChange = (e) => {
         const isChecked = e.target.checked;
         setStateDanhMucHuyen({
@@ -353,242 +338,59 @@ const Huyen = () => {
         });
     };
 
-    const handleOnchangeDetails = (e) => {
-        setStateDanhMucHuyenDetails({
-            ...stateDanhMucHuyenDetails,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateDanhMucHuyen({
-            ...stateDanhMucHuyen,
-            image: file.preview
-        })
-    }
-
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateDanhMucHuyenDetails({
-            ...stateDanhMucHuyenDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateDanhMucHuyen = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateDanhMucHuyenDetails }, {
-            onSettled: () => {
-                queryDanhMucHuyen.refetch()
-            }
-        })
-    }
-
     const handleChangeSelect = (value) => {
         setStateDanhMucHuyen({
             ...stateDanhMucHuyen,
-            type: value
-        })
-    }
-    const options = [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-        { value: 'option3', label: 'Option 3' },
-    ];
+            TenDanhMucTinh: value,
 
-    const handleChange = (value) => {
-        console.log(`selected value: ${value}`);
+        });
     };
+
+    // Make sure the dataTable variable is properly initialized to an empty array if it is null or undefined
+    const dataTable = danhmuchuyens?.data?.length ? danhmuchuyens.data.map((danhmuchuyen) => {
+        return { ...danhmuchuyen, key: danhmuchuyen._id };
+    }) : [];
+
+    const filteredDataTable = dataTable.filter((item) => {
+        return item.TenDanhMucTinh === stateDanhMucHuyen.TenDanhMucTinh;
+    });
+    console.log("Tỉnh: ", filteredDataTable)
     return (
         <div>
             <WrapperHeader>Danh mục Huyện</WrapperHeader>
             <div>
-                Tỉnh
+                Tỉnh :
                 &nbsp;
-                <ComboBoxComponent options={options} onChange={handleChange} style={{ width: '250px' }} > </ComboBoxComponent>
+                <Select
+                    name="TenDanhMucTinh"
+                    style={{ width: 250 }}
+                    value={stateDanhMucHuyen.TenDanhMucTinh}
+                    onChange={handleChangeSelect}
+                    options={renderOptions(queryDanhMucTinh?.data?.data)}
+                />
             </div>
+
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyDanhMucHuyens} columns={columns} isLoading={isLoadingDanhMucHuyens} data={dataTable} onRow={(record, rowIndex) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id)
-                        }
-                    };
-                }} />
+                <TableComponent
+                    columns={columns}
+                    isLoading={isLoadingDanhMucHuyens}
+                    data={filteredDataTable}
+                    onRow={(record, rowIndex) => {
+                        return {
+                            onClick: (event) => {
+                                setRowSelected(record._id);
+                            },
+                        };
+                    }}
+                />
             </div>
-            <ModalComponent forceRender title="Thêm mới cấp bậc" open={isModalOpen} onCancel={handleCancel} footer={null}>
-                <Loading isLoading={isLoading}>
-
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 10 }}
-                        wrapperCol={{ span: 18 }}
-                        onFinish={onFinish}
-                        autoComplete="on"
-                        form={form}
-                    >
-                        {/* DanhMucHuyenId,
-                TenDanhMucHuyen,
-                HienThi,
-                GhiChu */}
-                        <Form.Item
-                            label="Mã Huyện"
-                            name="DanhMucHuyenId"
-                            rules={[{ required: true, message: 'Hãy nhập mã cấp bậc!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateDanhMucHuyen['DanhMucHuyenId']}
-                                onChange={handleOnchange}
-                                name="DanhMucHuyenId"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Tên Huyện"
-                            name="TenDanhMucHuyen"
-                            rules={[{ required: true, message: 'Hãy nhập tên cấp bậc!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateDanhMucHuyen['TenDanhMucHuyen']}
-                                onChange={handleOnchange}
-                                name="TenDanhMucHuyen"
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            label="Hiển Thị"
-                            name="HienThi"
-                            valuePropName="checked"
-                            initialValue={stateDanhMucHuyen['HienThi']}
-                        >
-                            <Checkbox onChange={handleCheckboxChange}>Hiển thị</Checkbox>
-                        </Form.Item>
-                        <Form.Item
-                            label="Ghi chú"
-                            name="GhiChu"
-                        // rules={[{ required: true, message: 'Hãy nhập tên cấp bậc!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateDanhMucHuyen['GhiChu']}
-                                onChange={handleOnchange}
-                                name="GhiChu"
-                            />
-                        </Form.Item>
-
-                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Thêm
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </ModalComponent>
-
-
-            {/* <DrawerComponent title='Chi tiết sản phẩm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
-
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 2 }}
-                        wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateDanhMucHuyen}
-                        autoComplete="on"
-                        form={form}
-                    >
-                        <Form.Item
-                            label="Name"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails['name']} onChange={handleOnchangeDetails} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Type"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails['type']} onChange={handleOnchangeDetails} name="type" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Count inStock"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Price"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails.price} onChange={handleOnchangeDetails} name="price" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Description"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Rating"
-                            name="rating"
-                            rules={[{ required: true, message: 'Please input your count rating!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails.rating} onChange={handleOnchangeDetails} name="rating" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Discount"
-                            name="discount"
-                            rules={[{ required: true, message: 'Please input your discount of danhmuchuyen!' }]}
-                        >
-                            <InputComponent value={stateDanhMucHuyenDetails.discount} onChange={handleOnchangeDetails} name="discount" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                            rules={[{ required: true, message: 'Please input your count image!' }]}
-                        >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateDanhMucHuyenDetails?.image && (
-                                    <img src={stateDanhMucHuyenDetails?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
-                        </Form.Item>
-                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Apply
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </DrawerComponent> */}
             <ModalComponent title="Xóa Danh mục" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteDanhMucHuyen}>
                 <Loading isLoading={isLoadingDeleted}>
                     <div>Bạn có chắc xóa danh mục này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
-    )
+    );
 }
 
 export default Huyen

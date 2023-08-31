@@ -2,10 +2,10 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import * as UserService from '../../../services/UserService'
+import * as QuanNhanService from '../../../services/QuanNhanService'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import * as message from '../../../components/Message/Message'
-import { updateUser } from '../../../redux/slides/userSlide'
+//import { updateUser } from '../../../redux/slides/userSlide'
 import { getBase64 } from '../../../utils'
 import { WrapperContentProfile, WrapperHeader, WrapperInput, WrapperLabel, WrapperUploadFile } from './style'
 
@@ -14,96 +14,96 @@ import InputForm from '../../../components/InputForm/InputForm'
 import Loading from '../../../components/LoadingComponent/Loading'
 import { Button, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
+
+import { useQuery } from '@tanstack/react-query'
 import CheckboxComponent from '../../../components/CheckBox/CheckBox'
-import ComboBoxComponent from '../../../components/ComboBoxComponent/ComboBoxComponent'
 
-
-const LyLich = () => {
-    const user = useSelector((state) => state.user)
+const LyLich = ({ idQuanNhan }) => {
+    //update chưa đc
+    const quannhan = useSelector((state) => state.quannhan)
+    const [id, setId] = useState('')
+    const [hoten, setHoten] = useState('')
+    const [ngaysinh, setNgaysinh] = useState('')
+    const [gioitinh, setGioitinh] = useState('')
+    const [quequan, setQueQuan] = useState('')
+    const [diachi, setDiachi] = useState('')
+    const [sdt, setSdt] = useState('')
     const [email, setEmail] = useState('')
-    const [name, setName] = useState('')
-    const [phone, setPhone] = useState('')
-    const [address, setAddress] = useState('')
-    const [avatar, setAvatar] = useState('')
+    const [hoatdong, setHoatDong] = useState('')
+    const [loaiqn, setLoaiqn] = useState('')
+
     const mutation = useMutationHooks(
         (data) => {
             const { id, access_token, ...rests } = data
-            UserService.updateUser(id, rests, access_token)
+            QuanNhanService.updateQuanNhan(id, rests, access_token)
         }
     )
 
-    const dispatch = useDispatch()
-    const { data, isLoading, isSuccess, isError } = mutation
-
     useEffect(() => {
-        setEmail(user?.email)
-        setName(user?.name)
-        setPhone(user?.phone)
-        setAddress(user?.address)
-        setAvatar(user?.avatar)
-    }, [user])
-
-    useEffect(() => {
-        if (isSuccess) {
-            message.success()
-            handleGetDetailsUser(user?.id, user?.access_token)
-        } else if (isError) {
-            message.error()
-        }
-    }, [isSuccess, isError])
-
-    const handleGetDetailsUser = async (id, token) => {
-        const res = await UserService.getDetailsUser(id, token)
-        dispatch(updateUser({ ...res?.data, access_token: token }))
-    }
-
-    const handleOnchangeEmail = (value) => {
-        setEmail(value)
-    }
-    const handleOnchangeName = (value) => {
-        setName(value)
-    }
-    const handleOnchangePhone = (value) => {
-        setPhone(value)
-    }
-    const handleOnchangeAddress = (value) => {
-        setAddress(value)
-    }
-
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setAvatar(file.preview)
-    }
+        setId(quannhan?.id)
+        setHoten(quannhan?.hoten)
+        setNgaysinh(quannhan?.ngaysinh)
+        setGioitinh(quannhan?.gioitinh)
+        setQueQuan(quannhan?.quequan)
+        setDiachi(quannhan?.diachi)
+        setSdt(quannhan?.sdt)
+        setEmail(quannhan?.email)
+        setHoatDong(quannhan?.hoatdong)
+        setLoaiqn(quannhan?.loaiqn)
+    }, [quannhan])
 
     const handleUpdate = () => {
-        mutation.mutate({ id: user?.id, email, name, phone, address, avatar, access_token: user?.access_token })
+        mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
 
     }
-    const [date, setDate] = useState(new Date());
 
+    // show dữ liệu
+    const onChange = () => { }
+
+    const fetchGetDetailsQuanNhan = async (context) => {
+        const id = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhan:", id)
+        if (id) {
+            const res = await QuanNhanService.getDetailsQuanNhan(id)
+            console.log("qn:", res.data)
+            return res.data
+        }
+
+    }
+
+    const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    console.log("chi tiet quan nhan:", quannhanDetails)
+
+    const handleOnchangeHoTen = (value) => {
+        setHoten(hoten)
+    }
+
+    //Giới tính
+
+    const handleChangeCheckGioiTinh = (e) => {
+        console.log(`checked: ${e.target.checked}`);
+    };
+
+    //Dân tộc
 
     const optionDanToc = [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-        { value: 'option3', label: 'Option 3' },
+        { value: '1', label: 'Kinh' },
+        { value: '2', label: 'Thái' },
+        { value: '3', label: 'Tày' },
     ];
 
-    const handleChange = (value) => {
+    const handleChangeDanToc = (value) => {
         console.log(`selected value: ${value}`);
     };
 
-
     return (
 
-        <div style={{ width: '1200px', margin: '0 auto', height: '500px', padding: '30px' }}>
-            <WrapperHeader>HỒ SƠ CÁ NHÂN CỦA CÁN BỘ</WrapperHeader>
+        <div style={{ width: '1200px', margin: '0 auto', height: '500px', padding: '30px', marginBottom: '50px' }}>
+            <WrapperHeader>HỒ SƠ CÁ NHÂN CỦA CÁN BỘ:&nbsp; {quannhanDetails?.HoTen}</WrapperHeader>
 
             <Loading isLoading={isLoading}>
                 <WrapperContentProfile>
-                    <WrapperInput>
+                    {/* <WrapperInput>
                         <WrapperLabel htmlFor="avatar">Ảnh cá nhân</WrapperLabel>
                         <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
                             <Button icon={<UploadOutlined />}>Select File</Button>
@@ -116,8 +116,8 @@ const LyLich = () => {
                                 objectFit: 'cover'
                             }} alt="avatar" />
                         )}
-                        {/* <InputForm style={{ width: '500px' }} id="avatar" value={avatar} onChange={handleOnchangeAvatar} /> */}
-                        <ButtonComponent
+                      
+                    <ButtonComponent
                             onClick={handleUpdate}
                             size={40}
                             styleButton={{
@@ -129,42 +129,10 @@ const LyLich = () => {
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
-                    </WrapperInput>
+                        </WrapperInput> */}
                     <WrapperInput>
-                        <WrapperLabel htmlFor="name">Mã cán bộ</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="name" value={name} onChange={handleOnchangeName} />
-                        <ButtonComponent
-                            onClick={handleUpdate}
-                            size={40}
-                            styleButton={{
-                                height: '30px',
-                                width: 'fit-content',
-                                borderRadius: '4px',
-                                padding: '2px 6px 6px'
-                            }}
-                            textbutton={'Cập nhật'}
-                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        ></ButtonComponent>
-                    </WrapperInput>
-                    <WrapperInput>
-                        <WrapperLabel htmlFor="name">Trạng thái</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="name" value={name} onChange={handleOnchangeName} />
-                        <ButtonComponent
-                            onClick={handleUpdate}
-                            size={40}
-                            styleButton={{
-                                height: '30px',
-                                width: 'fit-content',
-                                borderRadius: '4px',
-                                padding: '2px 6px 6px'
-                            }}
-                            textbutton={'Cập nhật'}
-                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        ></ButtonComponent>
-                    </WrapperInput>
-                    <WrapperInput>
-                        <WrapperLabel htmlFor="name">Họ và Tên</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="name" value={name} onChange={handleOnchangeName} />
+                        <WrapperLabel htmlFor="QuanNhanId">Mã cán bộ</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="QuanNhanId" value={quannhanDetails?.QuanNhanId} />
                         <ButtonComponent
                             onClick={handleUpdate}
                             size={40}
@@ -180,10 +148,44 @@ const LyLich = () => {
                     </WrapperInput>
 
                     <WrapperInput>
-                        <WrapperLabel htmlFor="phone">Ngày sinh</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="email" value={phone} onChange={handleOnchangePhone} />
+                        <WrapperLabel htmlFor="HoatDong">Trạng thái</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="HoatDong" value={quannhanDetails?.HoatDong} />
                         <ButtonComponent
-                            onClick={handleUpdate}
+                            //   onClick={handleUpdate}
+                            size={40}
+                            styleButton={{
+                                height: '30px',
+                                width: 'fit-content',
+                                borderRadius: '4px',
+                                padding: '2px 6px 6px'
+                            }}
+                            textbutton={'Cập nhật'}
+                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
+                        ></ButtonComponent>
+                    </WrapperInput>
+
+                    <WrapperInput>
+                        <WrapperLabel htmlFor="HoTen">Họ và Tên</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="HoTen" value={quannhanDetails?.HoTen} onChange={handleOnchangeHoTen} />
+                        <ButtonComponent
+                            //   onClick={handleUpdate}
+                            size={40}
+                            styleButton={{
+                                height: '30px',
+                                width: 'fit-content',
+                                borderRadius: '4px',
+                                padding: '2px 6px 6px'
+                            }}
+                            textbutton={'Cập nhật'}
+                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
+                        ></ButtonComponent>
+                    </WrapperInput>
+
+                    <WrapperInput>
+                        <WrapperLabel htmlFor="NgaySinh">Ngày sinh</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="NgaySinh" value={quannhanDetails?.NgaySinh} />
+                        <ButtonComponent
+                            //   onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -196,10 +198,10 @@ const LyLich = () => {
                         ></ButtonComponent>
                     </WrapperInput>
                     <WrapperInput>
-                        <WrapperLabel htmlFor="address">Giới tính</WrapperLabel>
-                        {/* <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} /> */}
-                        <CheckboxComponent
-                            onClick={handleUpdate}
+                        <WrapperLabel htmlFor="GioiTinh">Giới tính</WrapperLabel>
+                        <CheckboxComponent style={{ width: '25px' }} id="GioiTinh" value={quannhanDetails?.GioiTinh} onChange={handleChangeCheckGioiTinh} />
+                        <ButtonComponent
+                            //onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -209,14 +211,15 @@ const LyLich = () => {
                             }}
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        ></CheckboxComponent>
+                        ></ButtonComponent>
                     </WrapperInput>
-                    <WrapperInput>
-                        {/* <WrapperLabel htmlFor="address">Dân tộc</WrapperLabel>
 
-                        <ComboBoxComponent style={{ width: '500px' }} id="address" value={address}
-                            options={optionDanToc} onChange={handleChange}
-                            onClick={handleUpdate}
+
+                    <WrapperInput>
+                        <WrapperLabel htmlFor="DonVi">Đơn vị</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="DonVi" value={quannhanDetails?.DonVi} />
+                        <ButtonComponent
+                            //     onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -226,16 +229,20 @@ const LyLich = () => {
                             }}
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        ></ComboBoxComponent> */}
+                        ></ButtonComponent>
+                    </WrapperInput>
+
+
+                    {/* 
                         <WrapperInput>
                             <WrapperLabel htmlFor="address">Dân tộc</WrapperLabel>
                             <ComboBoxComponent
                                 style={{ width: '500px' }}
-                                id="address"
-                                value={address}
+                                id="DanToc"
+                                value={quannhanDetails?.DanToc}
                                 options={optionDanToc}
-                                onChange={handleChange}
-                                onClick={handleUpdate}
+                                onChange={handleChangeDanToc}
+                            //    onClick={handleUpdate}
                                 size={40}
                                 styleButton={{
                                     height: '30px',
@@ -246,13 +253,29 @@ const LyLich = () => {
                                 textbutton={'Cập nhật'}
                                 styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                             />
-                        </WrapperInput>
+                        
+                    </WrapperInput> */}
+                    <WrapperInput>
+                        <WrapperLabel htmlFor="DiaChi">Địa chỉ</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="DiaChi" value={quannhanDetails?.DiaChi} />
+                        <ButtonComponent
+                            //   onClick={handleUpdate}
+                            size={40}
+                            styleButton={{
+                                height: '30px',
+                                width: 'fit-content',
+                                borderRadius: '4px',
+                                padding: '2px 6px 6px'
+                            }}
+                            textbutton={'Cập nhật'}
+                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
+                        ></ButtonComponent>
                     </WrapperInput>
                     <WrapperInput>
-                        <WrapperLabel htmlFor="address">Tôn giáo</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} />
+                        <WrapperLabel htmlFor="QueQuan">Quê quán</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="QueQuan" value={quannhanDetails?.QueQuan} />
                         <ButtonComponent
-                            onClick={handleUpdate}
+                            //   onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -266,10 +289,10 @@ const LyLich = () => {
                     </WrapperInput>
 
                     <WrapperInput>
-                        <WrapperLabel htmlFor="address">Quê quán</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} />
+                        <WrapperLabel htmlFor="SoDienThoai">Số điện thoại</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="SoDienThoai" value={quannhanDetails?.SoDienThoai} />
                         <ButtonComponent
-                            onClick={handleUpdate}
+                            //   onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -282,10 +305,10 @@ const LyLich = () => {
                         ></ButtonComponent>
                     </WrapperInput>
                     <WrapperInput>
-                        <WrapperLabel htmlFor="address">Trú quán</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} />
+                        <WrapperLabel htmlFor="Email">Email</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="Email" value={quannhanDetails?.Email} />
                         <ButtonComponent
-                            onClick={handleUpdate}
+                            //  onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -297,7 +320,7 @@ const LyLich = () => {
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
                     </WrapperInput>
-
+                    {/* 
                     <WrapperInput>
                         <WrapperLabel htmlFor="address">Địa chỉ liên lạc</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} />
@@ -541,8 +564,8 @@ const LyLich = () => {
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
-                    </WrapperInput>
-                    <WrapperInput>
+                    </WrapperInput> */}
+                    {/* <WrapperInput>
                         <WrapperLabel htmlFor="address">Sức khoẻ</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} />
                         <ButtonComponent
@@ -781,8 +804,8 @@ const LyLich = () => {
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
-                    </WrapperInput>
-                    <WrapperInput>
+                    </WrapperInput> */}
+                    {/* <WrapperInput>
                         <WrapperLabel htmlFor="address">Trình độ tin học</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="address" value={address} onChange={handleOnchangeAddress} />
                         <ButtonComponent
@@ -861,7 +884,7 @@ const LyLich = () => {
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
-                    </WrapperInput>
+                    </WrapperInput> */}
                 </WrapperContentProfile>
             </Loading>
 

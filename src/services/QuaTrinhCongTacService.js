@@ -24,13 +24,17 @@ export const updateQuaTrinhCongTac = async (id, data, access_token) => {
 };
 
 export const getDetailsQuaTrinhCongTac = async (id) => {
+  // const res = await axios.get(`${process.env.REACT_APP_API_URL}/quatrinhcongtac/get-details/${id}`);
   const res = await axios.get(`${process.env.REACT_APP_API_URL}/quatrinhcongtac/get-details/${id}`);
+  console.log("res: ", res.data)
   return res.data;
 };
+
 export const getQuaTrinhCongTacByQuanNhanId = async (id) => {
   const res = await axios.get(`${process.env.REACT_APP_API_URL}/quatrinhcongtac/get-by-id/${id}`);
   return res.data;
 };
+
 
 export const deleteQuaTrinhCongTac = async (id, access_token) => {
   const res = await axiosJWT.delete(

@@ -1,13 +1,9 @@
-
 import React from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as UserService from '../../../services/UserService'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as message from '../../../components/Message/Message'
-import { updateUser } from '../../../redux/slides/userSlide'
-import { getBase64 } from '../../../utils'
+import * as QuanNhanService from '../../../services/QuanNhanService'
+
+
+import { useQuery } from '@tanstack/react-query'
+
 
 import QTCongTac from '../../QuanLyQuanNhan/HoSoCanBo/QTCongTac'
 import QTDang from '../../QuanLyQuanNhan/HoSoCanBo/QTDang'
@@ -20,79 +16,33 @@ import SauDaiHoc from '../../QuanLyQuanNhan/HoSoCanBo/SauDaiHoc'
 import TinhTrangCT from '../../QuanLyQuanNhan/HoSoCanBo/TinhTrangCT'
 
 
+const QuaTrinh = ({ idQuanNhan }) => {
+    const onChange = () => { }
 
-const QuaTrinh = () => {
-    const user = useSelector((state) => state.user)
-    const [email, setEmail] = useState('')
-    const [name, setName] = useState('')
-    const [phone, setPhone] = useState('')
-    const [address, setAddress] = useState('')
-    const [avatar, setAvatar] = useState('')
-    const mutation = useMutationHooks(
-        (data) => {
-            const { id, access_token, ...rests } = data
-            UserService.updateUser(id, rests, access_token)
+    const fetchGetDetailsQuanNhan = async (context) => {
+        const id = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhan:", id)
+        if (id) {
+            const res = await QuanNhanService.getDetailsQuanNhan(id)
+            console.log("qn:", res.data)
+            return res.data
         }
-    )
-
-    const dispatch = useDispatch()
-    const { data, isLoading, isSuccess, isError } = mutation
-
-    useEffect(() => {
-        setEmail(user?.email)
-        setName(user?.name)
-        setPhone(user?.phone)
-        setAddress(user?.address)
-        setAvatar(user?.avatar)
-    }, [user])
-
-    useEffect(() => {
-        if (isSuccess) {
-            message.success()
-            handleGetDetailsUser(user?.id, user?.access_token)
-        } else if (isError) {
-            message.error()
-        }
-    }, [isSuccess, isError])
-
-    const handleGetDetailsUser = async (id, token) => {
-        const res = await UserService.getDetailsUser(id, token)
-        dispatch(updateUser({ ...res?.data, access_token: token }))
     }
 
-    const handleOnchangeEmail = (value) => {
-        setEmail(value)
-    }
-    const handleOnchangeName = (value) => {
-        setName(value)
-    }
-    const handleOnchangePhone = (value) => {
-        setPhone(value)
-    }
-    const handleOnchangeAddress = (value) => {
-        setAddress(value)
-    }
+    const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    console.log("chi tiet quan nhan:", quannhanDetails)
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setAvatar(file.preview)
-    }
 
-    const handleUpdate = () => {
-        mutation.mutate({ id: user?.id, email, name, phone, address, avatar, access_token: user?.access_token })
 
-    }
-    const [date, setDate] = useState(new Date());
 
     return (
         <div>
-
+            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTCongTac quannhanId={quannhanDetails?.QuanNhanId} />
+            </div><br />
 
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTNgoaiNgu />
+                <QTNgoaiNgu quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
@@ -104,9 +54,7 @@ const QuaTrinh = () => {
             </div>
             <br />
 
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTCongTac />
-            </div><br />
+
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <TinhTrangCT />
             </div>

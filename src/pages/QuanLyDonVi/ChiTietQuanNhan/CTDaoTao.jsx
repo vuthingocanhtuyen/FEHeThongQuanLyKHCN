@@ -17,7 +17,7 @@ import TaiKhaoThi from '../../QuanLyQuanNhan/CongTacGiangDay/TaiDaoTao/TaiKhaoTh
 
 
 
-const CTDaoTao = () => {
+const CTDaoTao = ({ idQuanNhan }) => {
     const user = useSelector((state) => state.user)
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')

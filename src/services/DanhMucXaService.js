@@ -66,7 +66,13 @@ export const deleteManyDanhMucXa = async (data, access_token) => {
     return res.data;
 };
 
-export const getAllType = async () => {
+export const getAllTypeHuyen = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/danhmucxa/get-all-type`);
     return res.data;
 };
+
+export const getAllTypeTinh = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/danhmucxa/get-all-type-tinh`);
+    return res.data;
+};
+

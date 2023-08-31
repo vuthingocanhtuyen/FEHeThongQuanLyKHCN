@@ -3,24 +3,18 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import * as UserService from '../../../services/UserService'
+import * as QuanNhanService from '../../../services/QuanNhanService'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import * as message from '../../../components/Message/Message'
-import { updateUser } from '../../../redux/slides/userSlide'
+
 import { getBase64 } from '../../../utils'
 import { WrapperContentProfile, WrapperHeader, WrapperInput, WrapperLabel, WrapperUploadFile } from './style'
-
-
-
-
 import ButtonComponent from '../../../components/ButtonComponent/ButtonComponent'
 import InputForm from '../../../components/InputForm/InputForm'
 import Loading from '../../../components/LoadingComponent/Loading'
 import { Button, Col, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import NgoaiNgu from './NgoaiNgu'
-import QTCapBac from './QTCapBac'
-import QTDaoTao from './QTDaoTao'
 import QTCongTac from './QTCongTac'
 import QTDang from './QTDang'
 import QTQuanHam from './QTQuanHam'
@@ -34,16 +28,23 @@ import TinhTrangCT from './TinhTrangCT'
 
 
 const CapNhatHSCB = () => {
-    const user = useSelector((state) => state.user)
+
+    const quannhan = useSelector((state) => state.quannhan)
+    const [id, setId] = useState('')
+    const [hoten, setHoten] = useState('')
+    const [ngaysinh, setNgaysinh] = useState('')
+    const [gioitinh, setGioitinh] = useState('')
+    const [quequan, setQueQuan] = useState('')
+    const [diachi, setDiachi] = useState('')
+    const [sdt, setSdt] = useState('')
     const [email, setEmail] = useState('')
-    const [name, setName] = useState('')
-    const [phone, setPhone] = useState('')
-    const [address, setAddress] = useState('')
     const [avatar, setAvatar] = useState('')
+    const [hoatdong, setHoatDong] = useState('')
+    const [loaiqn, setLoaiqn] = useState('')
     const mutation = useMutationHooks(
         (data) => {
             const { id, access_token, ...rests } = data
-            UserService.updateUser(id, rests, access_token)
+            QuanNhanService.updateQuanNhan(id, rests, access_token)
         }
     )
 
@@ -51,38 +52,43 @@ const CapNhatHSCB = () => {
     const { data, isLoading, isSuccess, isError } = mutation
 
     useEffect(() => {
-        setEmail(user?.email)
-        setName(user?.name)
-        setPhone(user?.phone)
-        setAddress(user?.address)
-        setAvatar(user?.avatar)
-    }, [user])
+        setId(quannhan?.id)
+        setHoten(quannhan?.hoten)
+        setNgaysinh(quannhan?.ngaysinh)
+        setGioitinh(quannhan?.gioitinh)
+        setQueQuan(quannhan?.quequan)
+        setDiachi(quannhan?.diachi)
+        setSdt(quannhan?.sdt)
+        setEmail(quannhan?.email)
+        setHoatDong(quannhan?.hoatdong)
+        setLoaiqn(quannhan?.loaiqn)
+    }, [quannhan])
 
-    useEffect(() => {
-        if (isSuccess) {
-            message.success()
-            handleGetDetailsUser(user?.id, user?.access_token)
-        } else if (isError) {
-            message.error()
-        }
-    }, [isSuccess, isError])
+    // useEffect(() => {
+    //     if (isSuccess) {
+    //         message.success()
+    //         handleGetDetailsQuanNhan(quannhan?.id, quannhan?.access_token)
+    //     } else if (isError) {
+    //         message.error()
+    //     }
+    // }, [isSuccess, isError])
 
-    const handleGetDetailsUser = async (id, token) => {
-        const res = await UserService.getDetailsUser(id, token)
-        dispatch(updateUser({ ...res?.data, access_token: token }))
-    }
+    // const handleGetDetailsQuanNhan = async (id, token) => {
+    //     const res = await QuanNhanService.getDetailsQuanNhan(id, token)
+    //     dispatch(updateQuanNhan({ ...res?.data, access_token: token }))
+    // }
 
     const handleOnchangeEmail = (value) => {
         setEmail(value)
     }
     const handleOnchangeName = (value) => {
-        setName(value)
+        setHoten(value)
     }
     const handleOnchangePhone = (value) => {
-        setPhone(value)
+        setSdt(value)
     }
     const handleOnchangeAddress = (value) => {
-        setAddress(value)
+        setDiachi(value)
     }
 
     const handleOnchangeAvatar = async ({ fileList }) => {
@@ -94,7 +100,7 @@ const CapNhatHSCB = () => {
     }
 
     const handleUpdate = () => {
-        mutation.mutate({ id: user?.id, email, name, phone, address, avatar, access_token: user?.access_token })
+        mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
 
     }
     const [date, setDate] = useState(new Date());
@@ -103,8 +109,8 @@ const CapNhatHSCB = () => {
         <div>
             <div style={{ width: '1270px', margin: '0 auto', height: '500px', padding: '30px' }}>
                 <WrapperHeader>Cập nhật thông tin cá nhân</WrapperHeader>
-                
-                
+
+
                 <div style={{ width: '500px', margin: '0 auto', float: 'left', padding: '10px', background: '#fff', borderRadius: "8px" }}>
 
 
@@ -140,22 +146,11 @@ const CapNhatHSCB = () => {
                             <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="email">Mã cán bộ</WrapperLabel>
                                 <InputForm style={{ width: '250px' }} id="email" value={email} onChange={handleOnchangeEmail} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
                             <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="name">Họ và Tên</WrapperLabel>
-                                <InputForm style={{ width: '250px' }} id="name" value={name} onChange={handleOnchangeName} />
+                                <InputForm style={{ width: '250px' }} id="name" value={hoten} onChange={handleOnchangeName} />
                                 <ButtonComponent
                                     onClick={handleUpdate}
                                     size={40}
@@ -170,9 +165,9 @@ const CapNhatHSCB = () => {
                                 ></ButtonComponent>
                             </WrapperInput>
 
-                            <WrapperInput>
+                            {/* <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="phone">Ngày sinh</WrapperLabel>
-                                <InputForm style={{ width: '250px' }} id="email" value={phone} onChange={handleOnchangePhone} />
+                                <InputForm style={{ width: '250px' }} id="email" value={ngaysinh} onChange={handleOnchangePhone} />
                                 <ButtonComponent
                                     onClick={handleUpdate}
                                     size={40}
@@ -217,7 +212,7 @@ const CapNhatHSCB = () => {
                                     textbutton={'Cập nhật'}
                                     styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                                 ></ButtonComponent>
-                            </WrapperInput>
+                            </WrapperInput> */}
 
 
 
@@ -226,13 +221,13 @@ const CapNhatHSCB = () => {
 
                 </div>
 
-                 
-               
+
+
 
                 <div style={{ width: '500px', margin: '0 auto', height: '400px', float: 'left', textAlign: 'left', padding: '10px', background: 'back' }}>
                     <Loading isLoading={isLoading}>
                         <WrapperContentProfile>
-                            <WrapperInput>
+                            {/* <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="address">Email</WrapperLabel>
                                 <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
                                 <ButtonComponent
@@ -346,7 +341,7 @@ const CapNhatHSCB = () => {
                                     textbutton={'Cập nhật'}
                                     styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                                 ></ButtonComponent>
-                            </WrapperInput>
+                            </WrapperInput> */}
 
 
                         </WrapperContentProfile>
@@ -354,7 +349,7 @@ const CapNhatHSCB = () => {
 
 
                 </div>
-                                        
+
             </div>
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <NgoaiNgu />

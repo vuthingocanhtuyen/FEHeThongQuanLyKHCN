@@ -17,7 +17,8 @@ import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
-
+import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
+import { useNavigate } from 'react-router-dom'
 const HoSoCanBo = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
@@ -25,6 +26,8 @@ const HoSoCanBo = () => {
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
   const user = useSelector((state) => state?.user)
+
+  const navigate = useNavigate()
   const searchInput = useRef(null);
   const inittial = () => ({
     QuanNhanId: '',
@@ -59,7 +62,7 @@ const HoSoCanBo = () => {
         QuanHam,
         DonVi,
         LoaiQN
-     } = data
+      } = data
       const res = QuanNhanService.createQuanNhan({
         QuanNhanId,
         HoTen,
@@ -140,9 +143,9 @@ const HoSoCanBo = () => {
   }
 
   useEffect(() => {
-    if(!isModalOpen) {
+    if (!isModalOpen) {
       form.setFieldsValue(stateQuanNhanDetails)
-    }else {
+    } else {
       form.setFieldsValue(inittial())
     }
   }, [form, stateQuanNhanDetails, isModalOpen])
@@ -166,6 +169,9 @@ const HoSoCanBo = () => {
     })
   }
 
+  const handleDetailsHoSoCanBo = (ids) => {
+    navigate(`/hosocanbo/${ids}`)
+  }
   const fetchAllTypeQuanNhan = async () => {
     const res = await QuanNhanService.getAllType()
     return res
@@ -183,8 +189,9 @@ const HoSoCanBo = () => {
   const renderAction = () => {
     return (
       <div>
-        <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-        <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuanNhan} />
+        {/* <Button style={{ fontSize: '15px' }} onClick={() => handleDetailsHoSoCanBo(record._id)} > Chi tiết</Button> */}
+        &nbsp;
+        <Button style={{ fontSize: '15px' }} onClick={handleDetailsQuanNhan} >Tải xuống</Button>
       </div>
     )
   }
@@ -257,54 +264,58 @@ const HoSoCanBo = () => {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    // render: (text) =>
-    //   searchedColumn === dataIndex ? (
-    //     // <Highlighter
-    //     //   highlightStyle={{
-    //     //     backgroundColor: '#ffc069',
-    //     //     padding: 0,
-    //     //   }}
-    //     //   searchWords={[searchText]}
-    //     //   autoEscape
-    //     //   textToHighlight={text ? text.toString() : ''}
-    //     // />
-    //   ) : (
-    //     text
-    //   ),
+
   });
 
 
   const columns = [
     {
-      title: 'QuanNhanId',
+      title: 'Mã quân nhân',
       dataIndex: 'QuanNhanId',
       sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
       ...getColumnSearchProps('QuanNhanId')
     },
     {
-        title: 'QuanNhanId',
-        dataIndex: 'QuanNhanId',
-        sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-        ...getColumnSearchProps('QuanNhanId')
-      },
-    {
-      title: 'QuanNhanId',
-      dataIndex: 'QuanNhanId',
+      title: 'Tên quân nhân',
+      dataIndex: 'HoTen',
       sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-      ...getColumnSearchProps('QuanNhanId')
+      ...getColumnSearchProps('HoTen')
     },
     {
-        title: 'QuanNhanId',
-        dataIndex: 'QuanNhanId',
-        sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-        ...getColumnSearchProps('QuanNhanId')
-      },
-      {
-        title: 'QuanNhanId',
-        dataIndex: 'QuanNhanId',
-        sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-        ...getColumnSearchProps('QuanNhanId')
-      },
+      title: 'Ngày sinh',
+      dataIndex: 'NgaySinh',
+      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      ...getColumnSearchProps('NgaySinh')
+    },
+    {
+      title: 'Giới tính',
+      dataIndex: 'GioiTinh',
+      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      ...getColumnSearchProps('GioiTinh')
+    },
+    {
+      title: 'Trạng thái',
+      dataIndex: 'HoatDong',
+      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      ...getColumnSearchProps('HoatDong')
+    },
+    {
+      title: 'Cấp bậc',
+      dataIndex: 'QuanHam',
+      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      ...getColumnSearchProps('QuanHam')
+    },
+    {
+      title: 'Đơn vị',
+      dataIndex: 'DonVi',
+      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      ...getColumnSearchProps('DonVi')
+    },
+    {
+      title: 'Chức năng',
+      dataIndex: 'action',
+      render: renderAction
+    },
   ];
   const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
     return { ...quannhan, key: quannhan._id }
@@ -339,18 +350,18 @@ const HoSoCanBo = () => {
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
     setStateQuanNhanDetails({
-        QuanNhanId: '',
-        HoTen: '',
-        NgaySinh: '',
-        GioiTinh: '',
-        QueQuan: '',
-        DiaChi: '',
-        SoDienThoai: '',
-        Email: '',
-        HoatDong: '',
-        QuanHam: '',
-        DonVi: '',
-        LoaiQN: ''
+      QuanNhanId: '',
+      HoTen: '',
+      NgaySinh: '',
+      GioiTinh: '',
+      QueQuan: '',
+      DiaChi: '',
+      SoDienThoai: '',
+      Email: '',
+      HoatDong: '',
+      QuanHam: '',
+      DonVi: '',
+      LoaiQN: ''
     })
     form.resetFields()
   };
@@ -380,18 +391,18 @@ const HoSoCanBo = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setStateQuanNhan({
-        QuanNhanId: '',
-        HoTen: '',
-        NgaySinh: '',
-        GioiTinh: '',
-        QueQuan: '',
-        DiaChi: '',
-        SoDienThoai: '',
-        Email: '',
-        HoatDong: '',
-        QuanHam: '',
-        DonVi: '',
-        LoaiQN: ''
+      QuanNhanId: '',
+      HoTen: '',
+      NgaySinh: '',
+      GioiTinh: '',
+      QueQuan: '',
+      DiaChi: '',
+      SoDienThoai: '',
+      Email: '',
+      HoatDong: '',
+      QuanHam: '',
+      DonVi: '',
+      LoaiQN: ''
     })
     form.resetFields()
   };
@@ -462,10 +473,10 @@ const HoSoCanBo = () => {
   }
 
   const handleChangeSelect = (value) => {
-      setStateQuanNhan({
-        ...stateQuanNhan,
-        type: value
-      })
+    setStateQuanNhan({
+      ...stateQuanNhan,
+      type: value
+    })
   }
 
   return (
@@ -477,9 +488,12 @@ const HoSoCanBo = () => {
       <div style={{ marginTop: '20px' }}>
         <TableComponent handleDelteMany={handleDelteManyQuanNhans} columns={columns} isLoading={isLoadingQuanNhans} data={dataTable} onRow={(record, rowIndex) => {
           return {
+
             onClick: event => {
-              setRowSelected(record._id)
-            }
+              setRowSelected(record._id);
+              handleDetailsHoSoCanBo(record._id);
+            },
+
           };
         }} />
       </div>
@@ -587,7 +601,7 @@ const HoSoCanBo = () => {
         </Loading>
       </ModalComponent>
 
-      
+
       <DrawerComponent title='Danh sách quân nhân' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
         <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
@@ -607,7 +621,7 @@ const HoSoCanBo = () => {
               <InputComponent value={stateQuanNhanDetails['QuanNhanId']} onChange={handleOnchangeDetails} name="QuanNhanId" />
             </Form.Item>
 
-            
+
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Apply
