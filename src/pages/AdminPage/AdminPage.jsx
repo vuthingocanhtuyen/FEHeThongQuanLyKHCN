@@ -1,11 +1,10 @@
 import { Menu } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { getItem } from '../../utils';
-import { UserOutlined, AppstoreOutlined, ShoppingCartOutlined, SettingOutlined, LogoutOutlined, LockOutlined, AppstoreAddOutlined, UsergroupAddOutlined } from '@ant-design/icons'
+import { UserOutlined, AppstoreOutlined, SettingOutlined, LogoutOutlined, LockOutlined, AppstoreAddOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import HeaderComponent from '../../components/HeaderCompoent/HeaderComponent';
 import AdminUser from '../../components/AdminUser/AdminUser';
-import AdminProduct from '../../components/AdminProduct/AdminProduct';
-import OrderAdmin from '../../components/OrderAdmin/OrderAmin';
+
 import * as OrderService from '../../services/OrderService'
 import * as ProductService from '../../services/ProductService'
 import * as UserService from '../../services/UserService'
@@ -56,6 +55,7 @@ import DieuChuyenCanBo from '../QuanLyDonVi/DieuChuyenCanBo';
 import TabThanhNhanTaiSan from '../QuanLyQuanNhan/HoSoCanBo/TabThanNhanTaiSan';
 import ThongKeBaoCao from '../ChiHuyDieuHanh/ThongKeNhanLuc/ThongKeBaoCao';
 import ThongKeTai from '../ChiHuyDieuHanh/ThongKeTai/ThongKeTai';
+import HocVi from '../QuanLyDanhMuc/ToChucNhanSu/HocVi';
 
 
 
@@ -76,8 +76,8 @@ const AdminPage = () => {
       // setstatePriority({
       //   data: combinedData // Lưu mảng dữ liệu vào state
       // });
-      
-      
+
+
       setIsLoadingUpdate(false);
     } catch (error) {
       console.log('Error while fetching resPriority details:', error);
@@ -85,8 +85,8 @@ const AdminPage = () => {
     }
   };
   useEffect(() => {
-      setIsLoadingUpdate(true);
-      fetchGetPriority();
+    setIsLoadingUpdate(true);
+    fetchGetPriority();
   }, [user.id]);
   console.log('combinedData:', combinedData);
   const managementChildren = [
@@ -106,7 +106,7 @@ const AdminPage = () => {
   }
 
 
-  
+
   const items = [
     {
       label: 'Hệ thống',
@@ -129,8 +129,7 @@ const AdminPage = () => {
       ],
     },
 
-    // getItem('Sản phẩm', 'products', <AppstoreOutlined />),
-    // getItem('Đơn hàng', 'orders', <ShoppingCartOutlined />),
+
     {
       label: 'Quản lý Danh mục',
       key: 'quanlydanhmuc',
@@ -144,6 +143,7 @@ const AdminPage = () => {
             getItem('Danh mục cấp bậc', 'capbac', <AppstoreAddOutlined />),
             getItem('Danh mục chức vụ', 'chucvu', <AppstoreAddOutlined />),
             getItem('Danh mục học hàm', 'hocham', <AppstoreAddOutlined />),
+            getItem('Danh mục học vị', 'hocvi', <AppstoreAddOutlined />),
             getItem('Danh mục C.Danh CMKT', 'cdcmkt', <AppstoreAddOutlined />),
             getItem('Danh mục Loại đơn vị', 'loaidv', <AppstoreAddOutlined />),
             getItem('Danh mục Hình thức Khen thưởng', 'khenthuong', <AppstoreAddOutlined />),
@@ -206,7 +206,7 @@ const AdminPage = () => {
       children: [
         getItem('Danh mục đơn vị', 'donvi', <LogoutOutlined />),
         getItem('Hồ sơ cán bộ', 'hscb', <LockOutlined />),
-        getItem('Chi tiết hồ sơ cán bộ', 'cthscb', <LockOutlined />),
+        //   getItem('Chi tiết hồ sơ cán bộ', 'cthscb', <LockOutlined />),
         getItem('Quản lý nhu cầu/biên chế', 'quanlynhucaubc', <UserOutlined />),
         getItem('Điểu chuyển cán bộ', 'dieuchuyen', <UserOutlined />),
       ],
@@ -219,19 +219,10 @@ const AdminPage = () => {
       children: [
         getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
         getItem('Thông kê tải', 'thongketai', <LockOutlined />),
-        // getItem('Báo cáo CD-KH', 'slcdkh', <AppstoreAddOutlined />),
-        // getItem('Báo cáo độ tuổi', 'sldotuoi', <UserOutlined />),
-        // getItem('Báo cáo ngành', 'slnganh', <UserOutlined />),
+
       ],
     },
-    // {
-    //   label: 'Chỉ huy/ Điều hành',
-    //   key: 'chihuydieuhanh',
-    //   icon: <AppstoreOutlined />,
-    //   children: [
-    //     getItem('Báo cáo thống kê', 'giangday', <AppstoreAddOutlined />)
-    //   ],
-    // },
+
   ];
 
   const [keySelected, setKeySelected] = useState('');
@@ -260,10 +251,7 @@ const AdminPage = () => {
 
   const queries = useQueries({
     queries: [
-      { queryKey: ['products'], queryFn: getAllProducts, staleTime: 1000 * 60 },
       { queryKey: ['users'], queryFn: getAllUsers, staleTime: 1000 * 60 },
-      { queryKey: ['orders'], queryFn: getAllOrder, staleTime: 1000 * 60 },
-      // {queryKey: ['quannhans'], queryFn: getAllQuanNhan, staleTime: 1000 * 60},
     ]
   })
   const memoCount = useMemo(() => {
@@ -281,9 +269,6 @@ const AdminPage = () => {
   }, [queries])
   const COLORS = {
     users: ['#e66465', '#9198e5'],
-    products: ['#a8c0ff', '#3f2b96'],
-    orders: ['#11998e', '#38ef7d'],
-    //  quannhans: ['#11998e', '#38ef7d'],
   };
 
   const renderPage = (key) => {
@@ -328,6 +313,10 @@ const AdminPage = () => {
       case 'hocham':
         return (
           <HocHam />
+        )
+      case 'hocvi':
+        return (
+          <HocVi />
         )
       case 'cdcmkt':
         return (
@@ -394,6 +383,12 @@ const AdminPage = () => {
         return (
           <CapNhatHSCB />
         )
+
+      case '/hosocanbo/:id':
+        return (
+          <ChiTietQuanNhan />
+        )
+
 
       case 'khenthuong':
         return (
@@ -469,32 +464,7 @@ const AdminPage = () => {
 
           <ThongKeTai />
         )
-      // case 'slcdkh':
-      //   return (
-      //     <TKCDKH />
-      //   )
-      // case 'sldotuoi':
-      //   return (
-      //     <TKDoTuoi />
-      //   )
 
-      // case 'slnganh':
-      //   return (
-      //     <TKNganh />
-      //   )
-
-      // case 'products':
-      //   return (
-      //     <AdminProduct />
-      //   )
-      // case 'orders':
-      //   return (
-      //     <OrderAdmin />
-      //   )
-      // case 'quannhans':
-      //   return (
-      //     <AdminUser />
-      //   )
       default:
         return <></>
     }
@@ -535,11 +505,11 @@ const AdminPage = () => {
 
 
         <div style={{ flex: 1, padding: '15px 0 15px 15px' }}>
-          <Loading isLoading={memoCount && Object.keys(memoCount) && Object.keys(memoCount).length !== 3}>
+          <div isLoading={memoCount && Object.keys(memoCount) && Object.keys(memoCount).length !== 3}>
             {!keySelected && (
               <CustomizedContent data={memoCount} colors={COLORS} setKeySelected={setKeySelected} />
             )}
-          </Loading>
+          </div>
           {renderPage(keySelected)}
         </div>
       </div>

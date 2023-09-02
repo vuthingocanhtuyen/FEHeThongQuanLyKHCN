@@ -8,32 +8,37 @@ import CongTacNCKH from './CongTacNCKH';
 import ThanNhan from '../../QuanLyQuanNhan/HoSoCanBo/ThanNhan';
 import TaiSan from '../../QuanLyQuanNhan/HoSoCanBo/TaiSan';
 
-
+import { useNavigate, useParams } from 'react-router-dom'
 
 const { TabPane } = Tabs;
 
 function ChiTietQuanNhan() {
+    const { id } = useParams()
+
     return (
         <>
-            <h2>Tên cán bộ, giáo viên: </h2>
+
             <Tabs defaultActiveKey="1">
                 <TabPane tab="Lý lịch" key="1">
-                    <LyLich />
+
+                    <LyLich idQuanNhan={id} />
+
+
                 </TabPane>
                 <TabPane tab="Các quá trình" key="2">
-                    <QuaTrinh />
+                    <QuaTrinh idQuanNhan={id} />
                 </TabPane>
                 <TabPane tab="Công tác Đào tạo" key="3">
-                    <CTDaoTao />
+                    <CTDaoTao idQuanNhan={id} />
                 </TabPane>
                 <TabPane tab="Công tác NCKH" key="4">
-                    <CongTacNCKH />
+                    <CongTacNCKH idQuanNhan={id} />
                 </TabPane>
                 <TabPane tab="Thân nhân" key="5">
-                    <ThanNhan />
+                    <ThanNhan idQuanNhan={id} />
                 </TabPane>
                 <TabPane tab="Tài sản" key="6">
-                    <TaiSan />
+                    <TaiSan idQuanNhan={id} />
                 </TabPane>
 
             </Tabs>

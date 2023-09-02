@@ -8,7 +8,7 @@ const NgoaiNgu = () => {
   const [data, setData] = useState([]);
   const [stateQuanNhanDetails, setStateQuanNhanDetails] = useState({});
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
-  const user = useSelector((state) => state?.user); 
+  const user = useSelector((state) => state?.user);
   const fetchGetDetailsQuanNhan = async () => {
     try {
       console.log('User _id:', user.QuanNhanId);
@@ -17,27 +17,28 @@ const NgoaiNgu = () => {
       if (resQuanNhan?.data) {
         const quanNhanId = resQuanNhan.data._id;
         console.log('tesst:', quanNhanId);
-      // const res = await QuanNhanService.getDetailsQuanNhan(quanNhanId, user.access_token);
-      if (resQuanNhan?.data) {
-        setStateQuanNhanDetails({
-          QuanNhanId: resQuanNhan?.data?.QuanNhanId,
-          HoTen: resQuanNhan?.data?.HoTen,
-          NgaySinh: resQuanNhan?.data?.NgaySinh,
-          GioiTinh: resQuanNhan?.data?.GioiTinh,
-          QueQuan: resQuanNhan?.data?.QueQuan,
-          DiaChi: resQuanNhan?.data?.DiaChi,
-          SoDienThoai: resQuanNhan?.data?.SoDienThoai,
-          Email: resQuanNhan?.data?.Email,
-          HoatDong: resQuanNhan?.data?.HoatDong,
-          QuanHam: resQuanNhan?.data?.QuanHam,
-          DonVi: resQuanNhan?.data?.DonVi,
-          LoaiQN: resQuanNhan?.data?.LoaiQN,
-        });
-        setData([resQuanNhan.data]);
+        // const res = await QuanNhanService.getDetailsQuanNhan(quanNhanId, user.access_token);
+        if (resQuanNhan?.data) {
+          setStateQuanNhanDetails({
+            QuanNhanId: resQuanNhan?.data?.QuanNhanId,
+            HoTen: resQuanNhan?.data?.HoTen,
+            NgaySinh: resQuanNhan?.data?.NgaySinh,
+            GioiTinh: resQuanNhan?.data?.GioiTinh,
+            QueQuan: resQuanNhan?.data?.QueQuan,
+            DiaChi: resQuanNhan?.data?.DiaChi,
+            SoDienThoai: resQuanNhan?.data?.SoDienThoai,
+            Email: resQuanNhan?.data?.Email,
+            HoatDong: resQuanNhan?.data?.HoatDong,
+            QuanHam: resQuanNhan?.data?.QuanHam,
+            DonVi: resQuanNhan?.data?.DonVi,
+            LoaiQN: resQuanNhan?.data?.LoaiQN,
+          });
+          setData([resQuanNhan.data]);
+        }
+        console.log('Dữ liệu từ API:', resQuanNhan);
+        setIsLoadingUpdate(false);
       }
-      console.log('Dữ liệu từ API:', resQuanNhan);
-      setIsLoadingUpdate(false);
-    }} catch (error) {
+    } catch (error) {
       console.log('Error while fetching quan nhan details:', error);
       setIsLoadingUpdate(false);
     }

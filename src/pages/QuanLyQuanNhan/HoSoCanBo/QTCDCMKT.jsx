@@ -1,93 +1,80 @@
-import { Button, Form, Space, Select } from 'antd'
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import TableComponent from '../../../components/TableComponent/TableComponent'
 
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import CheckBox from '../../../components/CheckBox/CheckBox'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import Loading from '../../../components/LoadingComponent/Loading'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-
-import { getBase64, renderOptions } from '../../../utils'
-import { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react';
+import { Form, Table, Button, Space } from 'antd';
+import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { getBase64 } from '../../../utils'
+import Loading from '../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as ProductService from '../../../services/ProductService'
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
+import * as QTCDCMKTService from '../../../services/QTCDCMKTService';
+import { WrapperHeader } from './style'
+import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../components/TableComponent/TableComponent';
+const QTCDCMKT = ({ quannhanId }) => {
 
-const QTCDCMKT = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
+
     const inittial = () => ({
-        HTHD: '',
-        HocVien: '',
-        Lop: '',
-        DeTai: '',
-        DateBD: '',
-        Quy: '',
-        Nam: '',
-        SoCBHD: '',
-        DinhMuc: '',
-        SoGioChuan: '',
-    })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
-
-    const job = () => ({
-        GiaoVien: '',
-        HinhThuc: '',
-        SoTiet: '',
-        SoGio: '',
+        QuyetDinh: '',
+        NgayQuyetDinh: '',
+        CDCMKT: '',
+        CaoNhat: '',
         GhiChu: '',
     })
+    const [stateQTCDCMKT, setStateQTCDCMKT] = useState(inittial())
+    const [stateQTCDCMKTDetails, setStateQTCDCMKTDetails] = useState(inittial())
+
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan } = data
-            const res = ProductService.createProduct({
-                HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan
+            const { QuanNhanId = quannhanId,
+                code = 123,
+                QuyetDinh,
+                NgayQuyetDinh,
+                CDCMKT,
+                CaoNhat,
+                GhiChu } = data
+            const res = QTCDCMKTService.createQTCDCMKT({
+                QuanNhanId,
+                code,
+                QuyetDinh,
+                NgayQuyetDinh,
+                CDCMKT,
+                CaoNhat,
+                GhiChu
             })
+            console.log("data create qtct:", res.data)
             return res
+
         }
     )
+
     const mutationUpdate = useMutationHooks(
         (data) => {
+            console.log("data update:", data)
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = QTCDCMKTService.updateQTCDCMKT(
                 id,
                 token,
                 { ...rests })
             return res
         },
+
     )
 
     const mutationDeleted = useMutationHooks(
@@ -95,7 +82,7 @@ const QTCDCMKT = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = QTCDCMKTService.deleteQTCDCMKT(
                 id,
                 token)
             return res
@@ -106,69 +93,73 @@ const QTCDCMKT = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = QTCDCMKTService.deleteManyQTCDCMKT(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+
+    const getAllQTCDCMKTs = async () => {
+        const res = await QTCDCMKTService.getAllQTCDCMKT()
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
-        if (res?.data) {
-            setStateProductDetails({
-                HTHD: res?.data?.HTHD,
-                HocVien: res?.data?.HocVien,
-                Lop: res?.data?.Lop,
-                DeTai: res?.data?.DeTai,
-                DateBD: res?.data?.DateBD,
-                Quy: res?.data?.Quy,
-                Nam: res?.data?.Name,
-                SoCBHD: res?.data?.SoCBHD,
-                DinhMuc: res?.data?.DinhMuc,
-                SoGioChuan: res?.data?.SoGioChuan
+    // show
 
-            })
+
+    const fetchGetQTCDCMKT = async (context) => {
+        const quannhanId = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhancongtacfe:", quannhanId)
+        if (quannhanId) {
+
+            const res = await QTCDCMKTService.getQTCDCMKTByQuanNhanId(quannhanId)
+            console.log("qtct res: ", res)
+            if (res?.data) {
+                setStateQTCDCMKTDetails({
+                    QuyetDinh: res?.data.QuyetDinh,
+                    NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                    CDCMKT: res?.data.CDCMKT,
+                    CaoNhat: res?.data.CaoNhat,
+                    GhiChu: res?.data.GhiChu,
+                })
+            }
+            // setIsLoadingUpdate(false)
+            // console.log("qn:", res.data)
+            // console.log("chi tiết qtct:", setStateQTCDCMKTDetails)
+            return res.data
         }
         setIsLoadingUpdate(false)
     }
-
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateQTCDCMKTDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateQTCDCMKTDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsQTCDCMKT(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsQTCDCMKT = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+
+    const handleDelteManyQTCDCMKTs = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
-        return res
-    }
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -176,27 +167,64 @@ const QTCDCMKT = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryQTCDCMKT = useQuery({ queryKey: ['qtcdcmkts'], queryFn: getAllQTCDCMKTs })
+    const qtcdcmktDetails = useQuery(['hosoquannhanqtcdcmkt', quannhanId], fetchGetQTCDCMKT, { enabled: !!quannhanId })
+
+    const { isLoading: isLoadingQTCDCMKT, data: qtcdcmkts } = queryQTCDCMKT
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQTCDCMKT} />
             </div>
         )
     }
 
+    const onChange = () => { }
+
+    const fetchGetDetailsQTCDCMKT = async (rowSelected) => {
+        const res = await QTCDCMKTService.getDetailsQTCDCMKT(rowSelected)
+        if (res?.data) {
+            setStateQTCDCMKTDetails({
+                QuyetDinh: res?.data.QuyetDinh,
+                NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                CDCMKT: res?.data.CDCMKT,
+                CaoNhat: res?.data.CaoNhat,
+                GhiChu: res?.data.GhiChu,
+            })
+        }
+        setIsLoadingUpdate(false)
+    }
+
+
+
+    useEffect(() => {
+        if (rowSelected) {
+            fetchGetDetailsQTCDCMKT(rowSelected)
+        }
+        setIsLoadingUpdate(false)
+    }, [rowSelected])
+
+
+    useEffect(() => {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateQTCDCMKTDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateQTCDCMKTDetails, isModalOpen])
+
+
+
+
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -256,83 +284,68 @@ const QTCDCMKT = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
+
+
+    //Show dữ liệu
+
+    //const { data: qtcdcmktDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQTCDCMKT, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", qtcdcmktDetails)
+    console.log("idquannhancongtac:", quannhanId)
+
 
 
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            dataIndex: 'stt',
+            render: (text, record, index) => index + 1,
+
         },
+
         {
             title: 'Quyết định',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            dataIndex: 'QuyetDinh',
+            key: 'QuyetDinh',
         },
         {
             title: 'Ngày quyết định',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            dataIndex: 'NgayQuyetDinh',
+            key: 'NgayQuyetDinh',
         },
         {
-            title: 'Chức danh chuyên môn kỹ thuật',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            title: 'CDCMKT',
+            dataIndex: 'CDCMKT',
+            key: 'CDCMKT',
         },
         {
             title: 'Cao nhất',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'CaoNhat',
+            key: 'CaoNhat',
+        },
+
+        {
+            title: 'Ghi chú',
+            dataIndex: 'GhiChu',
+            key: 'GhiChu',
         },
         {
             title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
+
+
     ];
-
-
-
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
-    })
-
     useEffect(() => {
-        if (isSuccess && data?.status === 'OK') {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
             message.success()
-            handleCancel()
-        } else if (isError) {
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
             message.error()
         }
-    }, [isSuccess])
+    }, [isSuccessDelected])
 
     useEffect(() => {
         if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
@@ -353,14 +366,12 @@ const QTCDCMKT = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+        setStateQTCDCMKTDetails({
+            QuyetDinh: '',
+            NgayQuyetDinh: '',
+            CDCMKT: '',
+            CaoNhat: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -379,25 +390,22 @@ const QTCDCMKT = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteQTCDCMKT = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+        setStateQTCDCMKT({
+            QuyetDinh: '',
+            NgayQuyetDinh: '',
+            CDCMKT: '',
+            CaoNhat: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -405,148 +413,165 @@ const QTCDCMKT = () => {
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            QuyetDinh: stateQTCDCMKT.QuyetDinh,
+            NgayQuyetDinh: stateQTCDCMKT.NgayQuyetDinh,
+            CDCMKT: stateQTCDCMKT.CDCMKT,
+            CaoNhat: stateQTCDCMKT.CaoNhat,
+            GhiChu: stateQTCDCMKT.GhiChu,
         }
+        console.log("Finsh", stateQTCDCMKT)
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
+
+
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
+        console.log("e: ", e.target.name, e.target.value)
+        setStateQTCDCMKT({
+            ...stateQTCDCMKT,
             [e.target.name]: e.target.value
         })
     }
+
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
+        console.log('check', e.target.name, e.target.value)
+        setStateQTCDCMKTDetails({
+            ...stateQTCDCMKTDetails,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+    const onUpdateQTCDCMKT = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQTCDCMKTDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
 
-    const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
-            type: value
-        })
-    }
+    const dataTable = qtcdcmktDetails?.data?.length && qtcdcmktDetails?.data?.map((qtcdcmktDetails) => {
+        return { ...qtcdcmktDetails, key: qtcdcmktDetails._id }
+    })
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
 
     return (
         <div>
-            <WrapperHeader>Quá trình chức danh chuyên môn kỹ thuật</WrapperHeader>
-            <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm </Button>
-            </div>
+            <div>
+                <WrapperHeader>Chức danh chuyên môn kỹ thuật</WrapperHeader>
+                <div style={{ marginTop: '10px' }}>
+                    <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
+                </div>
+                {isLoading ? ( // Hiển thị thông báo đang tải
+                    <div>Loading...</div>
+                ) : (
+                    // <Table dataSource={qtcdcmktDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingQTCDCMKT} data={dataTable} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected(record._id);
 
-            <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id)
-                        }
-                    };
-                }} />
+
+                            }
+
+                        };
+                    }} />
+                )}
+
             </div>
-            {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm quá trình chức danh chuyên môn kỹ thuật" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm mới CDCMKT" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 10 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
                         autoComplete="on"
                         form={form}
                     >
+
                         <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Quyết định"
+                            name="QuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKT['QuyetDinh']}
+                                onChange={handleOnchange}
+                                name="QuyetDinh"
+                            />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKT['NgayQuyetDinh']}
+                                onChange={handleOnchange}
+                                name="NgayQuyetDinh"
                             />
                         </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
+
                         <Form.Item
-                            label="Chức danh chuyên môn kỹ thuật"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="CDCMKT"
+                            name="CDCMKT"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKT['CDCMKT']}
+                                onChange={handleOnchange}
+                                name="CDCMKT"
+                            />
                         </Form.Item>
 
                         <Form.Item
                             label="Cao nhất"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            name="CaoNhat"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <CheckBox value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKT['CaoNhat']}
+                                onChange={handleOnchange}
+                                name="CaoNhat"
+                            />
                         </Form.Item>
 
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateQTCDCMKT['GhiChu']}
+                                onChange={handleOnchange}
+                                name="GhiChu"
+                            />
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Thêm
@@ -557,47 +582,57 @@ const QTCDCMKT = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật quá trình chức danh chuyên môn kỹ thuật' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+            <DrawerComponent title='Chi tiết chức danh chuyên môn kỹ thuật' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateQTCDCMKT}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Mã quyết định"
+                            name="QuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
+                            <InputComponent value={stateQTCDCMKTDetails['QuyetDinh']} onChange={handleOnchangeDetails} name="QuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Chức danh chuyên môn kỹ thuật"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Cao nhât"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <CheckBox value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateQTCDCMKTDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
                         </Form.Item>
 
+                        <Form.Item
+                            label="CDCMKT"
+                            name="CDCMKT"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQTCDCMKTDetails['CDCMKT']} onChange={handleOnchangeDetails} name="CDCMKT" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Cao nhất"
+                            name="CaoNhat"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQTCDCMKTDetails['CaoNhat']} onChange={handleOnchangeDetails} name="CaoNhat" />
+                        </Form.Item>
+
+
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQTCDCMKTDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
+                        </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -607,13 +642,16 @@ const QTCDCMKT = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa quá trình quân hàm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+
+            <ModalComponent title="Xóa quá trình CDCMKT" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQTCDCMKT}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa quá trình quân hàm này không?</div>
+                    <div>Bạn có chắc xóa qquá trình CDCMKT này không?</div>
                 </Loading>
             </ModalComponent>
-        </div>
-    )
-}
 
-export default QTCDCMKT
+        </div>
+
+    );
+};
+
+export default QTCDCMKT;

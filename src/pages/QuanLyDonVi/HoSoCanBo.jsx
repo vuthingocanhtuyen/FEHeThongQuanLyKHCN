@@ -18,7 +18,8 @@ import { useQuery } from '@tanstack/react-query'
 import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
-
+import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
+import { useNavigate } from 'react-router-dom'
 const HoSoCanBo = () => {
   const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,29 +28,31 @@ const HoSoCanBo = () => {
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
   const user = useSelector((state) => state?.user)
+
+  const navigate = useNavigate()
   const searchInput = useRef(null);
   useEffect(() => {
     const fetchGetChucVuDonVi = async () => {
-        
-        try {
-            // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
-            const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
-            console.log(response.data);
-            
-            if (response.data && response.data.length > 0) {
-                const firstData = response.data[0];
-                console.log(response.data[0]);
-                const donViValue = firstData.DonVi[0];
-                setCurrentUserDonVi(donViValue);
-            }
-            
-        } catch (error) {
-            console.error('Error fetching ChucVuDonVi:', error);
+
+      try {
+        // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
+        const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
+        console.log(response.data);
+
+        if (response.data && response.data.length > 0) {
+          const firstData = response.data[0];
+          console.log(response.data[0]);
+          const donViValue = firstData.DonVi[0];
+          setCurrentUserDonVi(donViValue);
         }
+
+      } catch (error) {
+        console.error('Error fetching ChucVuDonVi:', error);
+      }
     };
 
     fetchGetChucVuDonVi();
-}, [user.QuanNhanId, user.access_token]);
+  }, [user.QuanNhanId, user.access_token]);
   const inittial = () => ({
     QuanNhanId: '',
     HoTen: '',
@@ -83,7 +86,7 @@ const HoSoCanBo = () => {
         QuanHam,
         DonVi,
         LoaiQN
-     } = data
+      } = data
       const res = QuanNhanService.createQuanNhan({
         QuanNhanId,
         HoTen,
@@ -141,7 +144,7 @@ const HoSoCanBo = () => {
     const res = await QuanNhanService.getQuanNhanFromDonVi(currentUserDonVi)
     return res
   }
-  
+
 
   const fetchGetDetailsQuanNhan = async (rowSelected) => {
     const res = await QuanNhanService.getDetailsQuanNhan(rowSelected)
@@ -165,9 +168,9 @@ const HoSoCanBo = () => {
   }
 
   useEffect(() => {
-    if(!isModalOpen) {
+    if (!isModalOpen) {
       form.setFieldsValue(stateQuanNhanDetails)
-    }else {
+    } else {
       form.setFieldsValue(inittial())
     }
   }, [form, stateQuanNhanDetails, isModalOpen])
@@ -191,6 +194,9 @@ const HoSoCanBo = () => {
     })
   }
 
+  const handleDetailsHoSoCanBo = (ids) => {
+    navigate(`/hosocanbo/${ids}`)
+  }
   const fetchAllTypeQuanNhan = async () => {
     const res = await QuanNhanService.getAllType()
     return res
@@ -208,8 +214,9 @@ const HoSoCanBo = () => {
   const renderAction = () => {
     return (
       <div>
-        <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-        <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuanNhan} />
+        {/* <Button style={{ fontSize: '15px' }} onClick={() => handleDetailsHoSoCanBo(record._id)} > Chi tiết</Button> */}
+        &nbsp;
+        <Button style={{ fontSize: '15px' }} onClick={handleDetailsQuanNhan} >Tải xuống</Button>
       </div>
     )
   }
@@ -282,20 +289,7 @@ const HoSoCanBo = () => {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    // render: (text) =>
-    //   searchedColumn === dataIndex ? (
-    //     // <Highlighter
-    //     //   highlightStyle={{
-    //     //     backgroundColor: '#ffc069',
-    //     //     padding: 0,
-    //     //   }}
-    //     //   searchWords={[searchText]}
-    //     //   autoEscape
-    //     //   textToHighlight={text ? text.toString() : ''}
-    //     // />
-    //   ) : (
-    //     text
-    //   ),
+
   });
 
 
@@ -307,11 +301,11 @@ const HoSoCanBo = () => {
       ...getColumnSearchProps('QuanNhanId')
     },
     {
-        title: 'Họ và tên',
-        dataIndex: 'HoTen',
-        sorter: (a, b) => a.HoTen.length - b.HoTen.length,
-        ...getColumnSearchProps('HoTen')
-      },
+      title: 'Họ và tên',
+      dataIndex: 'HoTen',
+      sorter: (a, b) => a.HoTen.length - b.HoTen.length,
+      ...getColumnSearchProps('HoTen')
+    },
     {
       title: 'Ngày sinh',
       dataIndex: 'NgaySinh',
@@ -319,35 +313,35 @@ const HoSoCanBo = () => {
       ...getColumnSearchProps('NgaySinh')
     },
     {
-        title: 'Giới tính',
-        dataIndex: 'GioiTinh',
-        sorter: (a, b) => a.GioiTinh.length - b.GioiTinh.length,
-        ...getColumnSearchProps('GioiTinh')
-      },
-      {
-        title: 'Quê quán',
-        dataIndex: 'QueQuan',
-        sorter: (a, b) => a.QueQuan.length - b.QueQuan.length,
-        ...getColumnSearchProps('QueQuan')
-      },
-      {
-        title: 'Địa chỉ',
-        dataIndex: 'DiaChi',
-        sorter: (a, b) => a.DiaChi.length - b.DiaChi.length,
-        ...getColumnSearchProps('DiaChi')
-      },
-      {
-        title: 'Đơn vị',
-        dataIndex: 'DonVi',
-        sorter: (a, b) => a.DonVi.length - b.DonVi.length,
-        ...getColumnSearchProps('DonVi')
-      },
-      {
-        title: 'Chức vụ',
-        dataIndex: 'HoatDong',
-        sorter: (a, b) => a.HoatDong.length - b.HoatDong.length,
-        ...getColumnSearchProps('HoatDong')
-      },
+      title: 'Giới tính',
+      dataIndex: 'GioiTinh',
+      sorter: (a, b) => a.GioiTinh.length - b.GioiTinh.length,
+      ...getColumnSearchProps('GioiTinh')
+    },
+    {
+      title: 'Quê quán',
+      dataIndex: 'QueQuan',
+      sorter: (a, b) => a.QueQuan.length - b.QueQuan.length,
+      ...getColumnSearchProps('QueQuan')
+    },
+    {
+      title: 'Địa chỉ',
+      dataIndex: 'DiaChi',
+      sorter: (a, b) => a.DiaChi.length - b.DiaChi.length,
+      ...getColumnSearchProps('DiaChi')
+    },
+    {
+      title: 'Đơn vị',
+      dataIndex: 'DonVi',
+      sorter: (a, b) => a.DonVi.length - b.DonVi.length,
+      ...getColumnSearchProps('DonVi')
+    },
+    {
+      title: 'Chức vụ',
+      dataIndex: 'HoatDong',
+      sorter: (a, b) => a.HoatDong.length - b.HoatDong.length,
+      ...getColumnSearchProps('HoatDong')
+    },
 
 
   ];
@@ -384,18 +378,18 @@ const HoSoCanBo = () => {
   const handleCloseDrawer = () => {
     setIsOpenDrawer(false);
     setStateQuanNhanDetails({
-        QuanNhanId: '',
-        HoTen: '',
-        NgaySinh: '',
-        GioiTinh: '',
-        QueQuan: '',
-        DiaChi: '',
-        SoDienThoai: '',
-        Email: '',
-        HoatDong: '',
-        QuanHam: '',
-        DonVi: '',
-        LoaiQN: ''
+      QuanNhanId: '',
+      HoTen: '',
+      NgaySinh: '',
+      GioiTinh: '',
+      QueQuan: '',
+      DiaChi: '',
+      SoDienThoai: '',
+      Email: '',
+      HoatDong: '',
+      QuanHam: '',
+      DonVi: '',
+      LoaiQN: ''
     })
     form.resetFields()
   };
@@ -429,18 +423,18 @@ const HoSoCanBo = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
     setStateQuanNhan({
-        QuanNhanId: '',
-        HoTen: '',
-        NgaySinh: '',
-        GioiTinh: '',
-        QueQuan: '',
-        DiaChi: '',
-        SoDienThoai: '',
-        Email: '',
-        HoatDong: '',
-        QuanHam: '',
-        DonVi: '',
-        LoaiQN: ''
+      QuanNhanId: '',
+      HoTen: '',
+      NgaySinh: '',
+      GioiTinh: '',
+      QueQuan: '',
+      DiaChi: '',
+      SoDienThoai: '',
+      Email: '',
+      HoatDong: '',
+      QuanHam: '',
+      DonVi: '',
+      LoaiQN: ''
     })
     form.resetFields()
   };
@@ -511,10 +505,10 @@ const HoSoCanBo = () => {
   }
 
   const handleChangeSelect = (value) => {
-      setStateQuanNhan({
-        ...stateQuanNhan,
-        type: value
-      })
+    setStateQuanNhan({
+      ...stateQuanNhan,
+      type: value
+    })
   }
 
   return (
@@ -526,9 +520,12 @@ const HoSoCanBo = () => {
       <div style={{ marginTop: '20px' }}>
         <TableComponent handleDelteMany={handleDelteManyQuanNhans} columns={columns} isLoading={isLoadingQuanNhans} data={dataTable} onRow={(record, rowIndex) => {
           return {
+
             onClick: event => {
-              setRowSelected(record._id)
-            }
+              setRowSelected(record._id);
+              handleDetailsHoSoCanBo(record._id);
+            },
+
           };
         }} />
       </div>
@@ -636,7 +633,7 @@ const HoSoCanBo = () => {
         </Loading>
       </ModalComponent>
 
-      
+
       <DrawerComponent title='Danh sách quân nhân' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
         <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
@@ -656,7 +653,7 @@ const HoSoCanBo = () => {
               <InputComponent value={stateQuanNhanDetails['QuanNhanId']} onChange={handleOnchangeDetails} name="QuanNhanId" />
             </Form.Item>
 
-            
+
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Apply

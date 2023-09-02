@@ -1,92 +1,89 @@
-import { Button, Form, Space, Select } from 'antd'
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import TableComponent from '../../../components/TableComponent/TableComponent'
 
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import Loading from '../../../components/LoadingComponent/Loading'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-
-import { getBase64, renderOptions } from '../../../utils'
-import { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react';
+import { Form, Table, Button, Space } from 'antd';
+import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { getBase64 } from '../../../utils'
+import Loading from '../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as ProductService from '../../../services/ProductService'
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
+import * as NgoaiNguService from '../../../services/NgoaiNguService';
+import { WrapperHeader } from './style'
+import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../components/TableComponent/TableComponent';
+const NgoaiNgu = ({ quannhanId }) => {
 
-const QTNgoaiNgu = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
+
     const inittial = () => ({
-        HTHD: '',
-        HocVien: '',
-        Lop: '',
-        DeTai: '',
-        DateBD: '',
-        Quy: '',
-        Nam: '',
-        SoCBHD: '',
-        DinhMuc: '',
-        SoGioChuan: '',
-    })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
-
-    const job = () => ({
-        GiaoVien: '',
-        HinhThuc: '',
-        SoTiet: '',
-        SoGio: '',
+        NgonNgu: '',
+        LoaiBang: '',
+        NamNhan: '',
+        CapDo: '',
+        TuongDuong: '',
+        HinhThucBang: '',
+        TrangThai: '',
         GhiChu: '',
     })
+    const [stateNgoaiNgu, setStateNgoaiNgu] = useState(inittial())
+    const [stateNgoaiNguDetails, setStateNgoaiNguDetails] = useState(inittial())
+
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan } = data
-            const res = ProductService.createProduct({
-                HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan
+            const { QuanNhanId = quannhanId,
+                code = 123,
+                NgonNgu,
+                LoaiBang,
+                NamNhan,
+                CapDo,
+                TuongDuong,
+                HinhThucBang,
+                TrangThai,
+                GhiChu } = data
+            const res = NgoaiNguService.createNgoaiNgu({
+                QuanNhanId,
+                code,
+                NgonNgu,
+                LoaiBang,
+                NamNhan,
+                CapDo,
+                TuongDuong,
+                HinhThucBang,
+                TrangThai,
+                GhiChu
             })
+            console.log("data create qtct:", res.data)
             return res
+
         }
     )
+
     const mutationUpdate = useMutationHooks(
         (data) => {
+            console.log("data update:", data)
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = NgoaiNguService.updateNgoaiNgu(
                 id,
                 token,
                 { ...rests })
             return res
         },
+
     )
 
     const mutationDeleted = useMutationHooks(
@@ -94,7 +91,7 @@ const QTNgoaiNgu = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = NgoaiNguService.deleteNgoaiNgu(
                 id,
                 token)
             return res
@@ -105,69 +102,76 @@ const QTNgoaiNgu = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = NgoaiNguService.deleteManyNgoaiNgu(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+
+    const getAllNgoaiNgus = async () => {
+        const res = await NgoaiNguService.getAllNgoaiNgu()
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
-        if (res?.data) {
-            setStateProductDetails({
-                HTHD: res?.data?.HTHD,
-                HocVien: res?.data?.HocVien,
-                Lop: res?.data?.Lop,
-                DeTai: res?.data?.DeTai,
-                DateBD: res?.data?.DateBD,
-                Quy: res?.data?.Quy,
-                Nam: res?.data?.Name,
-                SoCBHD: res?.data?.SoCBHD,
-                DinhMuc: res?.data?.DinhMuc,
-                SoGioChuan: res?.data?.SoGioChuan
+    // show
 
-            })
+
+    const fetchGetNgoaiNgu = async (context) => {
+        const quannhanId = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhancongtacfe:", quannhanId)
+        if (quannhanId) {
+
+            const res = await NgoaiNguService.getNgoaiNguByQuanNhanId(quannhanId)
+            console.log("qtct res: ", res)
+            if (res?.data) {
+                setStateNgoaiNguDetails({
+                    NgonNgu: res?.data.NgonNgu,
+                    LoaiBang: res?.data.LoaiBang,
+                    NamNhan: res?.data.NamNhan,
+                    CapDo: res?.data.CapDo,
+                    TuongDuong: res?.data.TuongDuong,
+                    HinhThucBang: res?.data.HinhThucBang,
+                    TrangThai: res?.data.TrangThai,
+                    GhiChu: res?.data.GhiChu,
+                })
+            }
+            // setIsLoadingUpdate(false)
+            // console.log("qn:", res.data)
+            // console.log("chi tiết qtct:", setStateNgoaiNguDetails)
+            return res.data
         }
         setIsLoadingUpdate(false)
     }
-
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateNgoaiNguDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateNgoaiNguDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsNgoaiNgu(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsNgoaiNgu = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+
+    const handleDelteManyNgoaiNgus = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcongtacDetails.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
-        return res
-    }
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -175,27 +179,67 @@ const QTNgoaiNgu = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryNgoaiNgu = useQuery({ queryKey: ['ngoaingus'], queryFn: getAllNgoaiNgus })
+    const qtcongtacDetails = useQuery(['hosoquannhanngoaingu', quannhanId], fetchGetNgoaiNgu, { enabled: !!quannhanId })
+
+    const { isLoading: isLoadingNgoaiNgu, data: ngoaingus } = queryNgoaiNgu
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsNgoaiNgu} />
             </div>
         )
     }
 
+    const onChange = () => { }
+
+    const fetchGetDetailsNgoaiNgu = async (rowSelected) => {
+        const res = await NgoaiNguService.getDetailsNgoaiNgu(rowSelected)
+        if (res?.data) {
+            setStateNgoaiNguDetails({
+                NgonNgu: res?.data.NgonNgu,
+                LoaiBang: res?.data.LoaiBang,
+                NamNhan: res?.data.NamNhan,
+                CapDo: res?.data.CapDo,
+                TuongDuong: res?.data.TuongDuong,
+                HinhThucBang: res?.data.HinhThucBang,
+                TrangThai: res?.data.TrangThai,
+                GhiChu: res?.data.GhiChu,
+            })
+        }
+        setIsLoadingUpdate(false)
+    }
+
+
+
+    useEffect(() => {
+        if (rowSelected) {
+            fetchGetDetailsNgoaiNgu(rowSelected)
+        }
+        setIsLoadingUpdate(false)
+    }, [rowSelected])
+
+
+    useEffect(() => {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateNgoaiNguDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateNgoaiNguDetails, isModalOpen])
+
+
+
+
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -255,100 +299,82 @@ const QTNgoaiNgu = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
+
+
+    //Show dữ liệu
+
+    //const { data: qtcongtacDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetNgoaiNgu, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", qtcongtacDetails)
+    console.log("idquannhancongtac:", quannhanId)
+
 
 
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            dataIndex: 'stt',
+            render: (text, record, index) => index + 1,
+
         },
+
         {
             title: 'Ngôn ngữ',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            dataIndex: 'NgonNgu',
+            key: 'NgonNgu',
         },
         {
             title: 'Loại bằng',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            dataIndex: 'LoaiBang',
+            key: 'LoaiBang',
         },
         {
             title: 'Năm nhận',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            dataIndex: 'NamNhan',
+            key: 'NamNhan',
         },
         {
             title: 'Cấp độ',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'CapDo',
+            key: 'CapDo',
         },
         {
             title: 'Tương đương',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'TuongDuong',
+            key: 'TuongDuong',
         },
         {
             title: 'Hình thức bằng',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'HinhThucBang',
+            key: 'HinhThucBang',
         },
         {
             title: 'Trạng thái',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'TrangThai',
+            key: 'TrangThai',
+        },
+        {
+            title: 'Ghi chú',
+            dataIndex: 'GhiChu',
+            key: 'GhiChu',
         },
         {
             title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
+
+
     ];
-
-
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
-    })
-
     useEffect(() => {
-        if (isSuccess && data?.status === 'OK') {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
             message.success()
-            handleCancel()
-        } else if (isError) {
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
             message.error()
         }
-    }, [isSuccess])
+    }, [isSuccessDelected])
 
     useEffect(() => {
         if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
@@ -369,14 +395,15 @@ const QTNgoaiNgu = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+        setStateNgoaiNguDetails({
+            NgonNgu: '',
+            LoaiBang: '',
+            NamNhan: '',
+            CapDo: '',
+            TuongDuong: '',
+            HinhThucBang: '',
+            TrangThai: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -395,25 +422,25 @@ const QTNgoaiNgu = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteNgoaiNgu = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcongtacDetails.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+        setStateNgoaiNgu({
+            NgonNgu: '',
+            LoaiBang: '',
+            NamNhan: '',
+            CapDo: '',
+            TuongDuong: '',
+            HinhThucBang: '',
+            TrangThai: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -421,162 +448,209 @@ const QTNgoaiNgu = () => {
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+
+            NgonNgu: stateNgoaiNgu.NgonNgu,
+            LoaiBang: stateNgoaiNgu.LoaiBang,
+            NamNhan: stateNgoaiNgu.NamNhan,
+            CapDo: stateNgoaiNgu.CapDo,
+            TuongDuong: stateNgoaiNgu.TuongDuong,
+            HinhThucBang: stateNgoaiNgu.HinhThucBang,
+            TrangThai: stateNgoaiNgu.TrangThai,
+            GhiChu: stateNgoaiNgu.GhiChu,
         }
+        console.log("Finsh", stateNgoaiNgu)
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcongtacDetails.refetch()
             }
         })
     }
+
+
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
+        console.log("e: ", e.target.name, e.target.value)
+        setStateNgoaiNgu({
+            ...stateNgoaiNgu,
             [e.target.name]: e.target.value
         })
     }
+
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
+        console.log('check', e.target.name, e.target.value)
+        setStateNgoaiNguDetails({
+            ...stateNgoaiNguDetails,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+    const onUpdateNgoaiNgu = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                qtcongtacDetails.refetch()
             }
         })
     }
 
-    const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
-            type: value
-        })
-    }
+    const dataTable = qtcongtacDetails?.data?.length && qtcongtacDetails?.data?.map((qtcongtacDetails) => {
+        return { ...qtcongtacDetails, key: qtcongtacDetails._id }
+    })
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
 
     return (
         <div>
-            <WrapperHeader>Ngoại ngữ</WrapperHeader>
-            <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm</Button>
-            </div>
+            <div>
+                <WrapperHeader>Ngôn ngữ</WrapperHeader>
+                <div style={{ marginTop: '10px' }}>
+                    <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
+                </div>
+                {isLoading ? ( // Hiển thị thông báo đang tải
+                    <div>Loading...</div>
+                ) : (
+                    // <Table dataSource={qtcongtacDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingNgoaiNgu} data={dataTable} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected(record._id);
 
-            <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id)
-                        }
-                    };
-                }} />
+
+                            }
+
+                        };
+                    }} />
+                )}
+
             </div>
-            {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm ngoại ngữ" open={isModalOpen} onCancel={handleCancel} footer={null} width="70%">
+            <ModalComponent forceRender title="Thêm mới ngôn ngữ" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 10 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
                         autoComplete="on"
                         form={form}
                     >
+
                         <Form.Item
                             label="Ngôn ngữ"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            name="NgonNgu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
+                            <InputComponent
+                                style={{ width: '100%' }}
 
-                        <Form.Item
-                            label="Hình thức"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
+                                value={stateNgoaiNgu['NgonNgu']}
+                                onChange={handleOnchange}
+                                name="NgonNgu"
                             />
                         </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
+
                         <Form.Item
-                            label="Tên hình thức"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Loại bằng"
+                            name="LoaiBang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['LoaiBang']}
+                                onChange={handleOnchange}
+                                name="LoaiBang"
+                            />
                         </Form.Item>
-                        <Form.Item
-                            label="Cấp độ tương đương"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
-                        >
-                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Tên cấp độ"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
-                        </Form.Item>
+
                         <Form.Item
                             label="Năm nhận"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
+                            name="NamNhan"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['NamNhan']}
+                                onChange={handleOnchange}
+                                name="NamNhan"
+                            />
                         </Form.Item>
 
+                        <Form.Item
+                            label="Cấp độ"
+                            name="CapDo"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateNgoaiNgu['CapDo']}
+                                onChange={handleOnchange}
+                                name="CapDo"
+                            />
+                        </Form.Item>
 
+                        <Form.Item
+                            label="Tương Đương"
+                            name="TuongDuong"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['TuongDuong']}
+                                onChange={handleOnchange}
+                                name="TuongDuong"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Hình thức bằng"
+                            name="HinhThucBang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['HinhThucBang']}
+                                onChange={handleOnchange}
+                                name="HinhThucBang"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Trạng thái"
+                            name="TrangThai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['TrangThai']}
+                                onChange={handleOnchange}
+                                name="TrangThai"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['GhiChu']}
+                                onChange={handleOnchange}
+                                name="GhiChu"
+                            />
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Thêm
@@ -587,59 +661,78 @@ const QTNgoaiNgu = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật lịch sử ngôn ngữ' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+            <DrawerComponent title='Chi tiết ngôn ngữ' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
-                        labelCol={{ span: 4 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateNgoaiNgu}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
                             label="Ngôn ngữ"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            name="NgonNgu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
+                            <InputComponent value={stateNgoaiNguDetails['NgonNgu']} onChange={handleOnchangeDetails} name="NgonNgu" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Hình thức"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            label="Loại bằng"
+                            name="LoaiBang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
+                            <InputComponent value={stateNgoaiNguDetails['LoaiBang']} onChange={handleOnchangeDetails} name="LoaiBang" />
                         </Form.Item>
-                        <Form.Item
-                            label="Tên hình thức"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Cấp độ tương tương"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Tên cấp độ"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
+
                         <Form.Item
                             label="Năm nhận"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
+                            name="NamNhan"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
+                            <InputComponent value={stateNgoaiNguDetails['NamNhan']} onChange={handleOnchangeDetails} name="NamNhan" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Cấp độ"
+                            name="CapDo"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateNgoaiNguDetails['CapDo']} onChange={handleOnchangeDetails} name="CapDo" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Tương đương"
+                            name="TuongDuong"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateNgoaiNguDetails['TuongDuong']} onChange={handleOnchangeDetails} name="TuongDuong" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Hình thức bằng"
+                            name="HinhThucBang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateNgoaiNguDetails['HinhThucBang']} onChange={handleOnchangeDetails} name="HinhThucBang" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Trạng thái"
+                            name="TrangThai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateNgoaiNguDetails['TrangThai']} onChange={handleOnchangeDetails} name="TrangThai" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateNgoaiNguDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
                         </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
@@ -650,13 +743,16 @@ const QTNgoaiNgu = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa bằng ngoại ngữ" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+
+            <ModalComponent title="Xóa quá trình công tác" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteNgoaiNgu}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa ngoại ngữ này không?</div>
+                    <div>Bạn có chắc xóa quá trình công tác này không?</div>
                 </Loading>
             </ModalComponent>
-        </div>
-    )
-}
 
-export default QTNgoaiNgu
+        </div>
+
+    );
+};
+
+export default NgoaiNgu;

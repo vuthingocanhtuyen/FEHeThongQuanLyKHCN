@@ -38,7 +38,7 @@ const TableComponent = (props) => {
 
   return (
     <Loading isLoading={isLoading}>
-      {!!rowSelectedKeys.length && (
+      {/* {!!rowSelectedKeys.length && (
         <div style={{
           background: '#1d1ddd',
           color: '#fff',
@@ -50,7 +50,7 @@ const TableComponent = (props) => {
         >
           Xóa tất cả
         </div>
-      )}
+      )} */}
       <button onClick={exportExcel}>Export Excel</button>
       <Table
         rowSelection={{
