@@ -1,92 +1,84 @@
-import { Button, Form, Space, Select } from 'antd'
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import TableComponent from '../../../components/TableComponent/TableComponent'
 
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import Loading from '../../../components/LoadingComponent/Loading'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-
-import { getBase64, renderOptions } from '../../../utils'
-import { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react';
+import { Form, Table, Button, Space } from 'antd';
+import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { getBase64 } from '../../../utils'
+import Loading from '../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as ProductService from '../../../services/ProductService'
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
+import * as DaiHocService from '../../../services/DaiHocService';
+import { WrapperHeader } from './style'
+import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../components/TableComponent/TableComponent';
+const DaiHoc = ({ quannhanId }) => {
 
-const DaiHoc = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
+
     const inittial = () => ({
-        HTHD: '',
-        HocVien: '',
-        Lop: '',
-        DeTai: '',
-        DateBD: '',
-        Quy: '',
-        Nam: '',
-        SoCBHD: '',
-        DinhMuc: '',
-        SoGioChuan: '',
-    })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
-
-    const job = () => ({
-        GiaoVien: '',
-        HinhThuc: '',
-        SoTiet: '',
-        SoGio: '',
+        He: '',
+        Nganh: '',
+        Truong: '',
+        QuocGia: '',
+        NamNhan: '',
+        TrangThai: '',
         GhiChu: '',
     })
+    const [stateDaiHoc, setStateDaiHoc] = useState(inittial())
+    const [stateDaiHocDetails, setStateDaiHocDetails] = useState(inittial())
+
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan } = data
-            const res = ProductService.createProduct({
-                HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan
+            const { QuanNhanId = quannhanId,
+                code = 123,
+                He,
+                Nganh,
+                Truong,
+                QuocGia, NamNhan,
+                TrangThai,
+                GhiChu } = data
+            const res = DaiHocService.createDaiHoc({
+                QuanNhanId,
+                code,
+                He,
+                Nganh,
+                Truong,
+                QuocGia, NamNhan,
+                TrangThai,
+                GhiChu
             })
+            console.log("data create daihoc:", res.data)
             return res
+
         }
     )
+
     const mutationUpdate = useMutationHooks(
         (data) => {
+            console.log("data update:", data)
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = DaiHocService.updateDaiHoc(
                 id,
                 token,
                 { ...rests })
             return res
         },
+
     )
 
     const mutationDeleted = useMutationHooks(
@@ -94,7 +86,7 @@ const DaiHoc = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = DaiHocService.deleteDaiHoc(
                 id,
                 token)
             return res
@@ -105,69 +97,75 @@ const DaiHoc = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = DaiHocService.deleteManyDaiHoc(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+
+    const getAllDaiHocs = async () => {
+        const res = await DaiHocService.getAllDaiHoc()
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
-        if (res?.data) {
-            setStateProductDetails({
-                HTHD: res?.data?.HTHD,
-                HocVien: res?.data?.HocVien,
-                Lop: res?.data?.Lop,
-                DeTai: res?.data?.DeTai,
-                DateBD: res?.data?.DateBD,
-                Quy: res?.data?.Quy,
-                Nam: res?.data?.Name,
-                SoCBHD: res?.data?.SoCBHD,
-                DinhMuc: res?.data?.DinhMuc,
-                SoGioChuan: res?.data?.SoGioChuan
+    // show
 
-            })
+
+    const fetchGetDaiHoc = async (context) => {
+        const quannhanId = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhancongtacfe:", quannhanId)
+        if (quannhanId) {
+
+            const res = await DaiHocService.getDaiHocByQuanNhanId(quannhanId)
+            console.log("qtct res: ", res)
+            if (res?.data) {
+                setStateDaiHocDetails({
+                    He: res?.data.He,
+                    Nganh: res?.data.Nganh,
+                    NamNhan: res?.data.NamNhan,
+                    Truong: res?.data.Truong,
+                    QuocGia: res?.data.QuocGia,
+                    TrangThai: res?.data.TrangThai,
+                    GhiChu: res?.data.GhiChu,
+                })
+            }
+            // setIsLoadingUpdate(false)
+            // console.log("qn:", res.data)
+            // console.log("chi tiết qtct:", setStateDaiHocDetails)
+            return res.data
         }
         setIsLoadingUpdate(false)
     }
-
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateDaiHocDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateDaiHocDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsDaiHoc(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsDaiHoc = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+
+    const handleDelteManyDaiHocs = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                daihocDetails.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
-        return res
-    }
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -175,27 +173,67 @@ const DaiHoc = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryDaiHoc = useQuery({ queryKey: ['daihocs'], queryFn: getAllDaiHocs })
+    const daihocDetails = useQuery(['hosoquannhandaihoc', quannhanId], fetchGetDaiHoc, { enabled: !!quannhanId })
+    console.log("dauhoc:", daihocDetails.data)
+    
+    const { isLoading: isLoadingDaiHoc, data: daihocs } = queryDaiHoc
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsDaiHoc} />
             </div>
         )
     }
 
+    const onChange = () => { }
+
+    const fetchGetDetailsDaiHoc = async (rowSelected) => {
+        const res = await DaiHocService.getDetailsDaiHoc(rowSelected)
+        if (res?.data) {
+            setStateDaiHocDetails({
+                He: res?.data.He,
+                Nganh: res?.data.Nganh,
+                Truong: res?.data.Truong,
+                QuocGia: res?.data.QuocGia,
+                NamNhan: res?.data.NamNhan,
+                TrangThai: res?.data.TrangThai,
+                GhiChu: res?.data.GhiChu,
+            })
+        }
+        setIsLoadingUpdate(false)
+    }
+
+
+
+    useEffect(() => {
+        if (rowSelected) {
+            fetchGetDetailsDaiHoc(rowSelected)
+        }
+        setIsLoadingUpdate(false)
+    }, [rowSelected])
+
+
+    useEffect(() => {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateDaiHocDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateDaiHocDetails, isModalOpen])
+
+
+
+
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -255,96 +293,80 @@ const DaiHoc = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
+
+
+    //Show dữ liệu
+
+    //const { data: daihocDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetDaiHoc, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", daihocDetails)
+    console.log("idquannhancongtac:", quannhanId)
+
 
 
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            dataIndex: 'stt',
+            render: (text, record, index) => index + 1,
+
         },
+
         {
             title: 'Hệ',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            dataIndex: 'He',
+            key: 'He',
         },
         {
             title: 'Ngành',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            dataIndex: 'Nganh',
+            key: 'Nganh',
         },
         {
             title: 'Trường',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            dataIndex: 'Truong',
+            key: 'Truong',
         },
+
+
         {
             title: 'Quốc gia',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'QuocGia',
+            key: 'QuocGia',
         },
         {
             title: 'Năm nhận',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'NamNhan',
+            key: 'NamNhan',
         },
 
         {
             title: 'Trạng thái',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'TrangThai',
+            key: 'TrangThai',
+        },
+        {
+            title: 'Ghi chú',
+            dataIndex: 'GhiChu',
+            key: 'GhiChu',
         },
         {
             title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
+
+
     ];
-
-
-
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
-    })
-
     useEffect(() => {
-        if (isSuccess && data?.status === 'OK') {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
             message.success()
-            handleCancel()
-        } else if (isError) {
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
             message.error()
         }
-    }, [isSuccess])
+    }, [isSuccessDelected])
 
     useEffect(() => {
         if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
@@ -365,14 +387,14 @@ const DaiHoc = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+        setStateDaiHocDetails({
+            He: '',
+            Nganh: '',
+            Truong: '',
+            QuocGia: '',
+            NamNhan: '',
+            TrangThai: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -391,25 +413,24 @@ const DaiHoc = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteDaiHoc = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                daihocDetails.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+        setStateDaiHoc({
+            He: '',
+            Nganh: '',
+            Truong: '',
+            QuocGia: '',
+            NamNhan: '',
+            TrangThai: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -417,158 +438,195 @@ const DaiHoc = () => {
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            He: stateDaiHoc.He,
+            Nganh: stateDaiHoc.Nganh,
+            Truong: stateDaiHoc.Truong,
+            QuocGia: stateDaiHoc.QuocGia,
+            NamNhan: stateDaiHoc.NamNhan,
+            TrangThai: stateDaiHoc.TrangThai,
+            GhiChu: stateDaiHoc.GhiChu,
         }
+        console.log("Finsh", stateDaiHoc)
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                daihocDetails.refetch()
             }
         })
     }
+
+
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
+        console.log("e: ", e.target.name, e.target.value)
+        setStateDaiHoc({
+            ...stateDaiHoc,
             [e.target.name]: e.target.value
         })
     }
+
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
+        console.log('check', e.target.name, e.target.value)
+        setStateDaiHocDetails({
+            ...stateDaiHocDetails,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+    const onUpdateDaiHoc = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateDaiHocDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                daihocDetails.refetch()
             }
         })
     }
 
-    const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
-            type: value
-        })
-    }
+    const dataTable = daihocDetails?.data?.length && daihocDetails?.data?.map((daihocDetails) => {
+        return { ...daihocDetails, key: daihocDetails._id }
+    })
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
 
     return (
         <div>
-            <WrapperHeader>Đại học</WrapperHeader>
-            {/* <div style={{ marginTop: '10px', float: 'right' }}>
-                <Button style={{ background: 'green' }} onClick={() => setIsModalOpen(true)}>Thêm</Button>
-            </div> */}
-            <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm </Button>
-            </div>
+            <div>
+                <WrapperHeader>Đại học</WrapperHeader>
+                <div style={{ marginTop: '10px' }}>
+                    <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
+                </div>
+                {isLoading ? ( // Hiển thị thông báo đang tải
+                    <div>Loading...</div>
+                ) : (
+                    // <Table dataSource={daihocDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingDaiHoc} data={dataTable} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected(record._id);
 
-            <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id)
-                        }
-                    };
-                }} />
+
+                            }
+
+                        };
+                    }} />
+                )}
+
             </div>
-            {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm bằng cấp đại học " open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm mới đại học" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 10 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
                         autoComplete="on"
                         form={form}
                     >
+
                         <Form.Item
-                            label="Loại bằng"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Hệ"
+                            name="He"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDaiHoc['He']}
+                                onChange={handleOnchange}
+                                name="He"
+                            />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngành"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="Nganh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDaiHoc['Nganh']}
+                                onChange={handleOnchange}
+                                name="Nganh"
                             />
                         </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
+
+
                         <Form.Item
                             label="Trường"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            name="Truong"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDaiHoc['Truong']}
+                                onChange={handleOnchange}
+                                name="Truong"
+                            />
                         </Form.Item>
+
                         <Form.Item
                             label="Quốc gia"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
+                            name="QuocGia"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.price} onChange={handleOnchange} name="price" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDaiHoc['QuocGia']}
+                                onChange={handleOnchange}
+                                name="QuocGia"
+                            />
                         </Form.Item>
+
                         <Form.Item
                             label="Năm nhận"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
+                            name="NamNhan"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.description} onChange={handleOnchange} name="description" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateDaiHoc['NamNhan']}
+                                onChange={handleOnchange}
+                                name="NamNhan"
+                            />
                         </Form.Item>
 
+                        <Form.Item
+                            label="Trạng thái"
+                            name="TrangThai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateDaiHoc['TrangThai']}
+                                onChange={handleOnchange}
+                                name="TrangThai"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateDaiHoc['GhiChu']}
+                                onChange={handleOnchange}
+                                name="GhiChu"
+                            />
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Thêm
@@ -579,53 +637,74 @@ const DaiHoc = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật bằng cấp đại học' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+            <DrawerComponent title='Chi tiết đại học' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateDaiHoc}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Loại bằng"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Hệ"
+                            name="He"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
+                            <InputComponent value={stateDaiHocDetails['He']} onChange={handleOnchangeDetails} name="He" />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngành"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="Nganh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
+                            <InputComponent value={stateDaiHocDetails['Nganh']} onChange={handleOnchangeDetails} name="Nganh" />
                         </Form.Item>
+
                         <Form.Item
                             label="Trường"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            name="Truong"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateDaiHocDetails['Truong']} onChange={handleOnchangeDetails} name="Truong" />
                         </Form.Item>
+
                         <Form.Item
-                            label="Quốc gia"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
+                            label="Quốc Gia"
+                            name="QuocGia"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
+                            <InputComponent value={stateDaiHocDetails['QuocGia']} onChange={handleOnchangeDetails} name="QuocGia" />
                         </Form.Item>
+
                         <Form.Item
                             label="Năm nhận"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
+                            name="NamNhan"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
+                            <InputComponent value={stateDaiHocDetails['NamNhan']} onChange={handleOnchangeDetails} name="NamNhan" />
                         </Form.Item>
+
+                        <Form.Item
+                            label="Trạng thái"
+                            name="TrangThai"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateDaiHocDetails['TrangThai']} onChange={handleOnchangeDetails} name="TrangThai" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateDaiHocDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
+                        </Form.Item>
+
+
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -635,13 +714,16 @@ const DaiHoc = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa bằng đại học" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+
+            <ModalComponent title="Xóa quá trình đại học" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteDaiHoc}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa bằng đại học này không?</div>
+                    <div>Bạn có chắc xóa quá trình đại học này không?</div>
                 </Loading>
             </ModalComponent>
-        </div>
-    )
-}
 
-export default DaiHoc
+        </div>
+
+    );
+};
+
+export default DaiHoc;

@@ -9,7 +9,7 @@ import { useState } from 'react'
 import InputComponent from '../../../components/InputComponent/InputComponent'
 
 import { getBase64, renderOptions } from '../../../utils'
-import * as ProductService from '../../../services/ProductService'
+import * as DonViService from '../../../services/DonViService'
 
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import Loading from '../../../components/LoadingComponent/Loading'
@@ -20,7 +20,8 @@ import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 
-const TableDonVi = () => {
+const TableDonVi = ({handleTreeNodeClick,treeNodeClickedId } ) => {
+    console.log(treeNodeClickedId)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -29,39 +30,74 @@ const TableDonVi = () => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const inittial = () => ({
+        code: '',
+        codeview: '',
         name: '',
-        price: '',
-        description: '',
-        rating: '',
-        image: '',
-        type: '',
-        countInStock: '',
-        newType: '',
-        discount: '',
-    })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
+        note: '',
+        edituser: '',
+        edittime: '',
+        lock: '',
+        lockdate: '',
+        managelevelcode: '',
+        unitcode: '',
+        parentcode: '',
+        comparelevel: '',
+        theorder: '',
+        phone: '',
+        email: '',
+        managestaff: '',
+        whois: '',
+        thucluc:'',
+        bienche: '',
+    });
+    
+    
+    const [stateDonVi, setStateDonVi] = useState(inittial())
+    const [stateDonViDetails, setStateDonViDetails] = useState(inittial())
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock, discount } = data
-            const res = ProductService.createProduct({
+            const { code,
+                codeview,
                 name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock,
-                discount
+                note,
+                edituser,
+                edittime,
+                lock,
+                lockdate,
+                managelevelcode,
+                unitcode,
+                parentcode,
+                comparelevel,
+                theorder,
+                phone,
+                email,
+                managestaff,
+                whois,
+                thucluc,
+                bienche,} = data
+            const res = DonViService.createDonVi({
+                code,
+                codeview,
+                name,
+                note,
+                edituser,
+                edittime,
+                lock,
+                lockdate,
+                managelevelcode,
+                unitcode,
+                parentcode,
+                comparelevel,
+                theorder,
+                phone,
+                email,
+                managestaff,
+                whois,
+                thucluc,
+                bienche,
             })
             return res
         }
@@ -71,7 +107,7 @@ const TableDonVi = () => {
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = DonViService.updateDonVi(
                 id,
                 token,
                 { ...rests })
@@ -84,7 +120,7 @@ const TableDonVi = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = DonViService.deleteDonVi(
                 id,
                 token)
             return res
@@ -95,30 +131,41 @@ const TableDonVi = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = DonViService.deleteManyDonVi(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+    const getAllDonVis = async () => {
+        const res = await DonViService.getDonViConOnly2(treeNodeClickedId)
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
+    const fetchGetDetailsDonVi = async (rowSelected) => {
+        const res = await DonViService.getDetailsDonVi(rowSelected)
         if (res?.data) {
-            setStateProductDetails({
+            setStateDonViDetails({
+                code: res?.data?.code,
+                codeview: res?.data?.codeview,
                 name: res?.data?.name,
-                price: res?.data?.price,
-                description: res?.data?.description,
-                rating: res?.data?.rating,
-                image: res?.data?.image,
-                type: res?.data?.type,
-                countInStock: res?.data?.countInStock,
-                discount: res?.data?.discount
+                note: res?.data?.note,
+                edituser: res?.data?.edituser,
+                edittime: res?.data?.edittime,
+                lock: res?.data?.lock,
+                lockdate: res?.data?.lockdate,
+                managelevelcode: res?.data?.managelevelcode,
+                unitcode: res?.data?.unitcode,
+                parentcode: res?.data?.parentcode,
+                comparelevel: res?.data?.comparelevel,
+                theorder: res?.data?.theorder,
+                phone: res?.data?.phone,
+                email: res?.data?.email,
+                managestaff: res?.data?.managestaff,
+                whois: res?.data?.whois,
+                thucluc: res?.data?.thucluc,
+                bienche: res?.data?.bienche,
             })
         }
         setIsLoadingUpdate(false)
@@ -126,35 +173,32 @@ const TableDonVi = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateDonViDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateDonViDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsDonVi(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsDonVi = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+    const handleDelteManyDonVis = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDonVi.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
-        return res
-    }
+    
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -162,14 +206,20 @@ const TableDonVi = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryDonVi = useQuery(
+        ['prioritys', treeNodeClickedId], // Thay đổi queryKey để phản ánh treeNodeClickedId
+        getAllDonVis,
+        {
+            enabled: !!treeNodeClickedId, // Kích hoạt truy vấn khi treeNodeClickedId không null
+        }
+    );
+    // const typeDonVi = useQuery({ queryKey: ['type-priority'], queryFn: fetchAllTypeDonVi })
+    const { isLoading: isLoadingDonVis, data: prioritys } = queryDonVi
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsDonVi} />
             </div>
         )
     }
@@ -242,84 +292,48 @@ const TableDonVi = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
     });
 
 
     const columns = [
         {
-            title: 'STT',
+            title: 'code',
+            dataIndex: 'code',
+            sorter: (a, b) => a.code.length - b.code.length,
+            ...getColumnSearchProps('code')
+        },
+        {
+            title: 'codeview',
+            dataIndex: 'codeview',
+            sorter: (a, b) => a.codeview.length - b.codeview.length,
+            ...getColumnSearchProps('codeview')
+        },
+        {
+            title: 'name',
             dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
+            // sorter: (a, b) => a.name.length - b.name.length,
             ...getColumnSearchProps('name')
         },
         {
-            title: 'Mã',
-            dataIndex: 'price',
-            sorter: (a, b) => a.price - b.price,
-            filters: [
-                {
-                    text: '>= 50',
-                    value: '>=',
-                },
-                {
-                    text: '<= 50',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return record.price >= 50
-                }
-                return record.price <= 50
-            },
+            title: 'phone',
+            dataIndex: 'phone',
+            // sorter: (a, b) => a.phone.length - b.phone.length,
+            ...getColumnSearchProps('phone')
         },
         {
-            title: 'Tên',
-            dataIndex: 'rating',
-            sorter: (a, b) => a.rating - b.rating,
-            filters: [
-                {
-                    text: '>= 3',
-                    value: '>=',
-                },
-                {
-                    text: '<= 3',
-                    value: '<=',
-                }
-            ],
-            onFilter: (value, record) => {
-                if (value === '>=') {
-                    return Number(record.rating) >= 3
-                }
-                return Number(record.rating) <= 3
-            },
+            title: 'email',
+            dataIndex: 'email',
+            // sorter: (a, b) => a.email.length - b.email.length,
+            ...getColumnSearchProps('email')
         },
         {
-            title: 'Ghi chú',
-            dataIndex: 'type',
-        },
-        {
-            title: 'Chức năng',
+            title: 'Action',
             dataIndex: 'action',
             render: renderAction
         },
     ];
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
+    const dataTable = prioritys?.data?.length && prioritys?.data?.map((priority) => {
+        return { ...priority, key: priority._id }
     })
 
     useEffect(() => {
@@ -350,14 +364,26 @@ const TableDonVi = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
+        setStateDonViDetails({
+            code: '',
+            codeview: '',
             name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+            note: '',
+            edituser: '',
+            edittime: '',
+            lock: '',
+            lockdate: '',
+            managelevelcode: '',
+            unitcode: '',
+            parentcode: '',
+            comparelevel: '',
+            theorder: '',
+            phone: '',
+            email: '',
+            managestaff:'',
+            whois: '',
+            thucluc: '',
+            bienche: '',
         })
         form.resetFields()
     };
@@ -376,113 +402,119 @@ const TableDonVi = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteDonVi = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDonVi.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
+        setStateDonVi({
+            code: '',
+            codeview: '',
             name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+            note: '',
+            edituser: '',
+            edittime: '',
+            lock: '',
+            lockdate: '',
+            managelevelcode: '',
+            unitcode: '',
+            parentcode: '',
+            comparelevel: '',
+            theorder: '',
+            phone: '',
+            email: '',
+            managestaff:'',
+            whois: '',
+            thucluc: '',
+            bienche: '',
         })
         form.resetFields()
     };
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            code: stateDonVi.code,
+            codeview: stateDonVi.codeview,
+            name: stateDonVi.name,
+            note: stateDonVi.note,
+            edituser: stateDonVi.edituser,
+            edittime: stateDonVi.edittime,
+            lock: stateDonVi.lock,
+            lockdate: stateDonVi.lockdate,
+            managelevelcode: stateDonVi.managelevelcode,
+            unitcode: stateDonVi.unitcode,
+            parentcode: stateDonVi.parentcode,
+            comparelevel: stateDonVi.comparelevel,
+            theorder: stateDonVi.theorder,
+            phone: stateDonVi.phone,
+            email: stateDonVi.email,
+            managestaff: stateDonVi.managestaff,
+            whois: stateDonVi.whois,
+            thucluc: stateDonVi.thucluc,
+            bienche: stateDonVi.bienche,
         }
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDonVi.refetch()
             }
         })
     }
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
-            [e.target.name]: e.target.value
+        setStateDonVi({
+            ...stateDonVi,
+            [e.target.code]: e.target.value
         })
     }
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
-            [e.target.name]: e.target.value
+        setStateDonViDetails({
+            ...stateDonViDetails,
+            [e.target.code]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+
+    const onUpdateDonVi = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateDonViDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                queryDonVi.refetch()
             }
         })
     }
 
     const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
+        setStateDonVi({
+            ...stateDonVi,
             type: value
         })
     }
 
     return (
+        
         <div>
-            <WrapperHeader>Danh mục đơn vị</WrapperHeader>
+            <WrapperHeader>Quản lý đơn vị</WrapperHeader>
             <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm</Button>
+                <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
             </div>
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                 <TableComponent handleDelteMany={handleDelteManyDonVis} columns={columns} isLoading={isLoadingDonVis} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: event => {
-                            setRowSelected(record._id)
-                        }
+                            setRowSelected(record._id);
+                            
+                          }
+                        
                     };
                 }} />
             </div>
-            <ModalComponent forceRender title="Thêm đơn vị" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm đơn vị" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -494,61 +526,29 @@ const TableDonVi = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Đơn vị cấp trên"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Mã"
+                            name="code"
+                            rules={[{ required: true, message: 'Please input your code!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent value={stateDonVi['code']} onChange={handleOnchange} name="code" />
                         </Form.Item>
-                        <Form.Item
-                            label="Mã"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-
                         <Form.Item
                             label="Tên"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
-                            />
-                        </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
-                        <Form.Item
-                            label="Ghi chú"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent value={stateDonVi['name']} onChange={handleOnchange} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Loại"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Đơn vị cha"
+                            name="parentcode"
+                            rules={[{ required: true, message: 'Please input your parentcode!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent value={stateDonVi['parentcode']} onChange={handleOnchange} name="parentcode" />
                         </Form.Item>
-
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
-                                Thêm
+                                Submit
                             </Button>
                         </Form.Item>
                     </Form>
@@ -556,68 +556,54 @@ const TableDonVi = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Sửa đơn vị' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
+            <DrawerComponent title='Danh sách nhóm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 2 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateDonVi}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Đơn vị cấp trên"
+                            label="Name"
                             name="name"
                             rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Mã"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
+                            <InputComponent value={stateDonViDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Tên "
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateDonViDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
                         <Form.Item
-                            label="Ghi chú"
-                            name="price"
-                            rules={[{ required: true, message: 'Please input your count price!' }]}
+                            label="Name"
+                            name="name"
+                            rules={[{ required: true, message: 'Please input your name!' }]}
                         >
-                            <InputComponent value={stateProductDetails.price} onChange={handleOnchangeDetails} name="price" />
+                            <InputComponent value={stateDonViDetails['name']} onChange={handleOnchangeDetails} name="name" />
                         </Form.Item>
-                        <Form.Item
-                            label="Loại"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-
+                        
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
-                                Sửa
+                                Apply
                             </Button>
                         </Form.Item>
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa đơn vị" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+            <ModalComponent title="Xóa nhóm quyền" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteDonVi}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa đơn vị này không?</div>
+                    <div>Bạn có chắc xóa quyền này không?</div>
                 </Loading>
             </ModalComponent>
         </div>
+       
     )
 }
 

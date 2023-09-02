@@ -65,7 +65,17 @@ export const deleteManyQuanNhan = async (data, access_token) => {
   );
   return res.data;
 };
-
+export const getQuanNhanFromDonVi = async (id, access_token) => {
+  const res = await axiosJWT.get(
+    `${process.env.REACT_APP_API_URL}/quannhan/get-by-id2/${id}`,
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};
 export const getAllType = async () => {
   const res = await axios.get(`${process.env.REACT_APP_API_URL}/quannhan/get-all-type`);
   return res.data;

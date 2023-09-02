@@ -43,22 +43,26 @@ const QTCongTac = ({ quannhanId }) => {
 
   const mutation = useMutationHooks(
     (data) => {
-      const { SoQuyetDinh,
+      const { QuanNhanId = quannhanId
+        , SoQuyetDinh,
         NgayQuyetDinh, ChucVu, DonVi, KetThuc, DonViSinhHoatHocThuat,
         TrangThai,
         GhiChu } = data
       const res = QuaTrinhCongTacService.createQuaTrinhCongTac({
-        SoQuyetDinh,
+        QuanNhanId, SoQuyetDinh,
         NgayQuyetDinh, ChucVu, DonVi, KetThuc, DonViSinhHoatHocThuat,
         TrangThai,
         GhiChu
       })
+      console.log("data create qtct:", res.data)
       return res
+
     }
   )
 
   const mutationUpdate = useMutationHooks(
     (data) => {
+      console.log("data update:", data)
       const { id,
         token,
         ...rests } = data
@@ -68,6 +72,7 @@ const QTCongTac = ({ quannhanId }) => {
         { ...rests })
       return res
     },
+
   )
 
   const mutationDeleted = useMutationHooks(
@@ -121,11 +126,12 @@ const QTCongTac = ({ quannhanId }) => {
           GhiChu: res?.data.GhiChu,
         })
       }
-      setIsLoadingUpdate(false)
-      console.log("qn:", res.data)
-      console.log("chi tiết qtct:", setStateQuaTrinhCongTacDetails)
+      // setIsLoadingUpdate(false)
+      // console.log("qn:", res.data)
+      // console.log("chi tiết qtct:", setStateQuaTrinhCongTacDetails)
       return res.data
     }
+    setIsLoadingUpdate(false)
   }
   useEffect(() => {
     if (!isModalOpen) {
@@ -141,6 +147,39 @@ const QTCongTac = ({ quannhanId }) => {
       fetchGetDetailsQuaTrinhCongTac(rowSelected)
     }
   }, [rowSelected, isOpenDrawer])
+
+  const handleDetailsQuaTrinhCongTac = () => {
+    setIsOpenDrawer(true)
+  }
+
+
+  const handleDelteManyQuaTrinhCongTacs = (ids) => {
+    mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
+      onSettled: () => {
+        qtcongtacDetails.refetch()
+      }
+    })
+  }
+
+
+  const { data, isLoading, isSuccess, isError } = mutation
+  const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
+  const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
+  const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
+
+
+  const queryQuaTrinhCongTac = useQuery({ queryKey: ['quatrinhcongtacs'], queryFn: getAllQuaTrinhCongTacs })
+  const qtcongtacDetails = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhCongTac, { enabled: !!quannhanId })
+  console.log("qt công tác:", qtcongtacDetails.data, queryQuaTrinhCongTac.data)
+  const { isLoading: isLoadingQuaTrinhCongTac, data: quatrinhcongtacs } = queryQuaTrinhCongTac
+  const renderAction = () => {
+    return (
+      <div>
+        <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
+        <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuaTrinhCongTac} />
+      </div>
+    )
+  }
 
   const onChange = () => { }
 
@@ -158,16 +197,16 @@ const QTCongTac = ({ quannhanId }) => {
         GhiChu: res?.data.GhiChu,
       })
     }
+    setIsLoadingUpdate(false)
   }
 
 
-
-  console.log('StateQuaTrrinh', stateQuaTrinhCongTacDetails)
 
   useEffect(() => {
     if (rowSelected) {
       fetchGetDetailsQuaTrinhCongTac(rowSelected)
     }
+    setIsLoadingUpdate(false)
   }, [rowSelected])
 
 
@@ -175,40 +214,12 @@ const QTCongTac = ({ quannhanId }) => {
     if (!isModalOpen) {
       form.setFieldsValue(stateQuaTrinhCongTacDetails)
     } else {
-      form.setStateQuaTrinhCongTacDetails(inittial())
+      form.setFieldsValue(inittial())
     }
   }, [form, stateQuaTrinhCongTacDetails, isModalOpen])
 
-  const handleDetailsQuaTrinhCongTac = () => {
-    if (rowSelected) {
-      fetchGetDetailsQuaTrinhCongTac()
-    }
-    setIsOpenDrawer(true)
-    console.log('rowSelected', rowSelected)
-
-  }
-
-  const handleDelteManyQuaTrinhCongTacs = (ids) => {
-    mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
-      onSettled: () => {
-        queryQuaTrinhCongTac.refetch()
-      }
-    })
-  }
 
 
-
-
-  const queryQuaTrinhCongTac = useQuery({ queryKey: ['quatrinhcongtacs'], queryFn: getAllQuaTrinhCongTacs })
-  const { isLoading: isLoadingQuaTrinhCongTac, data: quatrinhcongtacs } = queryQuaTrinhCongTac
-  const renderAction = () => {
-    return (
-      <div>
-        <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-        <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuaTrinhCongTac} />
-      </div>
-    )
-  }
 
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -282,22 +293,20 @@ const QTCongTac = ({ quannhanId }) => {
 
 
   //Show dữ liệu
-  // const { dataMuta, isLoading, isSuccess, isError } = mutation
 
-  const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
-  const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
-  const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
-
-
-
-  const { isLoading, data: qtcongtacDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhCongTac, { enabled: !!quannhanId })
-  console.log("qtrinhcongtac:", qtcongtacDetails)
+  //const { data: qtcongtacDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhCongTac, { enabled: !!quannhanId })
+  //console.log("qtrinhcongtac:", qtcongtacDetails)
   console.log("idquannhancongtac:", quannhanId)
 
 
 
   const columns = [
+    {
+      title: 'STT',
+      dataIndex: 'stt',
+      render: (text, record, index) => index + 1,
 
+    },
     {
       title: 'Số quyết định',
       dataIndex: 'SoQuyetDinh',
@@ -399,7 +408,7 @@ const QTCongTac = ({ quannhanId }) => {
   const handleDeleteQuaTrinhCongTac = () => {
     mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
       onSettled: () => {
-        queryQuaTrinhCongTac.refetch()
+        qtcongtacDetails.refetch()
       }
     })
   }
@@ -419,6 +428,7 @@ const QTCongTac = ({ quannhanId }) => {
     form.resetFields()
   };
 
+
   const onFinish = () => {
     const params = {
       SoQuyetDinh: stateQuaTrinhCongTac.SoQuyetDinh,
@@ -430,14 +440,18 @@ const QTCongTac = ({ quannhanId }) => {
       TrangThai: stateQuaTrinhCongTac.TrangThai,
       GhiChu: stateQuaTrinhCongTac.GhiChu,
     }
+    console.log("Finsh", stateQuaTrinhCongTac)
     mutation.mutate(params, {
       onSettled: () => {
-        queryQuaTrinhCongTac.refetch()
+        qtcongtacDetails.refetch()
       }
     })
   }
 
+
+
   const handleOnchange = (e) => {
+    console.log("e: ", e.target.name, e.target.value)
     setStateQuaTrinhCongTac({
       ...stateQuaTrinhCongTac,
       [e.target.name]: e.target.value
@@ -457,13 +471,22 @@ const QTCongTac = ({ quannhanId }) => {
   const onUpdateQuaTrinhCongTac = () => {
     mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhCongTacDetails }, {
       onSettled: () => {
-        queryQuaTrinhCongTac.refetch()
+        qtcongtacDetails.refetch()
       }
     })
   }
 
-
-
+  const dataTable = qtcongtacDetails?.data?.length && qtcongtacDetails?.data?.map((qtcongtacDetails) => {
+    return { ...qtcongtacDetails, key: qtcongtacDetails._id }
+  })
+  useEffect(() => {
+    if (isSuccess && data?.status === 'OK') {
+      message.success()
+      handleCancel()
+    } else if (isError) {
+      message.error()
+    }
+  }, [isSuccess])
 
   return (
     <div>
@@ -476,7 +499,7 @@ const QTCongTac = ({ quannhanId }) => {
           <div>Loading...</div>
         ) : (
           // <Table dataSource={qtcongtacDetails} columns={columns} />
-          <TableComponent columns={columns} isLoading={isLoadingQuaTrinhCongTac} data={qtcongtacDetails} onRow={(record, rowSelected) => {
+          <TableComponent columns={columns} isLoading={isLoadingQuaTrinhCongTac} data={dataTable} onRow={(record, rowSelected) => {
             return {
               onClick: event => {
                 setRowSelected(record._id);
@@ -609,12 +632,12 @@ const QTCongTac = ({ quannhanId }) => {
 
       <DrawerComponent title='Chi tiết quá trình công tác' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
-        <Loading isLoading={isLoading}>
+        <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
           <Form
             name="basic"
             labelCol={{ span: 5 }}
             wrapperCol={{ span: 22 }}
-            onFinish={onFinish}
+            onFinish={onUpdateQuaTrinhCongTac}
             autoComplete="on"
             form={form}
           >

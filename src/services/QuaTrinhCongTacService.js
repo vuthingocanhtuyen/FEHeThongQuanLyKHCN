@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const axiosJWT = axios.create();
+import { axiosJWT } from "./UserService"
 
 export const createQuaTrinhCongTac = async (data) => {
   const res = await axios.post(
@@ -10,7 +10,7 @@ export const createQuaTrinhCongTac = async (data) => {
   return res.data;
 };
 
-export const updateQuaTrinhCongTac = async (id, data, access_token) => {
+export const updateQuaTrinhCongTac = async (id, access_token, data) => {
   const res = await axiosJWT.put(
     `${process.env.REACT_APP_API_URL}/quatrinhcongtac/update/${id}`,
     data,

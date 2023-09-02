@@ -38,6 +38,9 @@ const LyLich = ({ idQuanNhan }) => {
             QuanNhanService.updateQuanNhan(id, rests, access_token)
         }
     )
+    const dispatch = useDispatch()
+    const { data, isLoading, isSuccess, isError } = mutation
+
 
     useEffect(() => {
         setId(quannhan?.id)
@@ -52,11 +55,56 @@ const LyLich = ({ idQuanNhan }) => {
         setLoaiqn(quannhan?.loaiqn)
     }, [quannhan])
 
+
+    useEffect(() => {
+        if (isSuccess) {
+            message.success()
+            handleGetDetailsQuanNhan(quannhan?.id, quannhan?.access_token)
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess, isError])
+
+    const handleGetDetailsQuanNhan = async (id, token) => {
+        const res = await QuanNhanService.getDetailsQuanNhan(id, token)
+        dispatch(QuanNhanService.updateQuanNhan({ ...res?.data, access_token: token }))
+    }
+    const handleOnchangeHoatDong = (value) => {
+        setHoatDong(value)
+    }
+    const handleOnchangeLoaiqn = (value) => {
+        setLoaiqn(value)
+    }
+
+    const handleOnchangeId = (value) => {
+        setId(value)
+    }
+    const handleOnchangeHoTen = (value) => {
+        setHoten(value)
+    }
+    const handleOnchangeNgaySinh = (value) => {
+        setNgaysinh(value)
+    }
+    const handleOnchangeGioiTinh = (value) => {
+        setGioitinh(value)
+    }
+
+    const handleOnchangeQueQuan = (value) => {
+        setQueQuan(value)
+    }
+    const handleOnchangeDiaChi = (value) => {
+        setDiachi(value)
+    }
+    const handleOnchangeSdt = (value) => {
+        setSdt(value)
+    }
+    const handleOnchangeEmail = (value) => {
+        setEmail(value)
+    }
     const handleUpdate = () => {
         mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
 
     }
-
     // show dữ liệu
     const onChange = () => { }
 
@@ -71,12 +119,10 @@ const LyLich = ({ idQuanNhan }) => {
 
     }
 
-    const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    const { isLoading: isLoadingquannhan, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
     console.log("chi tiet quan nhan:", quannhanDetails)
 
-    const handleOnchangeHoTen = (value) => {
-        setHoten(hoten)
-    }
+
 
     //Giới tính
 
@@ -103,36 +149,10 @@ const LyLich = ({ idQuanNhan }) => {
 
             <Loading isLoading={isLoading}>
                 <WrapperContentProfile>
-                    {/* <WrapperInput>
-                        <WrapperLabel htmlFor="avatar">Ảnh cá nhân</WrapperLabel>
-                        <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
-                            <Button icon={<UploadOutlined />}>Select File</Button>
-                        </WrapperUploadFile>
-                        {avatar && (
-                            <img src={avatar} style={{
-                                height: '150px',
-                                width: '150px',
-                                //borderRadius: '50%',
-                                objectFit: 'cover'
-                            }} alt="avatar" />
-                        )}
-                      
-                    <ButtonComponent
-                            onClick={handleUpdate}
-                            size={40}
-                            styleButton={{
-                                height: '30px',
-                                width: 'fit-content',
-                                borderRadius: '4px',
-                                padding: '2px 6px 6px'
-                            }}
-                            textbutton={'Cập nhật'}
-                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        ></ButtonComponent>
-                        </WrapperInput> */}
+
                     <WrapperInput>
-                        <WrapperLabel htmlFor="QuanNhanId">Mã cán bộ</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="QuanNhanId" value={quannhanDetails?.QuanNhanId} />
+                        <WrapperLabel htmlFor="id">Mã cán bộ</WrapperLabel>
+                        <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QuanNhanId} onChange={handleOnchangeId} />
                         <ButtonComponent
                             onClick={handleUpdate}
                             size={40}

@@ -1,92 +1,72 @@
-import { Button, Form, Space, Select } from 'antd'
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import TableComponent from '../../../components/TableComponent/TableComponent'
 
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import Loading from '../../../components/LoadingComponent/Loading'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-
-import { getBase64, renderOptions } from '../../../utils'
-import { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react';
+import { Form, Table, Button, Space } from 'antd';
+import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { getBase64 } from '../../../utils'
+import Loading from '../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as ProductService from '../../../services/ProductService'
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
+import * as QuaTrinhQuanHamService from '../../../services/QTQuanHamService';
+import { WrapperHeader } from './style'
+import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../components/TableComponent/TableComponent';
+const QTQuanHam = ({ quannhanId }) => {
 
-const QTQuanHam = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
+
     const inittial = () => ({
-        HTHD: '',
-        HocVien: '',
-        Lop: '',
-        DeTai: '',
-        DateBD: '',
-        Quy: '',
-        Nam: '',
-        SoCBHD: '',
-        DinhMuc: '',
-        SoGioChuan: '',
-    })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
-
-    const job = () => ({
-        GiaoVien: '',
-        HinhThuc: '',
-        SoTiet: '',
-        SoGio: '',
+        QuyetDinh: '',
+        NgayQuyetDinh: '',
+        QuanHam: '',
         GhiChu: '',
     })
+    const [stateQuaTrinhQuanHam, setStateQuaTrinhQuanHam] = useState(inittial())
+    const [stateQuaTrinhQuanHamDetails, setStateQuaTrinhQuanHamDetails] = useState(inittial())
+
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan } = data
-            const res = ProductService.createProduct({
-                HTHD,
-                HocVien,
-                Lop,
-                DeTai,
-                DateBD,
-                Quy,
-                Nam, SoCBHD, DinhMuc, SoGioChuan
+            const { QuanNhanId = quannhanId, code = 123
+                , QuyetDinh,
+                NgayQuyetDinh, QuanHam,
+                GhiChu } = data
+            const res = QuaTrinhQuanHamService.createQuaTrinhQuanHam({
+                QuanNhanId, code, QuyetDinh,
+                NgayQuyetDinh, QuanHam,
+                GhiChu
             })
+            console.log("data create qtct:", res.data)
             return res
+
         }
     )
+
     const mutationUpdate = useMutationHooks(
         (data) => {
+            console.log("data update:", data)
             const { id,
                 token,
                 ...rests } = data
-            const res = ProductService.updateProduct(
+            const res = QuaTrinhQuanHamService.updateQuaTrinhQuanHam(
                 id,
                 token,
                 { ...rests })
             return res
         },
+
     )
 
     const mutationDeleted = useMutationHooks(
@@ -94,7 +74,7 @@ const QTQuanHam = () => {
             const { id,
                 token,
             } = data
-            const res = ProductService.deleteProduct(
+            const res = QuaTrinhQuanHamService.deleteQuaTrinhQuanHam(
                 id,
                 token)
             return res
@@ -105,69 +85,72 @@ const QTQuanHam = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = ProductService.deleteManyProduct(
+            const res = QuaTrinhQuanHamService.deleteManyQuaTrinhQuanHam(
                 ids,
                 token)
             return res
         },
     )
 
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
+
+    const getAllQuaTrinhQuanHams = async () => {
+        const res = await QuaTrinhQuanHamService.getAllQuaTrinhQuanHam()
         return res
     }
 
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
-        if (res?.data) {
-            setStateProductDetails({
-                HTHD: res?.data?.HTHD,
-                HocVien: res?.data?.HocVien,
-                Lop: res?.data?.Lop,
-                DeTai: res?.data?.DeTai,
-                DateBD: res?.data?.DateBD,
-                Quy: res?.data?.Quy,
-                Nam: res?.data?.Name,
-                SoCBHD: res?.data?.SoCBHD,
-                DinhMuc: res?.data?.DinhMuc,
-                SoGioChuan: res?.data?.SoGioChuan
+    // show
 
-            })
+
+    const fetchGetQuaTrinhQuanHam = async (context) => {
+        const quannhanId = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhancongtacfe:", quannhanId)
+        if (quannhanId) {
+
+            const res = await QuaTrinhQuanHamService.getQuaTrinhQuanHamByQuanNhanId(quannhanId)
+            console.log("qtct res: ", res)
+            if (res?.data) {
+                setStateQuaTrinhQuanHamDetails({
+                    QuyetDinh: res?.data.QuyetDinh,
+                    NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                    QuanHam: res?.data.QuanHam,
+                    GhiChu: res?.data.GhiChu,
+                })
+            }
+            // setIsLoadingUpdate(false)
+            // console.log("qn:", res.data)
+            // console.log("chi tiết qtct:", setStateQuaTrinhQuanHamDetails)
+            return res.data
         }
         setIsLoadingUpdate(false)
     }
-
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
+            form.setFieldsValue(stateQuaTrinhQuanHamDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateProductDetails, isModalOpen])
+    }, [form, stateQuaTrinhQuanHamDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
+            fetchGetDetailsQuaTrinhQuanHam(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsProduct = () => {
+    const handleDetailsQuaTrinhQuanHam = () => {
         setIsOpenDrawer(true)
     }
 
-    const handleDelteManyProducts = (ids) => {
+
+    const handleDelteManyQuaTrinhQuanHams = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                quatrinhquanhamDetails.refetch()
             }
         })
     }
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
-        return res
-    }
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -175,27 +158,63 @@ const QTQuanHam = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
+    const queryQuaTrinhQuanHam = useQuery({ queryKey: ['quanhams'], queryFn: getAllQuaTrinhQuanHams })
+    const quatrinhquanhamDetails = useQuery(['hosoquannhanquanham', quannhanId], fetchGetQuaTrinhQuanHam, { enabled: !!quannhanId })
+    console.log("qt công tác:", quatrinhquanhamDetails.data, queryQuaTrinhQuanHam.data)
+    const { isLoading: isLoadingQuaTrinhQuanHam, data: quanhams } = queryQuaTrinhQuanHam
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuaTrinhQuanHam} />
             </div>
         )
     }
 
+    const onChange = () => { }
+
+    const fetchGetDetailsQuaTrinhQuanHam = async (rowSelected) => {
+        const res = await QuaTrinhQuanHamService.getDetailsQuaTrinhQuanHam(rowSelected)
+        if (res?.data) {
+            setStateQuaTrinhQuanHamDetails({
+                QuyetDinh: res?.data.QuyetDinh,
+                NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                QuanHam: res?.data.QuanHam,
+                GhiChu: res?.data.GhiChu,
+            })
+        }
+        setIsLoadingUpdate(false)
+    }
+
+
+
+    useEffect(() => {
+        if (rowSelected) {
+            fetchGetDetailsQuaTrinhQuanHam(rowSelected)
+        }
+        setIsLoadingUpdate(false)
+    }, [rowSelected])
+
+
+    useEffect(() => {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateQuaTrinhQuanHamDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateQuaTrinhQuanHamDetails, isModalOpen])
+
+
+
+
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -255,78 +274,62 @@ const QTQuanHam = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
+
+
+    //Show dữ liệu
+
+    //const { data: quatrinhquanhamDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhQuanHam, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", quatrinhquanhamDetails)
+    console.log("idquannhancongtac:", quannhanId)
+
 
 
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            dataIndex: 'stt',
+            render: (text, record, index) => index + 1,
+
         },
         {
-            title: 'Quyết định',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            title: 'Số quyết định',
+            dataIndex: 'QuyetDinh',
+            key: 'QuyetDinh',
         },
         {
             title: 'Ngày quyết định',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            dataIndex: 'NgayQuyetDinh',
+            key: 'NgayQuyetDinh',
         },
         {
             title: 'Quân hàm',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            dataIndex: 'QuanHam',
+            key: 'QuanHam',
         },
 
+        {
+            title: 'Ghi chú',
+            dataIndex: 'GhiChu',
+            key: 'GhiChu',
+        },
         {
             title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
+
+
     ];
-
-
-
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
-    })
-
     useEffect(() => {
-        if (isSuccess && data?.status === 'OK') {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
             message.success()
-            handleCancel()
-        } else if (isError) {
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
             message.error()
         }
-    }, [isSuccess])
+    }, [isSuccessDelected])
 
     useEffect(() => {
         if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
@@ -347,14 +350,11 @@ const QTQuanHam = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
+        setStateQuaTrinhQuanHamDetails({
+            QuyetDinh: '',
+            NgayQuyetDinh: '',
+            QuanHam: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -373,25 +373,21 @@ const QTQuanHam = () => {
     }
 
 
-    const handleDeleteProduct = () => {
+    const handleDeleteQuaTrinhQuanHam = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryProduct.refetch()
+                quatrinhquanhamDetails.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
+        setStateQuaTrinhQuanHam({
+            QuyetDinh: '',
+            NgayQuyetDinh: '',
+            QuanHam: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -399,140 +395,151 @@ const QTQuanHam = () => {
 
     const onFinish = () => {
         const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
+            QuyetDinh: stateQuaTrinhQuanHam.QuyetDinh,
+            NgayQuyetDinh: stateQuaTrinhQuanHam.NgayQuyetDinh,
+            QuanHam: stateQuaTrinhQuanHam.QuanHam,
+            GhiChu: stateQuaTrinhQuanHam.GhiChu,
         }
+        console.log("Finsh", stateQuaTrinhQuanHam)
         mutation.mutate(params, {
             onSettled: () => {
-                queryProduct.refetch()
+                quatrinhquanhamDetails.refetch()
             }
         })
     }
+
+
 
     const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
+        console.log("e: ", e.target.name, e.target.value)
+        setStateQuaTrinhQuanHam({
+            ...stateQuaTrinhQuanHam,
             [e.target.name]: e.target.value
         })
     }
+
 
     const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
+        console.log('check', e.target.name, e.target.value)
+        setStateQuaTrinhQuanHamDetails({
+            ...stateQuaTrinhQuanHamDetails,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
+    const onUpdateQuaTrinhQuanHam = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhQuanHamDetails }, {
             onSettled: () => {
-                queryProduct.refetch()
+                quatrinhquanhamDetails.refetch()
             }
         })
     }
 
-    const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
-            type: value
-        })
-    }
+    const dataTable = quatrinhquanhamDetails?.data?.length && quatrinhquanhamDetails?.data?.map((quatrinhquanhamDetails) => {
+        return { ...quatrinhquanhamDetails, key: quatrinhquanhamDetails._id }
+    })
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
 
     return (
         <div>
-            <WrapperHeader>Quá trình quân hàm</WrapperHeader>
-            <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm </Button>
-            </div>
+            <div>
+                <WrapperHeader>Quá trình quân hàm</WrapperHeader>
+                <div style={{ marginTop: '10px' }}>
+                    <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
+                </div>
+                {isLoading ? ( // Hiển thị thông báo đang tải
+                    <div>Loading...</div>
+                ) : (
+                    // <Table dataSource={quatrinhquanhamDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingQuaTrinhQuanHam} data={dataTable} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected(record._id);
 
-            <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id)
-                        }
-                    };
-                }} />
+
+                            }
+
+                        };
+                    }} />
+                )}
+
             </div>
-            {/* Thêm tham số */}
-            <ModalComponent forceRender title="Thêm quá trình quân hàm" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm mới quá trình quân hàm" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 10 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
                         autoComplete="on"
                         form={form}
                     >
+
                         <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Mã quyết định"
+                            name="QuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhQuanHam['QuyetDinh']}
+                                onChange={handleOnchange}
+                                name="QuyetDinh"
+                            />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhQuanHam['NgayQuyetDinh']}
+                                onChange={handleOnchange}
+                                name="NgayQuyetDinh"
                             />
                         </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
+
                         <Form.Item
                             label="Quân hàm"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
+                            name="QuanHam"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhQuanHam['QuanHam']}
+                                onChange={handleOnchange}
+                                name="QuanHam"
+                            />
                         </Form.Item>
 
 
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhQuanHam['GhiChu']}
+                                onChange={handleOnchange}
+                                name="GhiChu"
+                            />
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Thêm
@@ -543,40 +550,48 @@ const QTQuanHam = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Cập nhật quá trình quân hàm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+            <DrawerComponent title='Chi tiết quá trình quân hàm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
-                        labelCol={{ span: 4 }}
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
+                        onFinish={onUpdateQuaTrinhQuanHam}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Mã quyết định"
+                            name="QuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
+                            <InputComponent value={stateQuaTrinhQuanHamDetails['QuyetDinh']} onChange={handleOnchangeDetails} name="QuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Quân hàm"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
+                            <InputComponent value={stateQuaTrinhQuanHamDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
                         </Form.Item>
 
+                        <Form.Item
+                            label="Quân hàm"
+                            name="QuanHam"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQuaTrinhQuanHamDetails['QuanHam']} onChange={handleOnchangeDetails} name="QuanHam" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQuaTrinhQuanHamDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
+                        </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -586,13 +601,16 @@ const QTQuanHam = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa quá trình quân hàm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
+
+            <ModalComponent title="Xóa quá trình quân hàm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQuaTrinhQuanHam}>
                 <Loading isLoading={isLoadingDeleted}>
                     <div>Bạn có chắc xóa quá trình quân hàm này không?</div>
                 </Loading>
             </ModalComponent>
-        </div>
-    )
-}
 
-export default QTQuanHam
+        </div>
+
+    );
+};
+
+export default QTQuanHam;

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import 'antd/dist/antd.min.css'
 import 'antd/dist/antd.css'
-import { SelectedRowProvider } from '../../contexts'; 
 import DanhSachNhom from './DanhSachNhom';
 import PhamViNhom from './PhamViNhom';
 import ChucNangNhom from './ChucNangNhom';
@@ -16,7 +15,6 @@ function TabQuyen() {
 
     } 
     return (
-        <SelectedRowProvider value={selectedRowId}>
         <Tabs defaultActiveKey="1">
             <TabPane tab="Danh sách nhóm" key="1">
                 <DanhSachNhom handleselectedrow={handleselectedrow} selectedRowId={selectedRowId}/>
@@ -32,7 +30,6 @@ function TabQuyen() {
             </TabPane>
 
         </Tabs>
-        </SelectedRowProvider>
     );
 }
 

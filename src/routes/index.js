@@ -21,8 +21,8 @@ export const routes = [
         isShowHeader: true
     },
     {
-        path: '/order',
-        page: OrderPage,
+        path: '/',
+        page: AdminPage,
         isShowHeader: true
     },
     {

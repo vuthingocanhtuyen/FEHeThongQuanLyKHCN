@@ -206,7 +206,7 @@ const AdminPage = () => {
       children: [
         getItem('Danh mục đơn vị', 'donvi', <LogoutOutlined />),
         getItem('Hồ sơ cán bộ', 'hscb', <LockOutlined />),
-        getItem('Chi tiết hồ sơ cán bộ', 'cthscb', <LockOutlined />),
+        //   getItem('Chi tiết hồ sơ cán bộ', 'cthscb', <LockOutlined />),
         getItem('Quản lý nhu cầu/biên chế', 'quanlynhucaubc', <UserOutlined />),
         getItem('Điểu chuyển cán bộ', 'dieuchuyen', <UserOutlined />),
       ],
@@ -505,11 +505,11 @@ const AdminPage = () => {
 
 
         <div style={{ flex: 1, padding: '15px 0 15px 15px' }}>
-          <Loading isLoading={memoCount && Object.keys(memoCount) && Object.keys(memoCount).length !== 3}>
+          <div isLoading={memoCount && Object.keys(memoCount) && Object.keys(memoCount).length !== 3}>
             {!keySelected && (
               <CustomizedContent data={memoCount} colors={COLORS} setKeySelected={setKeySelected} />
             )}
-          </Loading>
+          </div>
           {renderPage(keySelected)}
         </div>
       </div>

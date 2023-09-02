@@ -46,33 +46,33 @@ const QuaTrinh = ({ idQuanNhan }) => {
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <DaiHoc />
+                <DaiHoc quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <SauDaiHoc />
+                <SauDaiHoc quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
 
 
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <TinhTrangCT />
+                <TinhTrangCT quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTDang />
+                <QTDang quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTQuanHam />
+                <QTQuanHam quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTCDCMKT />
+                <QTCDCMKT quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTHocTapKhac />
+                <QTHocTapKhac quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             {/* <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>

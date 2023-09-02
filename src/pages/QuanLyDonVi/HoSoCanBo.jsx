@@ -9,6 +9,7 @@ import InputComponent from '../../components/InputComponent/InputComponent'
 import { getBase64, renderOptions } from '../../utils'
 // import * as QuanNhanService from '../../services/QuanNhanService'
 import * as QuanNhanService from '../../services/QuanNhanService'
+import * as PriorityByUserService from '../../services/PriorityByUserService'
 import { useMutationHooks } from '../../hooks/useMutationHook'
 import Loading from '../../components/LoadingComponent/Loading'
 import { useEffect } from 'react'
@@ -20,6 +21,7 @@ import ModalComponent from '../../components/ModalComponent/ModalComponent'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
 import { useNavigate } from 'react-router-dom'
 const HoSoCanBo = () => {
+  const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -29,6 +31,28 @@ const HoSoCanBo = () => {
 
   const navigate = useNavigate()
   const searchInput = useRef(null);
+  useEffect(() => {
+    const fetchGetChucVuDonVi = async () => {
+
+      try {
+        // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
+        const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
+        console.log(response.data);
+
+        if (response.data && response.data.length > 0) {
+          const firstData = response.data[0];
+          console.log(response.data[0]);
+          const donViValue = firstData.DonVi[0];
+          setCurrentUserDonVi(donViValue);
+        }
+
+      } catch (error) {
+        console.error('Error fetching ChucVuDonVi:', error);
+      }
+    };
+
+    fetchGetChucVuDonVi();
+  }, [user.QuanNhanId, user.access_token]);
   const inittial = () => ({
     QuanNhanId: '',
     HoTen: '',
@@ -116,10 +140,11 @@ const HoSoCanBo = () => {
     },
   )
 
-  const getAllQuanNhans = async () => {
-    const res = await QuanNhanService.getAllQuanNhan()
+  const getQuanNhanFromDonVi = async () => {
+    const res = await QuanNhanService.getQuanNhanFromDonVi(currentUserDonVi)
     return res
   }
+
 
   const fetchGetDetailsQuanNhan = async (rowSelected) => {
     const res = await QuanNhanService.getDetailsQuanNhan(rowSelected)
@@ -183,7 +208,7 @@ const HoSoCanBo = () => {
   const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-  const queryQuanNhan = useQuery({ queryKey: ['quannhans'], queryFn: getAllQuanNhans })
+  const queryQuanNhan = useQuery({ queryKey: ['quannhans'], queryFn: getQuanNhanFromDonVi })
   const typeQuanNhan = useQuery({ queryKey: ['type-quannhan'], queryFn: fetchAllTypeQuanNhan })
   const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
   const renderAction = () => {
@@ -270,52 +295,55 @@ const HoSoCanBo = () => {
 
   const columns = [
     {
-      title: 'Mã quân nhân',
+      title: 'Mã quân nhân',
       dataIndex: 'QuanNhanId',
       sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
       ...getColumnSearchProps('QuanNhanId')
     },
     {
-      title: 'Tên quân nhân',
+      title: 'Họ và tên',
       dataIndex: 'HoTen',
-      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      sorter: (a, b) => a.HoTen.length - b.HoTen.length,
       ...getColumnSearchProps('HoTen')
     },
     {
-      title: 'Ngày sinh',
+      title: 'Ngày sinh',
       dataIndex: 'NgaySinh',
-      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      sorter: (a, b) => a.NgaySinh.length - b.NgaySinh.length,
       ...getColumnSearchProps('NgaySinh')
     },
     {
-      title: 'Giới tính',
+      title: 'Giới tính',
       dataIndex: 'GioiTinh',
-      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      sorter: (a, b) => a.GioiTinh.length - b.GioiTinh.length,
       ...getColumnSearchProps('GioiTinh')
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'HoatDong',
-      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-      ...getColumnSearchProps('HoatDong')
+      title: 'Quê quán',
+      dataIndex: 'QueQuan',
+      sorter: (a, b) => a.QueQuan.length - b.QueQuan.length,
+      ...getColumnSearchProps('QueQuan')
     },
     {
-      title: 'Cấp bậc',
-      dataIndex: 'QuanHam',
-      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-      ...getColumnSearchProps('QuanHam')
+      title: 'Địa chỉ',
+      dataIndex: 'DiaChi',
+      sorter: (a, b) => a.DiaChi.length - b.DiaChi.length,
+      ...getColumnSearchProps('DiaChi')
     },
     {
-      title: 'Đơn vị',
+      title: 'Đơn vị',
       dataIndex: 'DonVi',
-      sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+      sorter: (a, b) => a.DonVi.length - b.DonVi.length,
       ...getColumnSearchProps('DonVi')
     },
     {
-      title: 'Chức năng',
-      dataIndex: 'action',
-      render: renderAction
+      title: 'Chức vụ',
+      dataIndex: 'HoatDong',
+      sorter: (a, b) => a.HoatDong.length - b.HoatDong.length,
+      ...getColumnSearchProps('HoatDong')
     },
+
+
   ];
   const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
     return { ...quannhan, key: quannhan._id }
@@ -387,7 +415,11 @@ const HoSoCanBo = () => {
       }
     })
   }
-
+  useEffect(() => {
+    if (currentUserDonVi) {
+      queryQuanNhan.refetch();
+    }
+  }, [currentUserDonVi, queryQuanNhan]);
   const handleCancel = () => {
     setIsModalOpen(false);
     setStateQuanNhan({
