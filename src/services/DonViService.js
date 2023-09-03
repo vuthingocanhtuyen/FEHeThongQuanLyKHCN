@@ -91,7 +91,18 @@ export const getDonViCon = async (id, access_token) => {
       }
     );
     return res.data;
-  };  
+  };
+  export const getDonViConByTen = async (id, access_token) => {
+    const res = await axiosJWT.get(
+      `${process.env.REACT_APP_API_URL}/donvi/getdonviconbyten/${id}`,
+      {
+        headers: {
+          token: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  };    
   export const getDonViConOnly2 = async (id, access_token) => {
     const res = await axiosJWT.get(
       `${process.env.REACT_APP_API_URL}/donvi/getdonvicononly2/${id}`,
