@@ -112,7 +112,7 @@ const QTHoaTapKhac = ({ quannhanId }) => {
 
   const fetchGetQuyTrinhHocTapKhac = async (context) => {
     const quannhanId = context?.queryKey && context?.queryKey[1]
-    console.log("idquannhan htkfe:", quannhanId)
+    console.log("idquannhan htk fe:", quannhanId)
     if (quannhanId) {
       const res = await QuyTrinhHocTapKhacService.getQuaTrinhHocTapKhacByQuanNhanId(quannhanId)
       console.log("qthtk res: ", res)

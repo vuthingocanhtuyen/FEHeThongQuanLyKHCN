@@ -146,6 +146,7 @@ const ThongKeHocVi = ({handleTreeNodeClick,treeNodeClickedId }) => {
           title: 'Tên Đơn Vị',
           dataIndex: 'TenDonVi',
           key: 'TenDonVi',
+          ...getColumnSearchProps('TenDonVi')
         },
         {
           title: 'Tiến sỹ khoa học',

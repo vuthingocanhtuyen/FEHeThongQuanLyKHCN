@@ -16,55 +16,53 @@ import { useQuery } from '@tanstack/react-query'
 
 
 const CustomizedContent = () => {
-
-
-    const [quannhanObjectId, setQuannhanObjectId] = useState([]);
+    const [isLoading, setIsLoading] = useState(false)
+    const [date, setDate] = useState(new Date());
+    const [data, setData] = useState([]);
     const [stateQuanNhanDetails, setStateQuanNhanDetails] = useState({});
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
     const user = useSelector((state) => state?.user);
-    console.log('ctqn123 user:', user);
-    const fetchGetObjectId = async () => {
+    const fetchGetDetailsQuanNhan = async () => {
         try {
-            console.log('User _id custom:', user.id);
-            const resQuanNhan = await QuanNhanService.getObjectIdByQuanNhanId(user.id, user.access_token);
-
-            console.log('ctqn123:', resQuanNhan.data);
-            setQuannhanObjectId(resQuanNhan.data);
+            console.log('User _id:', user.QuanNhanId);
+            const resQuanNhan = await QuanNhanService.getQuanNhanByQuanNhanId(user.QuanNhanId, user.access_token);
+            console.log('resQuanNhan:', resQuanNhan);
+            if (resQuanNhan?.data) {
+                const quanNhanId = resQuanNhan.data._id;
+                console.log('tesst:', quanNhanId);
+                // const res = await QuanNhanService.getDetailsQuanNhan(quanNhanId, user.access_token);
+                if (resQuanNhan?.data) {
+                    setStateQuanNhanDetails({
+                        QuanNhanId: resQuanNhan?.data?.QuanNhanId,
+                        HoTen: resQuanNhan?.data?.HoTen,
+                        NgaySinh: resQuanNhan?.data?.NgaySinh,
+                        GioiTinh: resQuanNhan?.data?.GioiTinh,
+                        QueQuan: resQuanNhan?.data?.QueQuan,
+                        DiaChi: resQuanNhan?.data?.DiaChi,
+                        SoDienThoai: resQuanNhan?.data?.SoDienThoai,
+                        Email: resQuanNhan?.data?.Email,
+                        HoatDong: resQuanNhan?.data?.HoatDong,
+                        QuanHam: resQuanNhan?.data?.QuanHam,
+                        DonVi: resQuanNhan?.data?.DonVi,
+                        LoaiQN: resQuanNhan?.data?.LoaiQN,
+                    });
+                    setData([resQuanNhan.data]);
+                }
+                console.log('Dữ liệu từ API:', resQuanNhan);
+                setIsLoadingUpdate(false);
+            }
         } catch (error) {
             console.log('Error while fetching quan nhan details:', error);
             setIsLoadingUpdate(false);
         }
     };
-    useEffect(() => {
-        console.log("Quan nhan _id cus:", quannhanObjectId);
-    }, [quannhanObjectId]);
+
     useEffect(() => {
         if (user && user.QuanNhanId) {
             setIsLoadingUpdate(true);
-            fetchGetObjectId();
+            fetchGetDetailsQuanNhan();
         }
     }, [user]);
-
-
-
-    const fetchGetDetailsQuanNhan = async (context) => {
-        const id = context?.queryKey && context?.queryKey[1]
-        console.log("idquannhan1302:", id)
-        if (id) {
-            const res = await QuanNhanService.getQuanNhanByQuanNhanId(id)
-            console.log("qn1302:", res.data)
-            return res.data
-        }
-
-    }
-
-
-    const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', user.QuanNhanId], fetchGetDetailsQuanNhan, { enabled: !!user.QuanNhanId })
-    console.log("chi tiet quan nhan cus:", quannhanDetails)
-
-
-
-    const [date, setDate] = useState(new Date());
 
     return (
 
@@ -74,62 +72,32 @@ const CustomizedContent = () => {
 
                 <WrapperHeader>Thông tin cán bộ</WrapperHeader>
                 <Loading isLoading={isLoading}>
-                    <WrapperContentProfile>
+                    <div style={{ marginTop: '20px' }}>
+                        <WrapperContentProfile>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="id">Mã cán bộ:</WrapperLabel>
+                                <InputForm style={{ width: '300px' }} id="id" value={stateQuanNhanDetails.QuanNhanId || ''} readOnly />
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="name">Tên cán bộ:</WrapperLabel>
+                                <InputForm style={{ width: '300px' }} id="hoten" value={stateQuanNhanDetails.HoTen || ''} readOnly />
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="gender">Giới tính:</WrapperLabel>
+                                <InputForm style={{ width: '300px' }} id="gender" value={stateQuanNhanDetails.GioiTinh || ''} readOnly />
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="quequan">Quê quán:</WrapperLabel>
+                                <InputForm style={{ width: '300px' }} id="quequan" value={stateQuanNhanDetails.QueQuan || ''} readOnly />
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="quanham">Đơn vị:</WrapperLabel>
+                                <InputForm style={{ width: '300px' }} id="quanham" value={stateQuanNhanDetails.DonVi || ''} readOnly />
+                            </WrapperInput>
 
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="id">Mã cán bộ</WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QuanNhanId} />
+                        </WrapperContentProfile>
+                    </div>
 
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="name">Tên cán bộ: </WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.HoTen} />
-
-                        </WrapperInput>
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="email">Ngày sinh: </WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.NgaySinh} />
-
-                        </WrapperInput>
-
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="id">Giới tính</WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.GioiTinh} />
-
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="name">Đơn vị công tác </WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.DonVi} />
-
-                        </WrapperInput>
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="email">Địa chỉ </WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.DiaChi} />
-
-                        </WrapperInput>
-
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="id">Quê quán</WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QueQuan} />
-
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="name">Số điện thoại </WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.SoDienThoai} />
-
-                        </WrapperInput>
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="email">Email </WrapperLabel>
-                            <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.Email} />
-
-                        </WrapperInput>
-
-                    </WrapperContentProfile>
                 </Loading>
 
             </div>
