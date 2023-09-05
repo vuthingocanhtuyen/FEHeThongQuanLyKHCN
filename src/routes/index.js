@@ -9,19 +9,20 @@ import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import ProductDetailsPage from "../pages/ProductDetailsPage/ProductDetailsPage";
 import ProductsPage from "../pages/ProductsPage/ProductsPage";
 import ProfilePage from "../pages/Profile/ProfilePage";
+import ChiTietQuanNhan from "../pages/QuanLyDonVi/ChiTietQuanNhan/ChiTietQuanNhan";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import TypeProductPage from "../pages/TypeProductPage/TypeProductPage";
 
 export const routes = [
     {
-        path: '/',
-        page: HomePage,
+        path: '/hosocanbo/:id',
+        page: ChiTietQuanNhan,
         isShowHeader: true
     },
     {
-        path: '/order',
-        page: OrderPage,
+        path: '/',
+        page: HomePage,
         isShowHeader: true
     },
     {

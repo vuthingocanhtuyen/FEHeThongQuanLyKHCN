@@ -19,7 +19,7 @@ import * as ProductService from '../../../services/ProductService'
 import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 
-const ThanNhan = () => {
+const ThanNhan = ({ idQuanNhan }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
 

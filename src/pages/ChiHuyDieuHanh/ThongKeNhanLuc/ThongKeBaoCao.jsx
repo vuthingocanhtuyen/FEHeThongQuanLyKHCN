@@ -1,26 +1,20 @@
 import { Button, Form, Space } from 'antd'
 import React from 'react'
-
-
 import InputComponent from '../../../components/InputComponent/InputComponent'
-
 import { convertPrice } from '../../../utils'
-
-
 import * as OrderService from '../../../services/OrderService'
 import { useQuery } from '@tanstack/react-query'
 import { SearchOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
-import ComboBoxComponent from '../../../components/ComboBoxComponent/ComboBox'
+import ComboBoxComponent from '../../../components/ComboBoxComponent/ComboBoxComponent'
 import { orderContant } from '../../../contant'
+import { useState } from 'react'
 import FreeDonVi from '../../QuanLyDonVi/DanhMucDonVi/FreeDonVi'
-
-
 import ThongKeHocVi from './ThongKeHocVi'
 import ThongKeHocHam from './ThongKeHocHam'
 import ThongKeCDCMKT from './ThongKeCDCMKT'
 import ThongKeQuanHam from './ThongKeQuanHam'
-import { WrapperContentProfile, WrapperContentProfileButton, WrapperContentProfileFree } from '../style'
+import { WrapperContentProfileFree } from '../style'
 
 
 
@@ -140,24 +134,21 @@ const ThongKeBaoCao = () => {
         console.log('usewr', order)
         return { ...order, key: order._id, userName: order?.shippingAddress?.fullName, phone: order?.shippingAddress?.phone, address: order?.shippingAddress?.address, paymentMethod: orderContant.payment[order?.paymentMethod], isPaid: order?.isPaid ? 'TRUE' : 'FALSE', isDelivered: order?.isDelivered ? 'TRUE' : 'FALSE', totalPrice: convertPrice(order?.totalPrice) }
     })
-
+    const [treeNodeClickedId, setTreeNodeClickedId] = useState(null);
+    const handleTreeNodeClick = (item) => {
+        setTreeNodeClickedId(item); // Cập nhật ID node từ FreeDonVi
+    }
     return (
         <div style={{ width: '1200px', margin: '0 auto', height: '700px', padding: '5px' }}>
 
             <div style={{ width: '200px', margin: '0 auto', height: '700px', float: 'left', background: '#fff' }}>
                 <WrapperContentProfileFree>
-                    <FreeDonVi />
-
+                    <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
                 </WrapperContentProfileFree>
-
-
             </div>
-
             <div style={{ width: '750px', margin: '0 auto', height: '700px', float: 'right', textAlign: 'left', padding: '5px', background: 'back' }}>
 
-
-                {/* <TableComponent columns={columns} isLoading={isLoadingOrders} data={dataTable} /> */}
-                <h4>Đơn vị: </h4>
+                
                 <Form
                     name="basic"
                     labelCol={{ span: 6 }}
@@ -165,67 +156,17 @@ const ThongKeBaoCao = () => {
                     autoComplete="on"
                 >
 
-                    <Form.Item
-                        label="Cấp báo cáo: "
-                        name="name"
-
-                    >
-                        <ComboBoxComponent
-                            style={{ width: '500px' }}
-                            options={optionCapBaoCao}
-                            onChange={handleChangeCapBaoCao}
-
-                            size={40}
-                            styleButton={{
-                                height: '30px',
-                                width: 'fit-content',
-                                borderRadius: '4px',
-                                padding: '2px 6px 6px'
-                            }}
-                            textbutton={'Cập nhật'}
-                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Báo cáo: "
-                        name="name"
-
-                    >
-                        <ComboBoxComponent
-                            style={{ width: '500px' }}
-                            options={optionloc}
-                            onChange={handleChangeLoc}
-
-                            size={40}
-                            styleButton={{
-                                height: '30px',
-                                width: 'fit-content',
-                                borderRadius: '4px',
-                                padding: '2px 6px 6px'
-                            }}
-                            textbutton={'Cập nhật'}
-                            styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        />
-                    </Form.Item>
-
-                    <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                        <Button type="primary" htmlType="submit">
-                            Lấy dữ liệu
-                        </Button>
-                    </Form.Item>
-
-                    <h5>Học vị</h5>
-                    <ThongKeHocVi />
+                    <h2>Học vị</h2>
+                    <ThongKeHocVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
                     <br />
-                    <h5>Học hàm</h5>
-                    <ThongKeHocHam />
+                    <h2>Học hàm</h2>
+                    <ThongKeHocHam handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
                     <br />
-                    <h5>Chức danh chuyên môn kỹ thuật</h5>
-                    <ThongKeCDCMKT />
+                    <h2>Chức danh chuyên môn kỹ thuật</h2>
+                    <ThongKeCDCMKT handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
                     <br />
-                    <h5>Quân hàm</h5>
-                    <ThongKeQuanHam />
+                    <h2>Quân hàm</h2>
+                    <ThongKeQuanHam handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
 
                 </Form>
             </div>

@@ -74,6 +74,8 @@ const ProductDetailsComponent = ({idProduct}) => {
     }
 
     const { isLoading, data: productDetails } = useQuery(['product-details', idProduct], fetchGetDetailsProduct, { enabled : !!idProduct})
+   
+   
     const handleAddOrderProduct = () => {
         if(!user?.id) {
             navigate('/sign-in', {state: location?.pathname})

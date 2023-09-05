@@ -21,7 +21,7 @@ import BaiBaoKH from '../../QuanLyQuanNhan/CongTacGiangDay/TaiNghienCuu/BaiBaoKH
 
 
 
-const CongTacNCKH = () => {
+const CongTacNCKH = ({ idQuanNhan }) => {
     const user = useSelector((state) => state.user)
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
