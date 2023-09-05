@@ -17,6 +17,7 @@ import { Button, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { updateUser } from '../../../redux/slides/userSlide'
 import { useQuery } from '@tanstack/react-query'
+
 import CheckboxComponent from '../../../components/CheckBox/CheckBox'
 
 const LyLich = ({ idQuanNhan }) => {
@@ -33,6 +34,7 @@ const LyLich = ({ idQuanNhan }) => {
     const [HoatDong, setHoatDong] = useState('')
     const [LoaiQN, setLoaiqn] = useState('')
     const [donvi, setDonvi] = useState('')
+
     const mutation = useMutationHooks(
         (data) => {
             const { id, access_token, ...rests } = data
@@ -107,7 +109,7 @@ const LyLich = ({ idQuanNhan }) => {
     const handleOnchangeEmail = (value) => {
         setEmail(value)
     }
-    
+
     // show dữ liệu
 
     const fetchGetDetailsQuanNhan = async (context) => {
@@ -115,10 +117,10 @@ const LyLich = ({ idQuanNhan }) => {
         console.log("idquannhan:", id)
         if (id) {
             const res = await QuanNhanService.getDetailsQuanNhan(id)
-            console.log("qn:", res.data)
+            console.log("qn lylich:", res.data)
             return res.data
         }
-        
+
 
     }
 
@@ -138,7 +140,13 @@ const LyLich = ({ idQuanNhan }) => {
         console.log(id)
     }, [id])
     const handleUpdate = () => {
-        mutation.mutate({ id: quannhanDetails?._id, Email, HoTen, NgaySinh, HoatDong, LoaiQN, SoDienThoai, GioiTinh, DiaChi, QueQuan, access_token: user?.access_token })
+        mutation.mutate({ id: quannhanDetails?._id, Email, HoTen, NgaySinh, HoatDong, LoaiQN, SoDienThoai, GioiTinh, DiaChi, QueQuan, access_token: user?.access_token }, {
+            onSettled: () => {
+                quannhanDetails.refetch()
+            }
+        })
+
+
     }
     return (
 
@@ -150,7 +158,7 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="id">Mã cán bộ</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="id" value={id} onChange={handleOnchangeId} readOnly/>
+                        <InputForm style={{ width: '500px' }} id="id" value={id} onChange={handleOnchangeId} readOnly />
                         <ButtonComponent
                             // onClick={handleUpdate}
                             size={40}
@@ -167,7 +175,7 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="HoatDong">Trạng thái</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="HoatDong" value={HoatDong} readOnly/>
+                        <InputForm style={{ width: '500px' }} id="HoatDong" value={HoatDong} readOnly />
                         <ButtonComponent
                             //   onClick={handleUpdate}
                             size={40}
@@ -186,7 +194,7 @@ const LyLich = ({ idQuanNhan }) => {
                         <WrapperLabel htmlFor="HoTen">Họ và Tên</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="HoTen" value={HoTen} onChange={handleOnchangeHoTen} />
                         <ButtonComponent
-                              onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -203,7 +211,7 @@ const LyLich = ({ idQuanNhan }) => {
                         <WrapperLabel htmlFor="NgaySinh">Ngày sinh</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="NgaySinh" value={NgaySinh} />
                         <ButtonComponent
-                              onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -217,7 +225,7 @@ const LyLich = ({ idQuanNhan }) => {
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="GioiTinh">Giới tính</WrapperLabel>
-                        <CheckboxComponent style={{ width: '25px' }} id="GioiTinh" value={GioiTinh} onChange={handleChangeCheckGioiTinh} />
+                        <CheckboxComponent style={{ width: '25px' }} id="GioiTinh" value={GioiTinh} checked={GioiTinh === 'Nu'} onChange={handleChangeCheckGioiTinh} />
                         <ButtonComponent
                             onClick={handleUpdate}
                             size={40}
@@ -235,9 +243,9 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="DonVi">Đơn vị</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="DonVi" value={donvi} onChange={handleOnchangeDonVi}/>
+                        <InputForm style={{ width: '500px' }} id="DonVi" value={donvi} onChange={handleOnchangeDonVi} />
                         <ButtonComponent
-                                onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -253,7 +261,7 @@ const LyLich = ({ idQuanNhan }) => {
                         <WrapperLabel htmlFor="DiaChi">Địa chỉ</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="DiaChi" value={DiaChi} onChange={handleOnchangeDiaChi} />
                         <ButtonComponent
-                              onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -267,9 +275,9 @@ const LyLich = ({ idQuanNhan }) => {
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="QueQuan">Quê quán</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="QueQuan" value={QueQuan} onChange={handleOnchangeQueQuan}/>
+                        <InputForm style={{ width: '500px' }} id="QueQuan" value={QueQuan} onChange={handleOnchangeQueQuan} />
                         <ButtonComponent
-                              onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -284,9 +292,9 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="SoDienThoai">Số điện thoại</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="SoDienThoai" value={SoDienThoai} onChange={handleOnchangeSdt}/>
+                        <InputForm style={{ width: '500px' }} id="SoDienThoai" value={SoDienThoai} onChange={handleOnchangeSdt} />
                         <ButtonComponent
-                              onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -300,9 +308,9 @@ const LyLich = ({ idQuanNhan }) => {
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="Email">Email</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="Email" value={Email} onChange={handleOnchangeEmail}/>
+                        <InputForm style={{ width: '500px' }} id="Email" value={Email} onChange={handleOnchangeEmail} />
                         <ButtonComponent
-                             onClick={handleUpdate}
+                            onClick={handleUpdate}
                             size={40}
                             styleButton={{
                                 height: '30px',
@@ -314,7 +322,7 @@ const LyLich = ({ idQuanNhan }) => {
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
                     </WrapperInput>
-                    
+
                 </WrapperContentProfile>
             </Loading>
         </div>
