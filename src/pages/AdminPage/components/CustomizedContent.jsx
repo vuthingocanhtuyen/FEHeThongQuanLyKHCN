@@ -15,69 +15,53 @@ import Loading from '../../../components/LoadingComponent/Loading'
 
 
 const CustomizedContent = () => {
-    const quannhan = useSelector((state) => state.quannhan)
-    const [id, setId] = useState('')
-
-    const [hoten, setHoten] = useState('')
-    const [ngaysinh, setNgaysinh] = useState('')
-    const [gioitinh, setGioitinh] = useState('')
-    const [quequan, setQueQuan] = useState('')
-    const [diachi, setDiachi] = useState('')
-    const [sdt, setSdt] = useState('')
-    const [email, setEmail] = useState('')
-    const [hoatdong, setHoatDong] = useState('')
-    const [loaiqn, setLoaiqn] = useState('')
-
-    const mutation = useMutationHooks(
-        (data) => {
-            const { id, access_token, ...rests } = data
-            QuanNhanService.updateQuanNhan(id, rests, access_token)
-        }
-    )
-
-    const dispatch = useDispatch()
-    const { data, isLoading, isSuccess, isError } = mutation
-
-    useEffect(() => {
-        setId(quannhan?.id)
-        setHoten(quannhan?.hoten)
-        setNgaysinh(quannhan?.ngaysinh)
-        setGioitinh(quannhan?.gioitinh)
-        setQueQuan(quannhan?.quequan)
-        setDiachi(quannhan?.diachi)
-        setSdt(quannhan?.sdt)
-        setEmail(quannhan?.email)
-        setHoatDong(quannhan?.hoatdong)
-        setLoaiqn(quannhan?.loaiqn)
-    }, [quannhan])
-
-
-
-    // const handleGetDetailsQuanNhan = async (id, token) => {
-    //     const res = await QuanNhanService.getDetailsQuanNhan(id, token)
-    //     dispatch(updateQuanNhan({ ...res?.data, access_token: token }))
-    // }
-
-    const handleOnchangeEmail = (value) => {
-        setEmail(value)
-    }
-    // const handleOnchangeName = (value) => {
-    //     setName(value)
-    // }
-    // const handleOnchangePhone = (value) => {
-    //     setPhone(value)
-    // }
-    // const handleOnchangeAddress = (value) => {
-    //     setAddress(value)
-    // }
-
-
-
-    const handleUpdate = () => {
-        mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
-
-    }
+    const [isLoading, setIsLoading] = useState(false)
     const [date, setDate] = useState(new Date());
+    const [data, setData] = useState([]);
+    const [stateQuanNhanDetails, setStateQuanNhanDetails] = useState({});
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+    const user = useSelector((state) => state?.user);
+    const fetchGetDetailsQuanNhan = async () => {
+    try {
+      console.log('User _id:', user.QuanNhanId);
+      const resQuanNhan = await QuanNhanService.getQuanNhanByQuanNhanId(user.QuanNhanId, user.access_token);
+      console.log('resQuanNhan:', resQuanNhan);
+      if (resQuanNhan?.data) {
+        const quanNhanId = resQuanNhan.data._id;
+        console.log('tesst:', quanNhanId);
+        // const res = await QuanNhanService.getDetailsQuanNhan(quanNhanId, user.access_token);
+        if (resQuanNhan?.data) {
+          setStateQuanNhanDetails({
+            QuanNhanId: resQuanNhan?.data?.QuanNhanId,
+            HoTen: resQuanNhan?.data?.HoTen,
+            NgaySinh: resQuanNhan?.data?.NgaySinh,
+            GioiTinh: resQuanNhan?.data?.GioiTinh,
+            QueQuan: resQuanNhan?.data?.QueQuan,
+            DiaChi: resQuanNhan?.data?.DiaChi,
+            SoDienThoai: resQuanNhan?.data?.SoDienThoai,
+            Email: resQuanNhan?.data?.Email,
+            HoatDong: resQuanNhan?.data?.HoatDong,
+            QuanHam: resQuanNhan?.data?.QuanHam,
+            DonVi: resQuanNhan?.data?.DonVi,
+            LoaiQN: resQuanNhan?.data?.LoaiQN,
+          });
+          setData([resQuanNhan.data]);
+        }
+        console.log('Dữ liệu từ API:', resQuanNhan);
+        setIsLoadingUpdate(false);
+      }
+    } catch (error) {
+      console.log('Error while fetching quan nhan details:', error);
+      setIsLoadingUpdate(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user.QuanNhanId) {
+      setIsLoadingUpdate(true);
+      fetchGetDetailsQuanNhan();
+    }
+  }, [user]);
 
     return (
 
@@ -85,61 +69,35 @@ const CustomizedContent = () => {
 
             <div style={{ width: '650px', margin: '0 auto', height: '700px', float: 'left', padding: '10px', background: '#fff', borderRadius: "8px" }}>
 
-                <WrapperHeader>Thông tin cán bộ</WrapperHeader>
+          <WrapperHeader>Thông tin cán bộ</WrapperHeader>
                 <Loading isLoading={isLoading}>
-                    <WrapperContentProfile>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="id">Mã cán bộ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="id" value={id} />
+                <div style={{ marginTop: '20px' }}> 
+          <WrapperContentProfile>
+            <WrapperInput>
+              <WrapperLabel htmlFor="id">Mã cán bộ:</WrapperLabel>
+              <InputForm style={{ width: '300px' }} id="id" value={stateQuanNhanDetails.QuanNhanId || ''} readOnly />
+            </WrapperInput>
+            <WrapperInput>
+              <WrapperLabel htmlFor="name">Tên cán bộ:</WrapperLabel>
+              <InputForm style={{ width: '300px' }} id="hoten" value={stateQuanNhanDetails.HoTen || ''} readOnly />
+            </WrapperInput>
+            <WrapperInput>
+              <WrapperLabel htmlFor="gender">Giới tính:</WrapperLabel>
+              <InputForm style={{ width: '300px' }} id="gender" value={stateQuanNhanDetails.GioiTinh || ''} readOnly />
+            </WrapperInput>
+            <WrapperInput>
+              <WrapperLabel htmlFor="quequan">Quê quán:</WrapperLabel>
+              <InputForm style={{ width: '300px' }} id="quequan" value={stateQuanNhanDetails.QueQuan || ''} readOnly />
+            </WrapperInput>
+            <WrapperInput>
+              <WrapperLabel htmlFor="quanham">Quân hàm:</WrapperLabel>
+              <InputForm style={{ width: '300px' }} id="quanham" value={stateQuanNhanDetails.QuanHam || ''} readOnly />
+            </WrapperInput>
+          
+          </WrapperContentProfile>
+          </div>
 
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="name">Tên cán bộ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="hoten" value={hoten} />
-
-                        </WrapperInput>
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="email">Giới tính: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="email" value={email} onChange={handleOnchangeEmail} />
-
-                        </WrapperInput>
-                        {/*
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="phone">Chuyên môn nghiệp vụ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="email" value={phone} onChange={handleOnchangePhone} />
-
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="phone">Đơn vị: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="email" value={phone} onChange={handleOnchangePhone} />
-
-                        </WrapperInput>
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="address">Cấp bậc: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="address">Tình trạng công tác:  </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                        </WrapperInput>
-
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="address">Chức vụ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                        </WrapperInput> */}
-
-                        {/* <WrapperInput>
-                            <WrapperLabel htmlFor="address">Tham số làm việc: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                        </WrapperInput> */}
-                    </WrapperContentProfile>
-                </Loading>
+        </Loading>
 
             </div>
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const axiosJWT = axios.create();
+import { axiosJWT } from "./UserService"
 
 export const createQuanNhan = async (data) => {
   const res = await axios.post(
