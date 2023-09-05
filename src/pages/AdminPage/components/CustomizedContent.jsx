@@ -10,73 +10,60 @@ import Calendar from 'react-calendar';
 import './Calendar.css'
 import InputForm from '../../../components/InputForm/InputForm'
 import Loading from '../../../components/LoadingComponent/Loading'
+import { useQuery } from '@tanstack/react-query'
 
 
 
 
 const CustomizedContent = () => {
-    const quannhan = useSelector((state) => state.quannhan)
-    const [id, setId] = useState('')
 
-    const [hoten, setHoten] = useState('')
-    const [ngaysinh, setNgaysinh] = useState('')
-    const [gioitinh, setGioitinh] = useState('')
-    const [quequan, setQueQuan] = useState('')
-    const [diachi, setDiachi] = useState('')
-    const [sdt, setSdt] = useState('')
-    const [email, setEmail] = useState('')
-    const [hoatdong, setHoatDong] = useState('')
-    const [loaiqn, setLoaiqn] = useState('')
 
-    const mutation = useMutationHooks(
-        (data) => {
-            const { id, access_token, ...rests } = data
-            QuanNhanService.updateQuanNhan(id, rests, access_token)
+    const [quannhanObjectId, setQuannhanObjectId] = useState([]);
+    const [stateQuanNhanDetails, setStateQuanNhanDetails] = useState({});
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+    const user = useSelector((state) => state?.user);
+    console.log('ctqn123 user:', user);
+    const fetchGetObjectId = async () => {
+        try {
+            console.log('User _id custom:', user.id);
+            const resQuanNhan = await QuanNhanService.getObjectIdByQuanNhanId(user.id, user.access_token);
+
+            console.log('ctqn123:', resQuanNhan.data);
+            setQuannhanObjectId(resQuanNhan.data);
+        } catch (error) {
+            console.log('Error while fetching quan nhan details:', error);
+            setIsLoadingUpdate(false);
         }
-    )
-
-    const dispatch = useDispatch()
-    const { data, isLoading, isSuccess, isError } = mutation
-
+    };
     useEffect(() => {
-        setId(quannhan?.id)
-        setHoten(quannhan?.hoten)
-        setNgaysinh(quannhan?.ngaysinh)
-        setGioitinh(quannhan?.gioitinh)
-        setQueQuan(quannhan?.quequan)
-        setDiachi(quannhan?.diachi)
-        setSdt(quannhan?.sdt)
-        setEmail(quannhan?.email)
-        setHoatDong(quannhan?.hoatdong)
-        setLoaiqn(quannhan?.loaiqn)
-    }, [quannhan])
+        console.log("Quan nhan _id cus:", quannhanObjectId);
+    }, [quannhanObjectId]);
+    useEffect(() => {
+        if (user && user.QuanNhanId) {
+            setIsLoadingUpdate(true);
+            fetchGetObjectId();
+        }
+    }, [user]);
 
 
 
-    // const handleGetDetailsQuanNhan = async (id, token) => {
-    //     const res = await QuanNhanService.getDetailsQuanNhan(id, token)
-    //     dispatch(updateQuanNhan({ ...res?.data, access_token: token }))
-    // }
-
-    const handleOnchangeEmail = (value) => {
-        setEmail(value)
-    }
-    // const handleOnchangeName = (value) => {
-    //     setName(value)
-    // }
-    // const handleOnchangePhone = (value) => {
-    //     setPhone(value)
-    // }
-    // const handleOnchangeAddress = (value) => {
-    //     setAddress(value)
-    // }
-
-
-
-    const handleUpdate = () => {
-        mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
+    const fetchGetDetailsQuanNhan = async (context) => {
+        const id = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhan1302:", id)
+        if (id) {
+            const res = await QuanNhanService.getQuanNhanByQuanNhanId(id)
+            console.log("qn1302:", res.data)
+            return res.data
+        }
 
     }
+
+
+    const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', user.QuanNhanId], fetchGetDetailsQuanNhan, { enabled: !!user.QuanNhanId })
+    console.log("chi tiet quan nhan cus:", quannhanDetails)
+
+
+
     const [date, setDate] = useState(new Date());
 
     return (
@@ -88,56 +75,60 @@ const CustomizedContent = () => {
                 <WrapperHeader>Thông tin cán bộ</WrapperHeader>
                 <Loading isLoading={isLoading}>
                     <WrapperContentProfile>
+
                         <WrapperInput>
-                            <WrapperLabel htmlFor="id">Mã cán bộ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="id" value={id} />
+                            <WrapperLabel htmlFor="id">Mã cán bộ</WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QuanNhanId} />
 
                         </WrapperInput>
                         <WrapperInput>
                             <WrapperLabel htmlFor="name">Tên cán bộ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="hoten" value={hoten} />
+                            <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.HoTen} />
 
                         </WrapperInput>
 
                         <WrapperInput>
-                            <WrapperLabel htmlFor="email">Giới tính: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="email" value={email} onChange={handleOnchangeEmail} />
-
-                        </WrapperInput>
-                        {/*
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="phone">Chuyên môn nghiệp vụ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="email" value={phone} onChange={handleOnchangePhone} />
-
-                        </WrapperInput>
-                        <WrapperInput>
-                            <WrapperLabel htmlFor="phone">Đơn vị: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="email" value={phone} onChange={handleOnchangePhone} />
+                            <WrapperLabel htmlFor="email">Ngày sinh: </WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.NgaySinh} />
 
                         </WrapperInput>
 
+
                         <WrapperInput>
-                            <WrapperLabel htmlFor="address">Cấp bậc: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
+                            <WrapperLabel htmlFor="id">Giới tính</WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.GioiTinh} />
 
                         </WrapperInput>
                         <WrapperInput>
-                            <WrapperLabel htmlFor="address">Tình trạng công tác:  </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
+                            <WrapperLabel htmlFor="name">Đơn vị công tác </WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.DonVi} />
 
                         </WrapperInput>
 
                         <WrapperInput>
-                            <WrapperLabel htmlFor="address">Chức vụ: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
+                            <WrapperLabel htmlFor="email">Địa chỉ </WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.DiaChi} />
 
-                        </WrapperInput> */}
+                        </WrapperInput>
 
-                        {/* <WrapperInput>
-                            <WrapperLabel htmlFor="address">Tham số làm việc: </WrapperLabel>
-                            <InputForm style={{ width: '300px' }} id="address" value={address} onChange={handleOnchangeAddress} />
 
-                        </WrapperInput> */}
+                        <WrapperInput>
+                            <WrapperLabel htmlFor="id">Quê quán</WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QueQuan} />
+
+                        </WrapperInput>
+                        <WrapperInput>
+                            <WrapperLabel htmlFor="name">Số điện thoại </WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.SoDienThoai} />
+
+                        </WrapperInput>
+
+                        <WrapperInput>
+                            <WrapperLabel htmlFor="email">Email </WrapperLabel>
+                            <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.Email} />
+
+                        </WrapperInput>
+
                     </WrapperContentProfile>
                 </Loading>
 

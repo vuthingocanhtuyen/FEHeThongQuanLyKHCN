@@ -14,8 +14,9 @@ import InputForm from '../../../components/InputForm/InputForm'
 import Loading from '../../../components/LoadingComponent/Loading'
 import { Button, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-
+import { updateQuanNhan } from '../../../redux/slides/quannhanSlide'
 import { useQuery } from '@tanstack/react-query'
+
 import CheckboxComponent from '../../../components/CheckBox/CheckBox'
 
 const LyLich = ({ idQuanNhan }) => {
@@ -67,7 +68,7 @@ const LyLich = ({ idQuanNhan }) => {
 
     const handleGetDetailsQuanNhan = async (id, token) => {
         const res = await QuanNhanService.getDetailsQuanNhan(id, token)
-        dispatch(QuanNhanService.updateQuanNhan({ ...res?.data, access_token: token }))
+        dispatch(updateQuanNhan({ ...res?.data, access_token: token }))
     }
     const handleOnchangeHoatDong = (value) => {
         setHoatDong(value)
@@ -102,9 +103,10 @@ const LyLich = ({ idQuanNhan }) => {
         setEmail(value)
     }
     const handleUpdate = () => {
-        mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
+        mutation.mutate({ id: quannhan?.idQuanNhan, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
 
     }
+
     // show dữ liệu
     const onChange = () => { }
 
@@ -113,7 +115,7 @@ const LyLich = ({ idQuanNhan }) => {
         console.log("idquannhan:", id)
         if (id) {
             const res = await QuanNhanService.getDetailsQuanNhan(id)
-            console.log("qn:", res.data)
+            console.log("qn lylich:", res.data)
             return res.data
         }
 
@@ -129,6 +131,7 @@ const LyLich = ({ idQuanNhan }) => {
     const handleChangeCheckGioiTinh = (e) => {
         console.log(`checked: ${e.target.checked}`);
     };
+
 
     //Dân tộc
 
@@ -219,7 +222,7 @@ const LyLich = ({ idQuanNhan }) => {
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="GioiTinh">Giới tính</WrapperLabel>
-                        <CheckboxComponent style={{ width: '25px' }} id="GioiTinh" value={quannhanDetails?.GioiTinh} onChange={handleChangeCheckGioiTinh} />
+                        <CheckboxComponent style={{ width: '25px' }} id="GioiTinh" value={quannhanDetails?.GioiTinh} checked={quannhanDetails?.GioiTinh === 'Nu'} onChange={handleChangeCheckGioiTinh} />
                         <ButtonComponent
                             //onClick={handleUpdate}
                             size={40}

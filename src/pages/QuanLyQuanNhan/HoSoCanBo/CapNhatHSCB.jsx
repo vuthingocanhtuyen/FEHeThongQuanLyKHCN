@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as QuanNhanService from '../../../services/QuanNhanService'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import * as message from '../../../components/Message/Message'
-
+import { useNavigate, useParams } from 'react-router-dom'
 import { getBase64 } from '../../../utils'
 import { WrapperContentProfile, WrapperHeader, WrapperInput, WrapperLabel, WrapperUploadFile } from './style'
 import ButtonComponent from '../../../components/ButtonComponent/ButtonComponent'
@@ -14,6 +14,7 @@ import InputForm from '../../../components/InputForm/InputForm'
 import Loading from '../../../components/LoadingComponent/Loading'
 import { Button, Col, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
+import { useQuery } from '@tanstack/react-query'
 import NgoaiNgu from './NgoaiNgu'
 import QTCongTac from './QTCongTac'
 import QTDang from './QTDang'
@@ -25,85 +26,52 @@ import DaiHoc from './DaiHoc'
 import SauDaiHoc from './SauDaiHoc'
 import TinhTrangCT from './TinhTrangCT'
 
-
-
 const CapNhatHSCB = () => {
+    const [quannhanObjectId, setQuannhanObjectId] = useState([]);
+    const [stateQuanNhanDetails, setStateQuanNhanDetails] = useState({});
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
+    const user = useSelector((state) => state?.user);
+    console.log('ctqn123 capnhatcb:', user);
+    const fetchGetObjectId = async () => {
+        try {
+            console.log('User _id capnhatcb:', user.id);
+            const resQuanNhan = await QuanNhanService.getObjectIdByQuanNhanId(user.id, user.access_token);
 
-    const quannhan = useSelector((state) => state.quannhan)
-    const [id, setId] = useState('')
-    const [hoten, setHoten] = useState('')
-    const [ngaysinh, setNgaysinh] = useState('')
-    const [gioitinh, setGioitinh] = useState('')
-    const [quequan, setQueQuan] = useState('')
-    const [diachi, setDiachi] = useState('')
-    const [sdt, setSdt] = useState('')
-    const [email, setEmail] = useState('')
-    const [avatar, setAvatar] = useState('')
-    const [hoatdong, setHoatDong] = useState('')
-    const [loaiqn, setLoaiqn] = useState('')
-    const mutation = useMutationHooks(
-        (data) => {
-            const { id, access_token, ...rests } = data
-            QuanNhanService.updateQuanNhan(id, rests, access_token)
+            console.log('ctqn capnhatcb:', resQuanNhan.data);
+            setQuannhanObjectId(resQuanNhan.data);
+        } catch (error) {
+            console.log('Error while fetching quan nhan details:', error);
+            setIsLoadingUpdate(false);
         }
-    )
-
-    const dispatch = useDispatch()
-    const { data, isLoading, isSuccess, isError } = mutation
-
+    };
     useEffect(() => {
-        setId(quannhan?.id)
-        setHoten(quannhan?.hoten)
-        setNgaysinh(quannhan?.ngaysinh)
-        setGioitinh(quannhan?.gioitinh)
-        setQueQuan(quannhan?.quequan)
-        setDiachi(quannhan?.diachi)
-        setSdt(quannhan?.sdt)
-        setEmail(quannhan?.email)
-        setHoatDong(quannhan?.hoatdong)
-        setLoaiqn(quannhan?.loaiqn)
-    }, [quannhan])
-
-    // useEffect(() => {
-    //     if (isSuccess) {
-    //         message.success()
-    //         handleGetDetailsQuanNhan(quannhan?.id, quannhan?.access_token)
-    //     } else if (isError) {
-    //         message.error()
-    //     }
-    // }, [isSuccess, isError])
-
-    // const handleGetDetailsQuanNhan = async (id, token) => {
-    //     const res = await QuanNhanService.getDetailsQuanNhan(id, token)
-    //     dispatch(updateQuanNhan({ ...res?.data, access_token: token }))
-    // }
-
-    const handleOnchangeEmail = (value) => {
-        setEmail(value)
-    }
-    const handleOnchangeName = (value) => {
-        setHoten(value)
-    }
-    const handleOnchangePhone = (value) => {
-        setSdt(value)
-    }
-    const handleOnchangeAddress = (value) => {
-        setDiachi(value)
-    }
-
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
+        console.log("Quan nhan _id capnhatcb:", quannhanObjectId);
+    }, [quannhanObjectId]);
+    useEffect(() => {
+        if (user && user.QuanNhanId) {
+            setIsLoadingUpdate(true);
+            fetchGetObjectId();
         }
-        setAvatar(file.preview)
+    }, [user]);
+
+
+
+    const fetchGetDetailsQuanNhan = async (context) => {
+        const id = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhan capnhatcb:", id)
+        if (id) {
+            const res = await QuanNhanService.getQuanNhanByQuanNhanId(id)
+            console.log("qn capnhatcb:", res.data)
+            return res.data
+        }
+
     }
 
-    const handleUpdate = () => {
-        mutation.mutate({ id: quannhan?.id, email, hoten, ngaysinh, hoatdong, loaiqn, sdt, gioitinh, diachi, quequan, access_token: quannhan?.access_token })
 
-    }
-    const [date, setDate] = useState(new Date());
+    const { isLoading, data: quannhanDetails } = useQuery(['hosoquannhan', user.QuanNhanId], fetchGetDetailsQuanNhan, { enabled: !!user.QuanNhanId })
+    console.log("chi tiet quan nhan capnhatcb:", quannhanDetails)
+
+
 
     return (
         <div>
@@ -113,10 +81,69 @@ const CapNhatHSCB = () => {
 
                 <div style={{ width: '500px', margin: '0 auto', float: 'left', padding: '10px', background: '#fff', borderRadius: "8px" }}>
 
+                    <Loading isLoading={isLoading}>
+                        <WrapperContentProfile>
+
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="id">Mã cán bộ</WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QuanNhanId} />
+
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="name">Tên cán bộ: </WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.HoTen} />
+
+                            </WrapperInput>
+
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="email">Ngày sinh: </WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.NgaySinh} />
+
+                            </WrapperInput>
+
+
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="id">Giới tính</WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.GioiTinh} />
+
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="name">Đơn vị công tác </WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.DonVi} />
+
+                            </WrapperInput>
+
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="email">Địa chỉ </WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.DiaChi} />
+
+                            </WrapperInput>
+
+
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="id">Quê quán</WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="id" value={quannhanDetails?.QueQuan} />
+
+                            </WrapperInput>
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="name">Số điện thoại </WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="hoten" value={quannhanDetails?.SoDienThoai} />
+
+                            </WrapperInput>
+
+                            <WrapperInput>
+                                <WrapperLabel htmlFor="email">Email </WrapperLabel>
+                                <InputForm style={{ width: '500px' }} id="email" value={quannhanDetails?.Email} />
+
+                            </WrapperInput>
+
+                        </WrapperContentProfile>
+                    </Loading>
+
 
                     <Loading isLoading={isLoading}>
                         <WrapperContentProfile>
-                            <WrapperInput>
+                            {/* <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="avatar">Ảnh</WrapperLabel>
                                 <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
                                     <Button icon={<UploadOutlined />}>Select File</Button>
@@ -129,7 +156,7 @@ const CapNhatHSCB = () => {
                                         objectFit: 'cover'
                                     }} alt="avatar" />
                                 )}
-                                {/* <InputForm style={{ width: '250px' }} id="avatar" value={avatar} onChange={handleOnchangeAvatar} /> */}
+                                <InputForm style={{ width: '250px' }} id="avatar" value={avatar} onChange={handleOnchangeAvatar} />
                                 <ButtonComponent
                                     onClick={handleUpdate}
                                     size={40}
@@ -142,8 +169,8 @@ const CapNhatHSCB = () => {
                                     textbutton={'Cập nhật'}
                                     styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                                 ></ButtonComponent>
-                            </WrapperInput>
-                            <WrapperInput>
+                            </WrapperInput> */}
+                            {/* <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="email">Mã cán bộ</WrapperLabel>
                                 <InputForm style={{ width: '250px' }} id="email" value={email} onChange={handleOnchangeEmail} />
 
@@ -165,7 +192,7 @@ const CapNhatHSCB = () => {
                                 ></ButtonComponent>
                             </WrapperInput>
 
-                            {/* <WrapperInput>
+                            <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="phone">Ngày sinh</WrapperLabel>
                                 <InputForm style={{ width: '250px' }} id="email" value={ngaysinh} onChange={handleOnchangePhone} />
                                 <ButtonComponent
@@ -225,9 +252,9 @@ const CapNhatHSCB = () => {
 
 
                 <div style={{ width: '500px', margin: '0 auto', height: '400px', float: 'left', textAlign: 'left', padding: '10px', background: 'back' }}>
-                    <Loading isLoading={isLoading}>
+                    {/* <Loading isLoading={isLoading}>
                         <WrapperContentProfile>
-                            {/* <WrapperInput>
+                             <WrapperInput>
                                 <WrapperLabel style={{ width: '100px' }} htmlFor="address">Email</WrapperLabel>
                                 <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
                                 <ButtonComponent
@@ -341,54 +368,54 @@ const CapNhatHSCB = () => {
                                     textbutton={'Cập nhật'}
                                     styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                                 ></ButtonComponent>
-                            </WrapperInput> */}
+                            </WrapperInput> 
 
 
                         </WrapperContentProfile>
-                    </Loading>
+                    </Loading> */}
 
 
                 </div>
-
+                {/* {quannhanDetails?.QuanNhanId} */}
             </div>
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+            {/* <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <NgoaiNgu />
+            </div> */}
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTNgoaiNgu quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTNgoaiNgu />
+                <DaiHoc quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <DaiHoc />
-            </div>
-            <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <SauDaiHoc />
+                <SauDaiHoc quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
 
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTCongTac />
+                <QTCongTac quannhanId={quannhanDetails?.QuanNhanId} />
             </div><br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <TinhTrangCT />
+                <TinhTrangCT quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTDang />
+                <QTDang quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTQuanHam />
+                <QTQuanHam quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTCDCMKT />
+                <QTCDCMKT quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTHocTapKhac />
+                <QTHocTapKhac quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
             <br />
             {/* <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
