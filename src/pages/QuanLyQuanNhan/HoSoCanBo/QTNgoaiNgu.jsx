@@ -14,8 +14,8 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-const NgoaiNgu = ({ quannhanId }) => {
-
+const NgoaiNgu = () => {
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -24,7 +24,7 @@ const NgoaiNgu = ({ quannhanId }) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-
+    const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         NgonNgu: '',
         LoaiBang: '',

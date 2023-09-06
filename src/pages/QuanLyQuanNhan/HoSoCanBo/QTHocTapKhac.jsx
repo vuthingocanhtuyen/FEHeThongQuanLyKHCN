@@ -14,7 +14,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-const QTHoaTapKhac = ({ quannhanId }) => {
+const QTHoaTapKhac = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
@@ -24,7 +24,7 @@ const QTHoaTapKhac = ({ quannhanId }) => {
 
   const user = useSelector((state) => state?.user)
   const searchInput = useRef(null);
-
+  const quannhanId = user.QuanNhanId;
   const inittial = () => ({
     Ten: '',
     Loai: '',
