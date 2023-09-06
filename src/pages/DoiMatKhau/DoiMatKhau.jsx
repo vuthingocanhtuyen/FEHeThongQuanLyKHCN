@@ -14,6 +14,7 @@ import { getBase64 } from '../../utils'
 
 const DoiMatKhau = () => {
     const user = useSelector((state) => state.user)
+    console.log("Usêr:", user)
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')

@@ -12,9 +12,11 @@ const NgoaiNgu = () => {
   const user = useSelector((state) => state?.user);
   const fetchGetObjectId = async () => {
     try {
-      console.log('User _id:', user.QuanNhanId);
-      const resQuanNhan = await QuanNhanService.getObjectIdByQuanNhanId(user.QuanNhanId, user.access_token);
-      setQuannhanObjectId(resQuanNhan.data);   
+      console.log('User _id:', user.id);
+      const resQuanNhan = await QuanNhanService.getObjectIdByQuanNhanId(user.id, user.access_token);
+
+      console.log('ctqn123:', resQuanNhan.data);
+      setQuannhanObjectId(resQuanNhan.data);
     } catch (error) {
       console.log('Error while fetching quan nhan details:', error);
       setIsLoadingUpdate(false);

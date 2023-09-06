@@ -9,6 +9,7 @@ import ThanNhan from '../../QuanLyQuanNhan/HoSoCanBo/ThanNhan';
 import TaiSan from '../../QuanLyQuanNhan/HoSoCanBo/TaiSan';
 
 import { useNavigate, useParams } from 'react-router-dom'
+import NgoaiNgu from '../../QuanLyQuanNhan/HoSoCanBo/NgoaiNgu';
 
 const { TabPane } = Tabs;
 
@@ -22,8 +23,8 @@ function ChiTietQuanNhan() {
                 <TabPane tab="Lý lịch" key="1">
 
                     <LyLich idQuanNhan={id} />
-
-
+                    {/* 
+                    <NgoaiNgu idQuanNhan={id} /> */}
                 </TabPane>
                 <TabPane tab="Các quá trình" key="2">
                     <QuaTrinh idQuanNhan={id} />
