@@ -84,10 +84,10 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   return (
     <div style={{ height: '100%', width: '100%', display: 'flex', background: '#9255FD', justifyContent: 'center' }}>
       <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenSearch ? 'space-between' : 'unset' }}>
-        <Col span={9}>
+        <Col span={15}>
           <WrapperTextHeader to='/'>HỆ THỐNG QUẢN LÝ NHÂN SỰ TRONG QUÂN ĐỘI</WrapperTextHeader>
         </Col>
-        {!isHiddenSearch && (
+        {/* {!isHiddenSearch && (
           <Col span={9}>
             <ButttonInputSearch
               size="large"
@@ -98,8 +98,8 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
               backgroundColorButton="#5a20c1"
             />
           </Col>
-        )}
-        <Col span={6} style={{ display: 'flex', gap: '54px', alignItems: 'center' }}>
+        )} */}
+        <Col span={9} style={{ display: 'flex', gap: '54px', alignItems: 'center' }}>
           <Loading isLoading={loading}>
             <WrapperHeaderAccout>
               {userAvatar ? (

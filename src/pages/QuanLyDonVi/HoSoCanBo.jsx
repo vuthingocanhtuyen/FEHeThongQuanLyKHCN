@@ -209,6 +209,10 @@ const HoSoCanBo = () => {
     const res = await ChucVuService.getChucVuFromDonVi(currentUserDonViCode)
     return res
   }
+  const fetchAllChucVu2 = async () => {
+    const res = await ChucVuService.getDataChucVuByDonVi(currentUserDonViCode)
+    return res
+  }
   const fetchAllQuanHam = async () => {
     const res = await QuanHamService.getAllType()
     return res
@@ -237,6 +241,7 @@ const HoSoCanBo = () => {
   const allDonVi = useQuery({ queryKey: ['all-donvi'], queryFn: fetchAllDonVi })
   const allDonVi2 = useQuery({ queryKey: ['all-donvi2'], queryFn: fetchAllDonVi2 })
   const allChucVu = useQuery({ queryKey: ['all-chucvu'], queryFn: fetchAllChucVu })
+  const allChucVu2 = useQuery({ queryKey: ['all-chucvu2'], queryFn: fetchAllChucVu2 })
   const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
   const renderAction = () => {
     return (
@@ -462,6 +467,11 @@ const HoSoCanBo = () => {
       allDonVi2.refetch();
     }
   }, [currentUserDonViCode, allDonVi2]);
+  useEffect(() => {
+    if (currentUserDonViCode) {
+      allChucVu2.refetch();
+    }
+  }, [currentUserDonViCode, allChucVu2]);
   const handleCancel = () => {
     setIsModalOpen(false);
     setStateQuanNhan({
@@ -547,13 +557,13 @@ const HoSoCanBo = () => {
   }
 
   const handleChangeSelect = (value) => {
-    console.log("bat dau");
-    console.log(allDonVi2?.data?.data);
+    // console.log("bat dau");
+    // console.log(allDonVi2?.data?.data);
     try{
     const selectedDonVi = allDonVi2?.data?.data.find(DonVi => DonVi.name === value);
     if (selectedDonVi) {
       setCurrentUserDonViCode(selectedDonVi.code);
-      console.log(selectedDonVi.code);
+      // console.log(selectedDonVi.code);
     }
       setStateQuanNhan({
         ...stateQuanNhan,
@@ -567,21 +577,41 @@ const handleChangeSelect2 = (value) => {
       ...stateQuanNhan,
       QuanHam: value
     })
-    console.log(stateQuanNhan)
+    // console.log(stateQuanNhan)
 }
 const handleChangeSelect4 = (value) => {
   setStateQuanNhan({
     ...stateQuanNhan,
     LoaiQN: value
   })
-  console.log(stateQuanNhan)
+  // console.log(stateQuanNhan)
 }
+// const handleChangeSelect3 = (value) => {
+//   setStateQuanNhan({
+//     ...stateQuanNhan,
+//     HoatDong: value
+//   })
+//   console.log(stateQuanNhan)
+// }
 const handleChangeSelect3 = (value) => {
-  setStateQuanNhan({
-    ...stateQuanNhan,
-    HoatDong: value
-  })
-  console.log(stateQuanNhan)
+  try{
+    const selectedChucVu = allChucVu2?.data?.data.find(ChucVuDonVi => ChucVuDonVi.name === value);
+    if (selectedChucVu) {
+      setCurrentUserDonViCode(selectedChucVu.chucvucode);
+      // console.log(selectedChucVu.chucvucode);
+    }
+      setStateQuanNhan({
+        ...stateQuanNhan,
+        HoatDong: selectedChucVu.chucvucode
+      })
+    }
+    catch{}
+  
+  // setStateQuanNhan({
+  //   ...stateQuanNhan,
+  //   HoatDong: value
+  // })
+  // console.log(stateQuanNhan)
 }
 
   return (
