@@ -48,7 +48,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   const content = (
     <div>
       <WrapperContentPopup onClick={() => handleClickNavigate('profile')}>Thông tin người dùng</WrapperContentPopup>
-      {(user?.isAdmin == "admin"||user?.isAdmin == "staff") && (
+      {(user?.isAdmin == "admin" || user?.isAdmin == "staff") && (
 
         <WrapperContentPopup onClick={() => handleClickNavigate('admin')}>Quản lí hệ thống</WrapperContentPopup>
       )}
@@ -85,7 +85,7 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     <div style={{ height: '100%', width: '100%', display: 'flex', background: '#9255FD', justifyContent: 'center' }}>
       <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenSearch ? 'space-between' : 'unset' }}>
         <Col span={15}>
-          <WrapperTextHeader to='/'>HỆ THỐNG QUẢN LÝ NHÂN SỰ TRONG QUÂN ĐỘI</WrapperTextHeader>
+          <WrapperTextHeader to='/'>HỆ THỐNG QUẢN LÝ KHOA HỌC CÔNG NGHỆ</WrapperTextHeader>
         </Col>
         {/* {!isHiddenSearch && (
           <Col span={9}>

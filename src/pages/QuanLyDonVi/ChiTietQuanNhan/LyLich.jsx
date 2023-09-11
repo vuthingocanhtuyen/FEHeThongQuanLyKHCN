@@ -22,6 +22,8 @@ import CheckboxComponent from '../../../components/CheckBox/CheckBox'
 
 const LyLich = ({ idQuanNhan }) => {
     //update chưa đc
+    console.log("ly lich" + idQuanNhan)
+    const [quannhann, setQuannhan] = useState([]);
     const user = useSelector((state) => state.user)
     const [id, setId] = useState('')
     const [HoTen, setHoten] = useState('')
@@ -33,7 +35,7 @@ const LyLich = ({ idQuanNhan }) => {
     const [Email, setEmail] = useState('')
     const [HoatDong, setHoatDong] = useState('')
     const [LoaiQN, setLoaiqn] = useState('')
-    const [donvi, setDonvi] = useState('')
+    const [DonVi, setDonvi] = useState('')
 
     const mutation = useMutationHooks(
         (data) => {
@@ -42,10 +44,12 @@ const LyLich = ({ idQuanNhan }) => {
         }
     )
     const dispatch = useDispatch()
-    const { data, isLoading, isSuccess, isError } = mutation
+    const { data, isSuccess, isError } = mutation
 
 
     useEffect(() => {
+
+        console.log(quannhann);
         console.log("bat dau");
         setId(quannhanDetails?.QuanNhanId)
         setHoten(quannhanDetails?.HoTen)
@@ -58,13 +62,15 @@ const LyLich = ({ idQuanNhan }) => {
         setHoatDong(quannhanDetails?.HoatDong)
         setLoaiqn(quannhanDetails?.LoaiQN)
         setDonvi(quannhanDetails?.DonVi)
-    }, [user])
+
+    }, [quannhann])
 
 
     useEffect(() => {
         if (isSuccess) {
             message.success()
-            handleGetDetailsUser(user?.id, user?.access_token)
+            handleUpdate()
+            //  handleGetDetailsUser(user?.id, user?.access_token)
         } else if (isError) {
             message.error()
         }
@@ -114,17 +120,18 @@ const LyLich = ({ idQuanNhan }) => {
 
     const fetchGetDetailsQuanNhan = async (context) => {
         const id = context?.queryKey && context?.queryKey[1]
-        console.log("idquannhan:", id)
         if (id) {
             const res = await QuanNhanService.getDetailsQuanNhan(id)
-            console.log("qn lylich:", res.data)
+            setQuannhan(res);
+            console.log("bat dau 3");
             return res.data
         }
 
 
     }
 
-    const { isLoading: isLoadingquannhan, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    // const { isLoading: isLoadingquannhan, data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    const { isLoading, data: quannhanDetails } = useQuery(['hsquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
 
 
 
@@ -140,11 +147,12 @@ const LyLich = ({ idQuanNhan }) => {
         console.log(id)
     }, [id])
     const handleUpdate = () => {
-        mutation.mutate({ id: quannhanDetails?._id, Email, HoTen, NgaySinh, HoatDong, LoaiQN, SoDienThoai, GioiTinh, DiaChi, QueQuan, access_token: user?.access_token }, {
+        mutation.mutate({ id: quannhanDetails?._id, Email, HoTen, NgaySinh, HoatDong, LoaiQN, SoDienThoai, GioiTinh, DiaChi, QueQuan, DonVi, access_token: user?.access_token }, {
             onSettled: () => {
                 quannhanDetails.refetch()
             }
-        })
+        }
+        )
 
 
     }
@@ -243,7 +251,7 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="DonVi">Đơn vị</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="DonVi" value={donvi} onChange={handleOnchangeDonVi} />
+                        <InputForm style={{ width: '500px' }} id="DonVi" value={DonVi} onChange={handleOnchangeDonVi} />
                         <ButtonComponent
                             onClick={handleUpdate}
                             size={40}
@@ -306,6 +314,9 @@ const LyLich = ({ idQuanNhan }) => {
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
                         ></ButtonComponent>
                     </WrapperInput>
+
+
+
                     <WrapperInput>
                         <WrapperLabel htmlFor="Email">Email</WrapperLabel>
                         <InputForm style={{ width: '500px' }} id="Email" value={Email} onChange={handleOnchangeEmail} />

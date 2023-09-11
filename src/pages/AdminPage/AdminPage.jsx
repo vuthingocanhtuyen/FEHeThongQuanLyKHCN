@@ -169,32 +169,43 @@ const AdminPage = () => {
     {
       label: 'Danh mục cá nhân',
       key: 'quanlyquannhan',
-      icon: <AppstoreOutlined />,
+      icon: <UserOutlined />,
       children: [
         {
-          label: 'Hồ sơ Cán bộ',
+          label: 'Thông tin cá nhân',
           key: 'hosocanbo',
-          icon: <SettingOutlined />,
-          children: [
-            getItem('Cập nhật hồ sơ cán bộ', 'hosocanbo', <AppstoreAddOutlined />),
-
-            getItem('Quá trình khen thưởng', 'khenthuong', <AppstoreAddOutlined />),
-            getItem('Quá trình kỷ luật', 'kyluat', <AppstoreAddOutlined />),
-            getItem('Thân nhân và Tài sản', 'thannhantaisan', <AppstoreAddOutlined />),
-          ]
+          icon: <UserOutlined />,
+          // children: [
+          //   getItem('Thông tin cá nhân', 'hosocanbo', <AppstoreAddOutlined />),
+          //   getItem('Chi tiết tải', 'khenthuong', <AppstoreAddOutlined />),
+          //   getItem('Tải đào tạo', 'kyluat', <AppstoreAddOutlined />),
+          //   getItem('Tải nghiên cứu', 'thannhantaisan', <AppstoreAddOutlined />),
+          // ]
         },
         {
-          label: 'Công tác giảng dạy',
-          key: 'congtacgiangday',
-          icon: <SettingOutlined />,
-          children: [
-            getItem('Thông tin cá nhân', 'thongtincanhan', <AppstoreAddOutlined />),
-            getItem('Chi tiết tải', 'chitiettai', <AppstoreAddOutlined />),
-            getItem('Tải đào tạo', 'taidaotao', <AppstoreAddOutlined />),
-            getItem('Tải nghiên cứu', 'tainghiencuu', <AppstoreAddOutlined />),
+          label: 'Chi tiết tải',
+          key: 'chitiettai',
+          icon: <AppstoreAddOutlined />,
+          // children: [
+          //   getItem('Thông tin cá nhân', 'thongtincanhan', <AppstoreAddOutlined />),
+          //   getItem('Chi tiết tải', 'chitiettai', <AppstoreAddOutlined />),
+          //   getItem('Tải đào tạo', 'taidaotao', <AppstoreAddOutlined />),
+          //   getItem('Tải nghiên cứu', 'tainghiencuu', <AppstoreAddOutlined />),
 
 
-          ]
+          // ]
+        },
+        {
+          label: 'Tải đào tạo',
+          key: 'taidaotao',
+          icon: <AppstoreAddOutlined />,
+
+        },
+        {
+          label: 'Tải nghiên cứu',
+          key: 'tainghiencuu',
+          icon: <AppstoreAddOutlined />,
+
         },
         // 
       ],
@@ -213,11 +224,11 @@ const AdminPage = () => {
     },
     {
 
-      label: 'Chỉ huy/ Điều hành',
-      key: 'chihuydieuhanh',
+      label: 'Báo cáo thông kê',
+      key: 'baocaothongke',
       icon: <LogoutOutlined />,
       children: [
-        getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
+        getItem('Thống kê dữ liệu giáo viên', 'thongkenhanluc', <UserOutlined />),
         getItem('Thông kê tải', 'thongketai', <LockOutlined />),
 
       ],

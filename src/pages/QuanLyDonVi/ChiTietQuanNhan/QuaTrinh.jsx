@@ -17,7 +17,6 @@ import TinhTrangCT from '../../QuanLyQuanNhan/HoSoCanBo/TinhTrangCT'
 
 
 const QuaTrinh = ({ idQuanNhan }) => {
-    const onChange = () => { }
 
     const fetchGetDetailsQuanNhan = async (context) => {
         const id = context?.queryKey && context?.queryKey[1]
