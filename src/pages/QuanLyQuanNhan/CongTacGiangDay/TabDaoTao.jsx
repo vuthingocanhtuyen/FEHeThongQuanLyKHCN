@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import 'antd/dist/antd.min.css';
-import TaiGiangDay from './TaiDaoTao/TaiGiangDay';
+import TaiGiangDay2 from './TaiDaoTao/TaiGiangDay2';
 import TaiHuongDan from './TaiDaoTao/TaiHuongDan';
 import TaiKhaoThi from './TaiDaoTao/TaiKhaoThi';
 import TaiHoiDong from './TaiDaoTao/TaiHoiDong';
@@ -11,7 +11,7 @@ function TabDaoTao() {
     return (
         <Tabs defaultActiveKey="1">
             <TabPane tab="Tải giảng dạy" key="1">
-                <TaiGiangDay />
+                <TaiGiangDay2 />
             </TabPane>
             <TabPane tab="Tải hướng dẫn" key="2">
                 <TaiHuongDan />

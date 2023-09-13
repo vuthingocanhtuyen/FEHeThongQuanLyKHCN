@@ -250,6 +250,8 @@ const AdminPage = () => {
   }
 
   const getAllUsers = async () => {
+    console.log("abcd");
+    console.log("abcd"+user?.isAdmin);
     const res = await UserService.getAllUser(user?.access_token)
     console.log('res', res)
     return { data: res?.data, key: 'users' }
