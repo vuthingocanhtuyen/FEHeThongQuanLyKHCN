@@ -176,7 +176,7 @@ const DaiHoc = () => {
     const queryDaiHoc = useQuery({ queryKey: ['daihocs'], queryFn: getAllDaiHocs })
     const daihocDetails = useQuery(['hosoquannhandaihoc', quannhanId], fetchGetDaiHoc, { enabled: !!quannhanId })
     console.log("dauhoc:", daihocDetails.data)
-    
+
     const { isLoading: isLoadingDaiHoc, data: daihocs } = queryDaiHoc
     const renderAction = () => {
         return (
@@ -481,9 +481,25 @@ const DaiHoc = () => {
             }
         })
     }
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
 
     const dataTable = daihocDetails?.data?.length && daihocDetails?.data?.map((daihocDetails) => {
-        return { ...daihocDetails, key: daihocDetails._id }
+        return {
+            ...daihocDetails,
+            key: daihocDetails._id,
+            TrangThai: getTrangThaiText(daihocDetails.TrangThai)
+        }
     })
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {

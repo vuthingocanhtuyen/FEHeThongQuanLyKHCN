@@ -499,9 +499,40 @@ const TaiKhaoThi = ({ }) => {
         })
     }
 
-    const dataTable = taikhaothiDetails?.data?.length && taikhaothiDetails?.data?.map((taikhaothiDetails) => {
-        return { ...taikhaothiDetails, key: taikhaothiDetails._id }
+
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
+    const dataTable = taikhaothiDetails?.data?.length > 0 && taikhaothiDetails?.data?.map((taikhaothiDetails) => {
+        return {
+            ...taikhaothiDetails,
+            key: taikhaothiDetails._id,
+            TrangThai: getTrangThaiText(taikhaothiDetails.TrangThai)
+
+        }
     })
+
+
+
+
+
+
+
+
+
+
+
+
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
             message.success()
@@ -521,6 +552,13 @@ const TaiKhaoThi = ({ }) => {
     const handleChangeSelect1 = (value) => {
         setStateTaiKhaoThi({
             ...stateTaiKhaoThi,
+            HinhThucKhaoThi: value
+        })
+        // console.log(stateQuanNhan)
+    }
+    const handleChangeSelectDetails = (value) => {
+        setStateTaiKhaoThiDetails({
+            ...stateTaiKhaoThiDetails,
             HinhThucKhaoThi: value
         })
         // console.log(stateQuanNhan)
@@ -732,7 +770,7 @@ const TaiKhaoThi = ({ }) => {
                         */}
                             <Select
                                 name="HinhThucKhaoThi"
-                                onChange={handleChangeSelect1}
+                                onChange={handleChangeSelectDetails}
                                 options={renderOptions(allHinhThucKhaoThi?.data?.data)}
                             />
                         </Form.Item>

@@ -1,20 +1,22 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space } from 'antd';
+import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { getBase64 } from '../../../utils'
+import { renderOptions } from '../../../utils'
 import Loading from '../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import * as QTCTDangService from '../../../services/QTCTDangService';
+import * as DanhMucChucVuDangService from '../../../services/DanhMucChucVuDangService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-const QTDang = ({  }) => {
+import moment from 'moment';
+const QTDang = ({ }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -470,9 +472,30 @@ const QTDang = ({  }) => {
             }
         })
     }
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
 
     const dataTable = quatrinhDangDetails?.data?.length && quatrinhDangDetails?.data?.map((quatrinhDangDetails) => {
-        return { ...quatrinhDangDetails, key: quatrinhDangDetails._id }
+        return {
+            ...quatrinhDangDetails,
+            key: quatrinhDangDetails._id,
+            TrangThai: getTrangThaiText(quatrinhDangDetails.TrangThai),
+            NgayQuyetDinh: convertDateToString(quatrinhDangDetails.NgayQuyetDinh)
+        }
     })
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
@@ -482,6 +505,29 @@ const QTDang = ({  }) => {
             message.error()
         }
     }, [isSuccess])
+
+
+    const fetchAllCVDang = async () => {
+        const res = await DanhMucChucVuDangService.getAllType()
+        return res
+    }
+
+    const allCVDang = useQuery({ queryKey: ['all-cvdang'], queryFn: fetchAllCVDang })
+    const handleChangeSelect1 = (value) => {
+        setStateQTCTDang({
+            ...stateQTCTDang,
+            ChucVu: value
+        })
+        // console.log(stateQuanNhan)
+    }
+    const handleChangeSelectDetails = (value) => {
+        setStateQTCTDangDetails({
+            ...stateQTCTDangDetails,
+            ChucVu: value
+        })
+        // console.log(stateQuanNhan)
+    }
+
 
     return (
         <div>
@@ -552,13 +598,21 @@ const QTDang = ({  }) => {
                             name="ChucVu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
+                            {/* <InputComponent
                                 style={{ width: '100%' }}
 
                                 value={stateQTCTDang['ChucVu']}
                                 onChange={handleOnchange}
                                 name="ChucVu"
+                            /> */}
+                            <Select
+                                name="ChucVu"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelect1}
+                                options={renderOptions(allCVDang?.data?.data)}
                             />
+
                         </Form.Item>
 
                         <Form.Item
@@ -606,7 +660,7 @@ const QTDang = ({  }) => {
                         <Form.Item
                             label="Ghi chú"
                             name="GhiChu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
@@ -658,7 +712,15 @@ const QTDang = ({  }) => {
                             name="ChucVu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQTCTDangDetails['ChucVu']} onChange={handleOnchangeDetails} name="ChucVu" />
+                            {/* <InputComponent value={stateQTCTDangDetails['ChucVu']} onChange={handleOnchangeDetails} name="ChucVu" /> */}
+                            <Select
+                                name="ChucVu"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelectDetails}
+                                options={renderOptions(allCVDang?.data?.data)}
+                            />
+
                         </Form.Item>
 
                         <Form.Item

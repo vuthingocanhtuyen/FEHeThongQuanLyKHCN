@@ -349,13 +349,13 @@ const HuongDanNCKH = ({ }) => {
         },
         {
             title: 'Vai trò',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'VaiTro',
+            key: 'VaiTro',
         },
         {
             title: 'Số tác giả',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'SoTacGia',
+            key: 'SoTacGia',
         },
         {
             title: 'Sinh viên',
@@ -484,6 +484,18 @@ const HuongDanNCKH = ({ }) => {
             GhiChu: stateHuongDanNCKH.GhiChu
 
         }
+        if (stateHuongDanNCKH.ThoiGianDuKienKetThuc <= stateHuongDanNCKH.ThoiGianBatDau) {
+            console.log("ThoiGianDuKienKetThuc must be after ThoiGianBatDau. Invalid!");
+            // Display an error message or take appropriate action
+            message.error("Thời gian kết thúc chưa phù hợp, nhập lại")
+            return;
+        }
+        if (stateHuongDanNCKH.NgayNghiemThu <= stateHuongDanNCKH.ThoiGianBatDau) {
+            console.log("ThoiGianDuKienKetThuc must be after ThoiGianBatDau. Invalid!");
+            // Display an error message or take appropriate action
+            message.error("Ngày nghiệm thu chưa phù hợp, nhập lại")
+            return;
+        }
         console.log("Finsh", stateHuongDanNCKH)
         mutation.mutate(params, {
             onSettled: () => {
@@ -520,9 +532,62 @@ const HuongDanNCKH = ({ }) => {
         })
     }
 
-    const dataTable = huongdannckhDetails?.data?.length && huongdannckhDetails?.data?.map((huongdannckhDetails) => {
-        return { ...huongdannckhDetails, key: huongdannckhDetails._id }
+
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
+
+
+    function getSoLuongSinhVien(value) {
+        const count = value.split(',').length - 1;
+        return count;
+    }
+
+    function getVaiSinhVien(value) {
+        const count = value.split(',').length - 1;
+        switch (count + 1) {
+            case 1:
+                return 'Chủ đề tài';
+            case 2:
+                return 'Nhóm đề tài';
+
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
+    const dataTable = huongdannckhDetails?.data?.length > 0 && huongdannckhDetails?.data?.map((huongdannckhDetails) => {
+        return {
+            ...huongdannckhDetails,
+            key: huongdannckhDetails._id,
+            TrangThai: getTrangThaiText(huongdannckhDetails.TrangThai),
+            SoTacGia: getSoLuongSinhVien(huongdannckhDetails.CacSinhVien) + 1,
+            VaiTro: getVaiSinhVien(huongdannckhDetails.CacSinhVien)
+
+        }
     })
+
+
+
+
+
+
+
+
+
+
+
+
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
             message.success()
@@ -599,6 +664,7 @@ const HuongDanNCKH = ({ }) => {
                         labelCol={{ span: 6 }}
                         wrapperCol={{ span: 18 }}
                         onFinish={onFinish}
+
                         autoComplete="on"
                         form={form}
                     >

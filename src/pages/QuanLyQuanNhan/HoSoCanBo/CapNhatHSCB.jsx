@@ -27,6 +27,7 @@ import QTNgoaiNgu from './QTNgoaiNgu'
 import DaiHoc from './DaiHoc'
 import SauDaiHoc from './SauDaiHoc'
 import TinhTrangCT from './TinhTrangCT'
+import QuaTrinhHocHam from './QuaTrinhHocHam'
 
 const CapNhatHSCB = () => {
     // const [quannhanObjectId, setQuannhanObjectId] = useState([]);
@@ -52,7 +53,7 @@ const CapNhatHSCB = () => {
     const [Email, setEmail] = useState('')
     const [HoatDong, setHoatDong] = useState('')
     const [LoaiQN, setLoaiqn] = useState('')
-    const [donvi, setDonvi] = useState('')
+    const [DonVi, setDonvi] = useState('')
     const mutation = useMutationHooks(
         (data) => {
             const { id, access_token, ...rests } = data
@@ -62,7 +63,7 @@ const CapNhatHSCB = () => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-       
+
         console.log(quannhann);
         console.log("bat dau");
         setId(quannhanDetails?.QuanNhanId)
@@ -76,10 +77,10 @@ const CapNhatHSCB = () => {
         setHoatDong(quannhanDetails?.HoatDong)
         setLoaiqn(quannhanDetails?.LoaiQN)
         setDonvi(quannhanDetails?.DonVi)
-    
+
     }, [quannhann])
 
-    const { data,  isSuccess, isError } = mutation
+    const { data, isSuccess, isError } = mutation
 
     useEffect(() => {
         if (isSuccess) {
@@ -136,22 +137,22 @@ const CapNhatHSCB = () => {
 
 
 
-    const fetchGetDetailsQuanNhan = async () => { 
-            console.log("bat dau 2");
-            console.log(quannhanObjectId);
-            const res = await QuanNhanService.getQuanNhanByQuanNhanId(quannhanObjectId);
+    const fetchGetDetailsQuanNhan = async () => {
+        console.log("bat dau 2");
+        console.log(quannhanObjectId);
+        const res = await QuanNhanService.getQuanNhanByQuanNhanId(quannhanObjectId);
 
-            setQuannhan(res); 
-            console.log("bat dau 3");
-            return res.data
-        
+        setQuannhan(res);
+        console.log("bat dau 3");
+        return res.data
+
     }
 
     // useEffect(() => {
     //     fetchGetDetailsQuanNhan();
     //   }, [quannhanObjectId]);
-    const { isLoading, data: quannhanDetails } = useQuery(['hsquannhan', quannhanObjectId], fetchGetDetailsQuanNhan, { enabled : !!quannhanObjectId})
-      
+    const { isLoading, data: quannhanDetails } = useQuery(['hsquannhan', quannhanObjectId], fetchGetDetailsQuanNhan, { enabled: !!quannhanObjectId })
+
     const handleChangeCheckGioiTinh = (e) => {
         console.log(`checked: ${e.target.checked}`);
     };
@@ -239,7 +240,10 @@ const CapNhatHSCB = () => {
                             </WrapperInput>
                             <WrapperInput>
                                 <WrapperLabel htmlFor="GioiTinh">Giới tính</WrapperLabel>
-                                <CheckboxComponent style={{ width: '25px' }} id="GioiTinh" value={GioiTinh} checked={GioiTinh === 'Nu'} onChange={handleChangeCheckGioiTinh} />
+                                <CheckboxComponent style={{ width: '25px' }}
+                                    id="GioiTinh" value={GioiTinh}
+                                    checked={GioiTinh === 'Nu'}
+                                    onChange={handleChangeCheckGioiTinh} />
                                 <ButtonComponent
                                     onClick={handleUpdate}
                                     size={40}
@@ -257,7 +261,7 @@ const CapNhatHSCB = () => {
 
                             <WrapperInput>
                                 <WrapperLabel htmlFor="DonVi">Đơn vị</WrapperLabel>
-                                <InputForm style={{ width: '500px' }} id="DonVi" value={donvi} onChange={handleOnchangeDonVi} />
+                                <InputForm style={{ width: '500px' }} id="DonVi" value={DonVi} onChange={handleOnchangeDonVi} />
                                 <ButtonComponent
                                     onClick={handleUpdate}
                                     size={40}
@@ -352,13 +356,13 @@ const CapNhatHSCB = () => {
 
 
 
-        
+
 
             </div>
 
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTNgoaiNgu  />
+                <QTNgoaiNgu />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
@@ -370,28 +374,32 @@ const CapNhatHSCB = () => {
             </div>
             <br />
 
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTCongTac  />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTCongTac />
 
             </div><br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <TinhTrangCT  />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <TinhTrangCT />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTDang  />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTDang />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTQuanHam  />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTQuanHam />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTCDCMKT  />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QuaTrinhHocHam />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <QTHocTapKhac  />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTCDCMKT />
+            </div>
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QTHocTapKhac />
             </div>
             <br />
 

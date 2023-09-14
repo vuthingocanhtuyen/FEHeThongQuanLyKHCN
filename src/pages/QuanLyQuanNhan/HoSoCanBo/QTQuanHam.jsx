@@ -1,19 +1,22 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space } from 'antd';
+import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { getBase64 } from '../../../utils'
+
+import { renderOptions } from '../../../utils'
 import Loading from '../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
 import * as QuaTrinhQuanHamService from '../../../services/QTQuanHamService';
+import * as DanhMucCapBacService from '../../../services/DanhMucCapBacService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
+import moment from 'moment';
 const QTQuanHam = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -435,9 +438,16 @@ const QTQuanHam = () => {
             }
         })
     }
-
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
     const dataTable = quatrinhquanhamDetails?.data?.length && quatrinhquanhamDetails?.data?.map((quatrinhquanhamDetails) => {
-        return { ...quatrinhquanhamDetails, key: quatrinhquanhamDetails._id }
+        return {
+            ...quatrinhquanhamDetails,
+            key: quatrinhquanhamDetails._id,
+            NgayQuyetDinh: convertDateToString(quatrinhquanhamDetails.NgayQuyetDinh)
+        }
     })
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
@@ -447,6 +457,32 @@ const QTQuanHam = () => {
             message.error()
         }
     }, [isSuccess])
+
+
+
+    const fetchAllCapBac = async () => {
+        const res = await DanhMucCapBacService.getAllType()
+        return res
+    }
+
+    const allCapBac = useQuery({ queryKey: ['all-capbac'], queryFn: fetchAllCapBac })
+    const handleChangeSelect1 = (value) => {
+        setStateQuaTrinhQuanHam({
+            ...stateQuaTrinhQuanHam,
+            QuanHam: value
+        })
+        // console.log(stateQuanNhan)
+    }
+    const handleChangeSelectDetails = (value) => {
+        setStateQuaTrinhQuanHamDetails({
+            ...stateQuaTrinhQuanHamDetails,
+            QuanHam: value
+        })
+        // console.log(stateQuanNhan)
+    }
+
+
+
 
     return (
         <div>
@@ -517,13 +553,23 @@ const QTQuanHam = () => {
                             name="QuanHam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
+                            {/* <InputComponent
                                 style={{ width: '100%' }}
 
                                 value={stateQuaTrinhQuanHam['QuanHam']}
                                 onChange={handleOnchange}
                                 name="QuanHam"
+                            /> */}
+
+                            <Select
+                                name="QuanHam"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelect1}
+                                options={renderOptions(allCapBac?.data?.data)}
                             />
+
+
                         </Form.Item>
 
 
@@ -582,7 +628,15 @@ const QTQuanHam = () => {
                             name="QuanHam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQuaTrinhQuanHamDetails['QuanHam']} onChange={handleOnchangeDetails} name="QuanHam" />
+                            {/* <InputComponent value={stateQuaTrinhQuanHamDetails['QuanHam']} onChange={handleOnchangeDetails} name="QuanHam" /> */}
+
+                            <Select
+                                name="QuanHam"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+                                // value={stateQuaTrinhQuanHamDetails.QuanHam}
+                                onChange={handleChangeSelectDetails}
+                                options={renderOptions(allCapBac?.data?.data)}
+                            />
                         </Form.Item>
 
                         <Form.Item

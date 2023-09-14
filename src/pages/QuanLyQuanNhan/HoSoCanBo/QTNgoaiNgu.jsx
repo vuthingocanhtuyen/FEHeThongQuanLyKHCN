@@ -15,7 +15,7 @@ import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
 const NgoaiNgu = () => {
-    
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -494,8 +494,25 @@ const NgoaiNgu = () => {
         })
     }
 
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
     const dataTable = qtcongtacDetails?.data?.length && qtcongtacDetails?.data?.map((qtcongtacDetails) => {
-        return { ...qtcongtacDetails, key: qtcongtacDetails._id }
+        return {
+            ...qtcongtacDetails,
+            key: qtcongtacDetails._id,
+            TrangThai: getTrangThaiText(qtcongtacDetails.TrangThai)
+        }
     })
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {

@@ -491,9 +491,25 @@ const SauDaiHoc = () => {
             }
         })
     }
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
 
     const dataTable = saudaihocDetails?.data?.length && saudaihocDetails?.data?.map((saudaihocDetails) => {
-        return { ...saudaihocDetails, key: saudaihocDetails._id }
+        return {
+            ...saudaihocDetails,
+            key: saudaihocDetails._id,
+            TrangThai: getTrangThaiText(saudaihocDetails.TrangThai)
+        }
     })
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {

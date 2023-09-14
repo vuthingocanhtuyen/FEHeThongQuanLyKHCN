@@ -14,7 +14,8 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-const TinhTrangCT = ({  }) => {
+import moment from 'moment';
+const TinhTrangCT = ({ }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -464,8 +465,31 @@ const TinhTrangCT = ({  }) => {
         })
     }
 
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
+
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
     const dataTable = tinhtrangcongtacDetails?.data?.length && tinhtrangcongtacDetails?.data?.map((tinhtrangcongtacDetails) => {
-        return { ...tinhtrangcongtacDetails, key: tinhtrangcongtacDetails._id }
+        return {
+            ...tinhtrangcongtacDetails,
+            key: tinhtrangcongtacDetails._id,
+            TrangThai: getTrangThaiText(tinhtrangcongtacDetails.TrangThai),
+            NgayQuyetDinh: convertDateToString(tinhtrangcongtacDetails.NgayQuyetDinh)
+        }
     })
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {

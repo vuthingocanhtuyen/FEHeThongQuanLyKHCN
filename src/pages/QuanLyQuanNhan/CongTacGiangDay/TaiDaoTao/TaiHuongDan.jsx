@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions } from '../../../../utils'
@@ -15,6 +15,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
+import 'antd/dist/antd.css';
 const TaiHuongDan = ({ }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -484,9 +485,11 @@ const TaiHuongDan = ({ }) => {
 
     const handleOnchange = (e) => {
         console.log("e: ", e.target.name, e.target.value)
+
         setStateTaiHuongDan({
             ...stateTaiHuongDan,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
+
         })
     }
 
@@ -496,6 +499,7 @@ const TaiHuongDan = ({ }) => {
         setStateTaiHuongDanDetails({
             ...stateTaiHuongDanDetails,
             [e.target.name]: e.target.value
+
         })
     }
 
@@ -508,9 +512,41 @@ const TaiHuongDan = ({ }) => {
         })
     }
 
-    const dataTable = taihuongdanDetails?.data?.length && taihuongdanDetails?.data?.map((taihuongdanDetails) => {
-        return { ...taihuongdanDetails, key: taihuongdanDetails._id }
+
+
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
+    const dataTable = taihuongdanDetails?.data?.length > 0 && taihuongdanDetails?.data?.map((taihuongdanDetails) => {
+        return {
+            ...taihuongdanDetails,
+            key: taihuongdanDetails._id,
+            TrangThai: getTrangThaiText(taihuongdanDetails.TrangThai)
+
+        }
     })
+
+
+
+
+
+
+
+
+
+
+
+
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
             message.success()
@@ -531,6 +567,15 @@ const TaiHuongDan = ({ }) => {
         setStateTaiHuongDan({
             ...stateTaiHuongDan,
             HinhThucHuongDan: value
+        })
+        // console.log(stateQuanNhan)
+    }
+
+
+    const handleChangeSelectDetails = (value) => {
+        setStateTaiHuongDanDetails({
+            ...stateTaiHuongDanDetails,
+            HinhThucHuongDân: value
         })
         // console.log(stateQuanNhan)
     }
@@ -614,7 +659,8 @@ const TaiHuongDan = ({ }) => {
                             name="NgayBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
+                            {/* <InputComponent value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" /> */}
+                            <DatePicker value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
                         </Form.Item>
                         <Form.Item
                             label="Quý"
@@ -710,7 +756,7 @@ const TaiHuongDan = ({ }) => {
                             {/* // <InputComponent value={stateTaiHuongDanDetails['HinhThucHuongDan']} onChange={handleOnchangeDetails} name="HinhThucHuongDan" /> */}
                             <Select
                                 name="HinhThucHuongDan"
-                                onChange={handleChangeSelect1}
+                                onChange={handleChangeSelectDetails}
                                 options={renderOptions(allHinhThucHuongdan?.data?.data)}
                             />
 

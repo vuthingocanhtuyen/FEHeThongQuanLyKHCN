@@ -14,7 +14,8 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-const QTCongTac = ({  }) => {
+import moment from 'moment';
+const QTCongTac = ({ }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
@@ -475,9 +476,31 @@ const QTCongTac = ({  }) => {
       }
     })
   }
+  function getTrangThaiText(statusValue) {
+    switch (statusValue) {
+      case 0:
+        return 'Đang chờ phê duyệt';
+      case 1:
+        return 'Đã phê duyệt';
+      case 2:
+        return 'Đã từ chối';
+      default:
+        return 'Trạng thái không hợp lệ';
+    }
+  }
 
+  function convertDateToString(date) {
+    // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+    return moment(date).format('DD/MM/YYYY');
+  }
   const dataTable = qtcongtacDetails?.data?.length && qtcongtacDetails?.data?.map((qtcongtacDetails) => {
-    return { ...qtcongtacDetails, key: qtcongtacDetails._id }
+    return {
+      ...qtcongtacDetails,
+      key: qtcongtacDetails._id,
+      TrangThai: getTrangThaiText(qtcongtacDetails.TrangThai),
+      NgayQuyetDinh: convertDateToString(qtcongtacDetails.NgayQuyetDinh)
+
+    }
   })
   useEffect(() => {
     if (isSuccess && data?.status === 'OK') {

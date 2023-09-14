@@ -1,54 +1,93 @@
-import { Button, Form, Space } from 'antd'
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import TableComponent from '../../../components/TableComponent/TableComponent'
 
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import Loading from '../../../components/LoadingComponent/Loading'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import React, { useEffect, useState, useRef } from 'react';
+import { Form, Select, Button, Space, Checkbox, Breadcrumb } from 'antd';
+import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { getBase64 } from '../../../utils'
-
-import { useEffect } from 'react'
-
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { renderOptions } from '../../../utils'
+import Loading from '../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as UserService from '../../../services/UserService'
-import { useIsFetching, useQuery, useQueryClient } from '@tanstack/react-query'
+import * as QuaTrinhHocHamService from '../../../services/QuaTrinhHocHamService';
+import * as DanhMucHocHamService from '../../../services/DanhMucHocHamService';
+import CheckboxComponent from '../../../components/CheckBox/CheckBox'
+import { WrapperHeader } from './style'
+import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
-
+import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../components/TableComponent/TableComponent';
+import moment from 'moment';
 const QuaTrinhHocHam = () => {
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-    const [isLoadingAdd, setIsLoadingAdd] = useState(false)
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-
-    const [stateUserDetails, setStateUserDetails] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        isAdmin: false,
-        avatar: '',
-        address: ''
+    const quannhanId = user.QuanNhanId;
+    const inittial = () => ({
+        QuyetDinh: '',
+        NgayQuyetDinh: '',
+        HocHam: '',
+        CaoNhat: '',
+        GhiChu: '',
     })
+    const [stateQuaTrinhHocHam, setStateQuaTrinhHocHam] = useState(inittial())
+    const [stateQuaTrinhHocHamDetails, setStateQuaTrinhHocHamDetails] = useState(inittial())
+
 
     const [form] = Form.useForm();
 
+    const mutation = useMutationHooks(
+        (data) => {
+            const { QuanNhanId = quannhanId,
+                code = 123,
+                QuyetDinh,
+                NgayQuyetDinh,
+                HocHam, CaoNhat,
+
+                GhiChu } = data
+            const res = QuaTrinhHocHamService.createQuaTrinhHocHam({
+                QuanNhanId,
+                code,
+                QuyetDinh,
+                NgayQuyetDinh,
+                HocHam, CaoNhat,
+
+                GhiChu
+            })
+            console.log("data create qtct:", res.data)
+            return res
+
+        }
+    )
+
     const mutationUpdate = useMutationHooks(
         (data) => {
+            console.log("data update:", data)
             const { id,
                 token,
                 ...rests } = data
-            const res = UserService.updateUser(
+            const res = QuaTrinhHocHamService.updateQuaTrinhHocHam(
                 id,
-                { ...rests }, token)
+                token,
+                { ...rests })
+            return res
+        },
+
+    )
+
+    const mutationDeleted = useMutationHooks(
+        (data) => {
+            const { id,
+                token,
+            } = data
+            const res = QuaTrinhHocHamService.deleteQuaTrinhHocHam(
+                id,
+                token)
             return res
         },
     )
@@ -57,115 +96,141 @@ const QuaTrinhHocHam = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = UserService.deleteManyUser(
+            const res = QuaTrinhHocHamService.deleteManyQuaTrinhHocHam(
                 ids,
                 token)
             return res
         },
     )
 
-    const handleDelteManyUsers = (ids) => {
+
+    const getAllQuaTrinhHocHams = async () => {
+        const res = await QuaTrinhHocHamService.getAllQuaTrinhHocHam()
+        return res
+    }
+
+    // show
+
+
+    const fetchGetQuaTrinhHocHam = async (context) => {
+        const quannhanId = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhancongtacfe:", quannhanId)
+        if (quannhanId) {
+
+            const res = await QuaTrinhHocHamService.getQuaTrinhHocHamByQuanNhanId(quannhanId)
+            console.log("qtct res: ", res)
+            if (res?.data) {
+                setStateQuaTrinhHocHamDetails({
+                    QuyetDinh: res?.data.QuyetDinh,
+                    NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                    HocHam: res?.data.HocHam,
+                    CaoNhat: res?.data.CaoNhat,
+                    GhiChu: res?.data.GhiChu,
+                })
+            }
+            // setIsLoadingUpdate(false)
+            // console.log("qn:", res.data)
+            // console.log("chi tiết qtct:", setStateQuaTrinhHocHamDetails)
+            return res.data
+        }
+        setIsLoadingUpdate(false)
+    }
+    useEffect(() => {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateQuaTrinhHocHamDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateQuaTrinhHocHamDetails, isModalOpen])
+
+    useEffect(() => {
+        if (rowSelected && isOpenDrawer) {
+            setIsLoadingUpdate(true)
+            fetchGetDetailsQuaTrinhHocHam(rowSelected)
+        }
+    }, [rowSelected, isOpenDrawer])
+
+    const handleDetailsQuaTrinhHocHam = () => {
+        setIsOpenDrawer(true)
+    }
+
+
+    const handleDelteManyQuaTrinhHocHams = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                queryClient.invalidateQueries(['users'])
+                quatrinhhochamDetails.refetch()
             }
         })
     }
 
-    const mutationDeleted = useMutationHooks(
-        (data) => {
-            const { id,
-                token,
-            } = data
-            const res = UserService.deleteUser(
-                id,
-                token)
-            return res
-        },
-    )
 
-    const fetchGetDetailsUser = async (rowSelected) => {
-        const res = await UserService.getDetailsUser(rowSelected)
+    const { data, isLoading, isSuccess, isError } = mutation
+    const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
+    const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
+    const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
+
+
+    const queryQuaTrinhHocHam = useQuery({ queryKey: ['qthh'], queryFn: getAllQuaTrinhHocHams })
+    const quatrinhhochamDetails = useQuery(['hosoquannhanqthh', quannhanId], fetchGetQuaTrinhHocHam, { enabled: !!quannhanId })
+
+    const { isLoading: isLoadingQuaTrinhHocHam, data: qtcdcmkts } = queryQuaTrinhHocHam
+    const renderAction = () => {
+        return (
+            <div>
+                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuaTrinhHocHam} />
+            </div>
+        )
+    }
+
+
+
+
+    const onChange = () => { }
+
+    const fetchGetDetailsQuaTrinhHocHam = async (rowSelected) => {
+        const res = await QuaTrinhHocHamService.getDetailsQuaTrinhHocHam(rowSelected)
         if (res?.data) {
-            setStateUserDetails({
-                name: res?.data?.name,
-                email: res?.data?.email,
-                phone: res?.data?.phone,
-                isAdmin: res?.data?.isAdmin,
-                address: res?.data?.address,
-                avatar: res.data?.avatar
+            setStateQuaTrinhHocHamDetails({
+                QuyetDinh: res?.data.QuyetDinh,
+                NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                HocHam: res?.data.HocHam,
+                CaoNhat: res?.data.CaoNhat,
+                GhiChu: res?.data.GhiChu,
             })
         }
         setIsLoadingUpdate(false)
     }
 
-    const fetchGetAddUser = async (rowSelected) => {
-        const res = await UserService.getDetailsUser(rowSelected)
-        if (res?.data) {
-            setStateUserDetails({
-                name: res?.data?.name,
-                email: res?.data?.email,
-                phone: res?.data?.phone,
-                isAdmin: res?.data?.isAdmin,
-                address: res?.data?.address,
-                avatar: res.data?.avatar
-            })
-        }
-        setIsLoadingAdd(false)
-    }
 
 
     useEffect(() => {
-        form.setFieldsValue(stateUserDetails)
-    }, [form, stateUserDetails])
+        if (rowSelected) {
+            fetchGetDetailsQuaTrinhHocHam(rowSelected)
+        }
+        setIsLoadingUpdate(false)
+    }, [rowSelected])
+
 
     useEffect(() => {
-        if (rowSelected && isOpenDrawer) {
-            setIsLoadingUpdate(true)
-            fetchGetDetailsUser(rowSelected)
+        if (!isModalOpen) {
+            form.setFieldsValue(stateQuaTrinhHocHamDetails)
+        } else {
+            form.setFieldsValue(inittial())
         }
-    }, [rowSelected, isOpenDrawer])
-
-    useEffect(() => {
-        if (rowSelected && isOpenDrawer) {
-            setIsLoadingAdd(true)
-            fetchGetAddUser(rowSelected)
-        }
-    }, [rowSelected, isOpenDrawer])
+    }, [form, stateQuaTrinhHocHamDetails, isModalOpen])
 
 
 
 
-
-    const handleDetailsProduct = () => {
-        setIsOpenDrawer(true)
-    }
-
-    const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
-    const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
-    const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
-
-    const queryClient = useQueryClient()
-    const users = queryClient.getQueryData(['users'])
-    const isFetchingUser = useIsFetching(['users'])
-    const renderAction = () => {
-        return (
-            <div>
-                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
-
-            </div>
-        )
-    }
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+
     };
 
     const getColumnSearchProps = (dataIndex) => ({
@@ -225,71 +290,100 @@ const QuaTrinhHocHam = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
+
+
+    //Show dữ liệu
+
+    //const { data: quatrinhhochamDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhHocHam, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", quatrinhhochamDetails)
+    console.log("idquannhancongtac:", quannhanId)
+    const handleChangeCheckCaoNhat = (e) => {
+        console.log(`checked: ${e.target.checked}`);
+    };
+
+
+    const CheckboxAction = () => {
+        return (
+            <div>
+                <CheckboxComponent style={{ width: '25px' }} checked={stateQuaTrinhHocHamDetails.CaoNhat === '1'} onChange={handleChangeCheckCaoNhat}
+                />
+            </div>
+        );
+    }
+
+    function getCaoNhatCheckBox(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return (
+                    <div>
+                        <CheckboxComponent style={{ width: '25px' }} />
+                    </div>
+                );
+
+            case 1:
+                return (
+                    <div>
+                        <CheckboxComponent style={{ width: '25px' }}
+                            checked={true}
+                            onChange={handleChangeCheckCaoNhat}
+                        />
+
+                    </div>
+                );
+
+            default:
+                return (
+                    <div>
+                        <CheckboxComponent style={{ width: '25px' }} />
+                    </div>
+                );
+        }
+    }
 
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            dataIndex: 'stt',
+            render: (text, record, index) => index + 1,
+
         },
+
         {
             title: 'Quyết định',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            dataIndex: 'QuyetDinh',
+            key: 'QuyetDinh',
         },
         {
             title: 'Ngày quyết định',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            dataIndex: 'NgayQuyetDinh',
+            key: 'NgayQuyetDinh',
         },
         {
             title: 'Học hàm',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            dataIndex: 'HocHam',
+            key: 'HocHam',
         },
         {
             title: 'Cao nhất',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            dataIndex: 'CaoNhat',
+            render: (text, record) => getCaoNhatCheckBox(record.CaoNhat)
         },
+
+        // {
+        //     title: 'Ghi chú',
+        //     dataIndex: 'GhiChu',
+        //     key: 'GhiChu',
+        // },
         {
             title: 'Chức năng',
             dataIndex: 'action',
             render: renderAction
         },
-    ];
-    const dataTable = users?.data?.length > 0 && users?.data?.map((user) => {
-        return { ...user, key: user._id, isAdmin: user.isAdmin ? 'TRUE' : 'FALSE' }
-    })
 
+
+    ];
     useEffect(() => {
         if (isSuccessDelected && dataDeleted?.status === 'OK') {
             message.success()
@@ -307,13 +401,23 @@ const QuaTrinhHocHam = () => {
         }
     }, [isSuccessDelectedMany])
 
+    useEffect(() => {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
+            message.success()
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
+            message.error()
+        }
+    }, [isSuccessDelected])
+
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateUserDetails({
-            name: '',
-            email: '',
-            phone: '',
-            isAdmin: false,
+        setStateQuaTrinhHocHamDetails({
+            QuyetDinh: '',
+            NgayQuyetDinh: '',
+            HocHam: '',
+            CaoNhat: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -331,111 +435,301 @@ const QuaTrinhHocHam = () => {
         setIsModalOpenDelete(false)
     }
 
-    const handleDeleteUser = () => {
+
+    const handleDeleteQuaTrinhHocHam = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryClient.invalidateQueries(['users'])
+                quatrinhhochamDetails.refetch()
             }
         })
     }
 
-    const handleOnchangeDetails = (e) => {
-        setStateUserDetails({
-            ...stateUserDetails,
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        setStateQuaTrinhHocHam({
+            QuyetDinh: '',
+            NgayQuyetDinh: '',
+            HocHam: '',
+            CaoNhat: '',
+            GhiChu: '',
+        })
+        form.resetFields()
+    };
+
+
+    const onFinish = () => {
+        const params = {
+            QuyetDinh: stateQuaTrinhHocHam.QuyetDinh,
+            NgayQuyetDinh: stateQuaTrinhHocHam.NgayQuyetDinh,
+            HocHam: stateQuaTrinhHocHam.HocHam,
+            CaoNhat: stateQuaTrinhHocHam.CaoNhat,
+            GhiChu: stateQuaTrinhHocHam.GhiChu,
+        }
+        console.log("Finsh", stateQuaTrinhHocHam)
+        mutation.mutate(params, {
+            onSettled: () => {
+                quatrinhhochamDetails.refetch()
+            }
+        })
+    }
+
+
+
+    const handleOnchange = (e) => {
+        console.log("e: ", e.target.name, e.target.value)
+        setStateQuaTrinhHocHam({
+            ...stateQuaTrinhHocHam,
             [e.target.name]: e.target.value
         })
     }
 
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateUserDetails({
-            ...stateUserDetails,
-            avatar: file.preview
+
+    const handleOnchangeDetails = (e) => {
+        console.log('check', e.target.name, e.target.value)
+        setStateQuaTrinhHocHamDetails({
+            ...stateQuaTrinhHocHamDetails,
+            [e.target.name]: e.target.value
         })
     }
-    const onUpdateUser = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateUserDetails }, {
+
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
+
+    const onUpdateQuaTrinhHocHam = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhHocHamDetails }, {
             onSettled: () => {
-                queryClient.invalidateQueries(['users'])
+                quatrinhhochamDetails.refetch()
             }
         })
     }
 
+
+
+
+    const dataTable = quatrinhhochamDetails?.data?.length && quatrinhhochamDetails?.data?.map((quatrinhhochamDetails) => {
+        return {
+            ...quatrinhhochamDetails,
+            key: quatrinhhochamDetails._id,
+            NgayQuyetDinh: convertDateToString(quatrinhhochamDetails.NgayQuyetDinh)
+
+        }
+    })
+
+
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
+
+
+    const fetchAllDanhMucHocHam = async () => {
+        const res = await DanhMucHocHamService.getAllType()
+        return res
+    }
+
+    const allDanhMucHocHam = useQuery({ queryKey: ['all-danhmuchocham'], queryFn: fetchAllDanhMucHocHam })
+    const handleChangeSelect1 = (value) => {
+        setStateQuaTrinhHocHam({
+            ...stateQuaTrinhHocHam,
+            HocHam: value
+        })
+        // console.log(stateQuanNhan)
+    }
+    const handleChangeSelectDetails = (value) => {
+        setStateQuaTrinhHocHamDetails({
+            ...stateQuaTrinhHocHamDetails,
+            HocHam: value
+        })
+        // console.log(stateQuanNhan)
+    }
+
+
     return (
         <div>
-            <WrapperHeader>Quá trình học hàm</WrapperHeader>
-            <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyUsers} columns={columns} isLoading={isFetchingUser} data={dataTable} onRow={(record, rowIndex) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id)
-                        }
-                    };
-                }} />
+            <div>
+                <WrapperHeader>Quá trình học hàm</WrapperHeader>
+                <div style={{ marginTop: '10px' }}>
+                    <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
+                </div>
+                {isLoading ? ( // Hiển thị thông báo đang tải
+                    <div>Loading...</div>
+                ) : (
+                    // <Table dataSource={quatrinhhochamDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingQuaTrinhHocHam} data={dataTable} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected(record._id);
+
+
+                            }
+
+                        };
+                    }} />
+                )}
+
             </div>
-            <DrawerComponent title='Chi tiết tham số' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="90%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+            <ModalComponent forceRender title="Thêm mới học hàm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+                <Loading isLoading={isLoading}>
 
                     <Form
                         name="basic"
-                        labelCol={{ span: 2 }}
+                        labelCol={{ span: 10 }}
+                        wrapperCol={{ span: 18 }}
+                        onFinish={onFinish}
+                        autoComplete="on"
+                        form={form}
+                    >
+
+                        <Form.Item
+                            label="Quyết định"
+                            name="QuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhHocHam['QuyetDinh']}
+                                onChange={handleOnchange}
+                                name="QuyetDinh"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Ngày quyết định"
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhHocHam['NgayQuyetDinh']}
+                                onChange={handleOnchange}
+                                name="NgayQuyetDinh"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Học hàm"
+                            name="HocHam"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+
+                            <Select
+                                name="HocHam"
+                                onChange={handleChangeSelect1}
+                                options={renderOptions(allDanhMucHocHam?.data?.data)}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Cao nhất"
+                            name="CaoNhat"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhHocHam['CaoNhat']}
+                                onChange={handleOnchange}
+                                name="CaoNhat"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhHocHam['GhiChu']}
+                                onChange={handleOnchange}
+                                name="GhiChu"
+                            />
+                        </Form.Item>
+                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
+                            <Button type="primary" htmlType="submit">
+                                Thêm
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Loading>
+            </ModalComponent>
+
+
+            <DrawerComponent title='Chi tiết học hàm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
+
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+                    <Form
+                        name="basic"
+                        labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateUser}
+                        onFinish={onUpdateQuaTrinhHocHam}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Name"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
+                            label="Mã quyết định"
+                            name="QuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateUserDetails['name']} onChange={handleOnchangeDetails} name="name" />
+                            <InputComponent value={stateQuaTrinhHocHamDetails['QuyetDinh']} onChange={handleOnchangeDetails} name="QuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Email"
-                            name="email"
-                            rules={[{ required: true, message: 'Please input your email!' }]}
+                            label="Ngày quyết định"
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateUserDetails['email']} onChange={handleOnchangeDetails} name="email" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Phone"
-                            name="phone"
-                            rules={[{ required: true, message: 'Please input your  phone!' }]}
-                        >
-                            <InputComponent value={stateUserDetails.phone} onChange={handleOnchangeDetails} name="phone" />
+                            <InputComponent value={stateQuaTrinhHocHamDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Adress"
-                            name="address"
-                            rules={[{ required: true, message: 'Please input your  address!' }]}
+                            label="Học hàm"
+                            name="HocHam"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateUserDetails.address} onChange={handleOnchangeDetails} name="address" />
+                            {/* // <InputComponent value={stateQuaTrinhHocHamDetails['HocHam']} onChange={handleOnchangeDetails} name="HocHam" />
+                          */}
+                            <Select
+                                name="HocHam"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelectDetails}
+                                options={renderOptions(allDanhMucHocHam?.data?.data)}
+                            />
+
                         </Form.Item>
 
                         <Form.Item
-                            label="Avatar"
-                            name="avatar"
-                            rules={[{ required: true, message: 'Please input your image!' }]}
+                            label="Cao nhất"
+                            name="CaoNhat"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateUserDetails?.avatar && (
-                                    <img src={stateUserDetails?.avatar} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhHocHamDetails['CaoNhat']}
+                                onChange={handleOnchangeDetails}
+                                name="CaoNhat"
+                            />
                         </Form.Item>
+
+
+                        <Form.Item
+                            label="Ghi chú"
+                            name="GhiChu"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQuaTrinhHocHamDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
+                        </Form.Item>
+
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Cập nhật
@@ -444,13 +738,16 @@ const QuaTrinhHocHam = () => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa tham số" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteUser}>
+
+            <ModalComponent title="Xóa quá trình học hàm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQuaTrinhHocHam}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa tham số này không?</div>
+                    <div>Bạn có chắc xóa quá trình học hàm này không?</div>
                 </Loading>
             </ModalComponent>
-        </div>
-    )
-}
 
-export default QuaTrinhHocHam
+        </div>
+
+    );
+};
+
+export default QuaTrinhHocHam;
