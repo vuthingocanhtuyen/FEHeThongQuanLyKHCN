@@ -31,6 +31,7 @@ const TaiGiangDay = ({ }) => {
     const [isOpenDrawer2, setIsOpenDrawer2] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+    const [isModalOpenDelete2, setIsModalOpenDelete2] = useState(false)
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -161,6 +162,17 @@ const TaiGiangDay = ({ }) => {
                 token,
             } = data
             const res = TaiGiangDayService.deleteTaiGiangDay(
+                id,
+                token)
+            return res
+        },
+    )
+    const mutationDeleted2 = useMutationHooks(
+        (data) => {
+            const { id,
+                token,
+            } = data
+            const res = HTCVService.deleteHTCV(
                 id,
                 token)
             return res
@@ -299,6 +311,7 @@ const TaiGiangDay = ({ }) => {
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
     const { data: dataUpdated2, isLoading: isLoadingUpdated2, isSuccess: isSuccessUpdated2, isError: isErrorUpdated2 } = mutationUpdate2
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
+    const { data: dataDeleted2, isLoading: isLoadingDeleted2, isSuccess: isSuccessDelected2, isError: isErrorDeleted2 } = mutationDeleted2
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
     
@@ -319,7 +332,7 @@ const TaiGiangDay = ({ }) => {
     const renderAction2 = () => {
         return (
             <div>
-                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
+                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete2(true)} />
                 <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsHTCV} />
             </div>
         )
@@ -592,6 +605,14 @@ const TaiGiangDay = ({ }) => {
             message.error()
         }
     }, [isSuccessDelected])
+    useEffect(() => {
+        if (isSuccessDelected2 && dataDeleted2?.status === 'OK') {
+            message.success()
+            handleCancelDelete2()
+        } else if (isErrorDeleted) {
+            message.error()
+        }
+    }, [isSuccessDelected2])
 
     useEffect(() => {
         if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
@@ -670,6 +691,9 @@ const TaiGiangDay = ({ }) => {
     const handleCancelDelete = () => {
         setIsModalOpenDelete(false)
     }
+    const handleCancelDelete2 = () => {
+        setIsModalOpenDelete2(false)
+    }
 
 
     const handleDeleteTaiGiangDay = () => {
@@ -679,8 +703,15 @@ const TaiGiangDay = ({ }) => {
             }
         })
     }
-
+    const handleDeleteHTCV = () => {
+        mutationDeleted2.mutate({ id: rowSelected2, token: user?.access_token }, {
+            onSettled: () => {
+                HTCVDetails.refetch()
+            }
+        })
+    }
     const handleCancel = () => {
+        taigiangdayDetails.refetch();
         settaigiangdayId(null);
         setIsModalOpen(false);
         setStateTaiGiangDay({
@@ -1215,6 +1246,11 @@ const TaiGiangDay = ({ }) => {
             <ModalComponent title="Xóa tải hướng dẫn" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteTaiGiangDay}>
                 <Loading isLoading={isLoadingDeleted}>
                     <div>Bạn có chắc xóa tải hướng dẫn này không?</div>
+                </Loading>
+            </ModalComponent>
+            <ModalComponent title="Xóa tải hướng dẫn" open={isModalOpenDelete2} onCancel={handleCancelDelete2} onOk={handleDeleteHTCV}>
+                <Loading isLoading={isLoadingDeleted2}>
+                    <div>Bạn có chắc xóa hình thức công việc này không?</div>
                 </Loading>
             </ModalComponent>
 
