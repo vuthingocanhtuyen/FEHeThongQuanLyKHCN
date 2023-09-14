@@ -26,7 +26,9 @@ const TaiGiangDay = ({ }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
+    const [rowSelected2, setRowSelected2] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+    const [isOpenDrawer2, setIsOpenDrawer2] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const [selectedName, setSelectedName] = useState('');
@@ -39,11 +41,11 @@ const TaiGiangDay = ({ }) => {
           try {
             // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
             const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
-            console.log(response.data);
+            
     
             if (response.data && response.data.length > 0) {
               const firstData = response.data[0];
-              console.log(response.data[0]);
+              
               const donViValue = firstData.DonVi[0];
               setCurrentUserDonVi(donViValue);
               setCurrentUserDonViCode(donViValue);
@@ -126,7 +128,7 @@ const TaiGiangDay = ({ }) => {
 
     const mutationUpdate = useMutationHooks(
         (data) => {
-            console.log("data update:", data)
+          
             const { id,
                 token,
                 ...rests } = data
@@ -138,22 +140,20 @@ const TaiGiangDay = ({ }) => {
         },
 
     )
-    // const mutationUpdate2 = useMutationHooks(
-    //     (data) => {
-    //         console.log("data update:", data)
-    //         const { id,
-    //             token,
-    //             HTCVList,
-    //             ...rests } = data
-    //         const res = TaiGiangDayService.updateHTCVLists(
-    //             id,
-    //             token,
-    //             HTCVList,
-    //             { ...rests })
-    //         return res
-    //     },
+    const mutationUpdate2 = useMutationHooks(
+        (data) => {
+          
+            const { id,
+                token,
+                ...rests } = data
+            const res = HTCVService.updateHTCV(
+                id,
+                token,
+                { ...rests })
+            return res
+        },
 
-    // )
+    )
      
     const mutationDeleted = useMutationHooks(
         (data) => {
@@ -189,11 +189,11 @@ const TaiGiangDay = ({ }) => {
 
     const fetchGetTaiGiangDay = async (context) => {
         const quannhanId = context?.queryKey && context?.queryKey[1]
-        console.log("iđn tai hd:", quannhanId)
+       
         if (quannhanId) {
 
             const res = await TaiGiangDayService.getTaiGiangDayByQuanNhanId(quannhanId)
-            console.log("taihd res: ", res)
+           
             if (res?.data) {
                 setStateTaiGiangDayDetails({
                     code: res?.data.code,
@@ -228,24 +228,24 @@ const TaiGiangDay = ({ }) => {
        
         if (taigiangdayId) {
             const res = await TaiGiangDayService.getDetailsTaiGiangDay(taigiangdayId)
-            console.log("xin chao");
+           
             
-            if (res?.data) {
-                setStateHTCVDetails({
-                    HinhThucCV: res?.data?.CacHTCV[0].HinhThucCV,
-                    QuanNhanId: res?.data?.CacHTCV[0].QuanNhanId,
-                    HoTen: res?.data?.CacHTCV[0].HoTen,
-                    KhoiLuongCV: res?.data?.CacHTCV[0].KhoiLuongCV,
-                    DonVi: res?.data?.CacHTCV[0].DonVi,
-                    SoTiet: res?.data?.CacHTCV[0].SoTiet,
-                    SoGioQuyDoi: res?.data?.CacHTCV[0].SoGioQuyDoi,
-                    GhiChu: res?.data?.CacHTCV[0].GhiChu,
-                })
-            }
+            // if (res?.data) {
+            //     setStateHTCVDetails({
+            //         // HinhThucCV: res?.data?.CacHTCV[0].HinhThucCV,
+            //         // QuanNhanId: res?.data?.CacHTCV[0].QuanNhanId,
+            //         // HoTen: res?.data?.CacHTCV[0].HoTen,
+            //         // KhoiLuongCV: res?.data?.CacHTCV[0].KhoiLuongCV,
+            //         // DonVi: res?.data?.CacHTCV[0].DonVi,
+            //         // SoTiet: res?.data?.CacHTCV[0].SoTiet,
+            //         // SoGioQuyDoi: res?.data?.CacHTCV[0].SoGioQuyDoi,
+            //         // GhiChu: res?.data?.CacHTCV[0].GhiChu,
+            //     })
+            // }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
             // console.log("chi tiết qtct:", setStateTaiGiangDayDetails)
-            console.log(res.data.CacHTCV[0].HinhThucCV)
+            
             return res.data.CacHTCV
         }
         setIsLoadingUpdate(false)
@@ -260,13 +260,26 @@ const TaiGiangDay = ({ }) => {
     
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
-            setIsLoadingUpdate(true)
-            fetchGetDetailsTaiGiangDay(rowSelected)
+            setIsLoadingUpdate(true);
+            settaigiangdayId(rowSelected);
+            fetchGetDetailsTaiGiangDay(rowSelected);
+
         }
     }, [rowSelected, isOpenDrawer])
+    useEffect(() => {
+        if (rowSelected2 && isOpenDrawer2) {
+            setIsLoadingUpdate(true);
+            fetchGetDetailsHTCV(rowSelected2);
+        }
+    }, [rowSelected2, isOpenDrawer2])
+
+
 
     const handleDetailsTaiGiangDay = () => {
         setIsOpenDrawer(true)
+    }
+    const handleDetailsHTCV = () => {
+        setIsOpenDrawer2(true)
     }
 
 
@@ -284,6 +297,7 @@ const TaiGiangDay = ({ }) => {
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
+    const { data: dataUpdated2, isLoading: isLoadingUpdated2, isSuccess: isSuccessUpdated2, isError: isErrorUpdated2 } = mutationUpdate2
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
@@ -302,6 +316,14 @@ const TaiGiangDay = ({ }) => {
             </div>
         )
     }
+    const renderAction2 = () => {
+        return (
+            <div>
+                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsHTCV} />
+            </div>
+        )
+    }
 
     const onChange = () => { }
     useEffect(() => {
@@ -310,6 +332,7 @@ const TaiGiangDay = ({ }) => {
         }
       }, [isModalOpen2, queryQuanNhan.refetch]);
     const fetchGetDetailsTaiGiangDay = async (rowSelected) => {
+        console.log("detail row");
         const res = await TaiGiangDayService.getDetailsTaiGiangDay(rowSelected)
         if (res?.data) {
             setStateTaiGiangDayDetails({
@@ -334,6 +357,29 @@ const TaiGiangDay = ({ }) => {
                 CacHTCV: res?.data.CacHTCV
             })
         }
+
+        console.log(res);
+        console.log("xong detail row");
+        setIsLoadingUpdate(false)
+    }
+    const fetchGetDetailsHTCV = async (rowSelected2) => {
+        console.log("detail row");
+        const res = await HTCVService.getDetailsHTCV(rowSelected2)
+        if (res?.data) {
+            setStateHTCVDetails({
+                HinhThucCV: res?.data.HinhThucCV,
+                QuanNhanId: res?.data.QuanNhanId,
+                HoTen: res?.data.HoTen,
+                KhoiLuongCV: res?.data.KhoiLuongCV,
+                DonVi: res?.data.DonVi,
+                SoTiet: res?.data.SoTiet,
+                SoGioQuyDoi: res?.data.SoGioQuyDoi,
+                GhiChu: res?.data.GhiChu,
+            })
+        }
+        console.log("abc");
+        console.log(stateHTCVDetails);
+        console.log("xong detail htcv");
         setIsLoadingUpdate(false)
     }
 
@@ -499,7 +545,7 @@ const TaiGiangDay = ({ }) => {
         {
             title: 'Chức năng',
             dataIndex: 'action',
-            render: renderAction
+            render: renderAction2
         },
 
 
@@ -590,6 +636,20 @@ const TaiGiangDay = ({ }) => {
         })
         form.resetFields()
     };
+    const handleCloseDrawer2 = () => {
+        setIsOpenDrawer2(false);
+        setStateHTCVDetails({
+            HinhThucCV: '',
+        QuanNhanId: '',
+        HoTen: '',
+        KhoiLuongCV: '',
+        DonVi: '',
+        SoTiet: '',
+        SoGioQuyDoi: '',
+        GhiChu: '',
+        })
+        form.resetFields()
+    };
 
     useEffect(() => {
         if (isSuccessUpdated && dataUpdated?.status === 'OK') {
@@ -599,7 +659,14 @@ const TaiGiangDay = ({ }) => {
             message.error()
         }
     }, [isSuccessUpdated])
-
+    useEffect(() => {
+        if (isSuccessUpdated2 && dataUpdated2?.status === 'OK') {
+            message.success()
+            handleCloseDrawer2()
+        } else if (isErrorUpdated2) {
+            message.error()
+        }
+    }, [isSuccessUpdated])
     const handleCancelDelete = () => {
         setIsModalOpenDelete(false)
     }
@@ -713,11 +780,10 @@ const TaiGiangDay = ({ }) => {
         const data = {
             HTCVList: htcvId
           };
-        console.log("bat dau");  
-        console.log(data);
+       
         try {
             const result = await TaiGiangDayService.updateHTCVLists(taigiangdayId, data, user?.access_token);
-            console.log(result);
+           
             if (result.status === 'OK') {
                 message.success(result.message);
                 HTCVDetails.refetch();
@@ -759,28 +825,42 @@ const TaiGiangDay = ({ }) => {
     }
 
     const handleOnchangeDetails = (e) => {
-        console.log('check', e.target.name, e.target.value)
+       
         setStateTaiGiangDayDetails({
             ...stateTaiGiangDayDetails,
             [e.target.name]: e.target.value
         })
+
+        
+    }
+    const handleOnchangeDetails2 = (e) => {
+       
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            [e.target.name]: e.target.value
+        })
+
+        
     }
 
 
     const onUpdateTaiGiangDay = () => {
+        console.log("bat dau update");
         mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateTaiGiangDayDetails }, {
             onSettled: () => {
                 taigiangdayDetails.refetch()
             }
         })
     }
-    // const onPushTaiGiangDay = () => {
-    //     mutationUpdate2.mutate({ id: taigiangdayId, HTCVList: htcvId, token: user?.access_token}, {
-    //         onSettled: () => {
-    //             taigiangdayDetails.refetch()
-    //         }
-    //     })
-    // }
+    const onUpdateHTCV = () => {
+        console.log("bat dau update");
+        mutationUpdate2.mutate({ id: rowSelected2, token: user?.access_token, ...stateHTCVDetails }, {
+            onSettled: () => {
+                HTCVDetails.refetch()
+            }
+        })
+    }
+    
 
     const dataTable = taigiangdayDetails?.data?.length && taigiangdayDetails?.data?.map((taigiangdayDetails) => {
         return { ...taigiangdayDetails, key: taigiangdayDetails._id }
@@ -969,95 +1049,63 @@ const TaiGiangDay = ({ }) => {
                     </Form>
                 </Loading>
             </ModalComponent>        
-
-            <DrawerComponent title='Cập nhật chi tiết tải hướng dẫn' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
+            
+            <DrawerComponent title='Cập nhật chi tiết tải hướng dẫn' isOpen={isOpenDrawer}  onClose={() => {setIsOpenDrawer(false);settaigiangdayId(null)}} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateTaiGiangDay}
+                        // onFinish={onUpdateTaiGiangDay}
                         autoComplete="on"
                         form={form}
                     >
-                        <Form.Item
-                            label="Hình thức hướng dẫn"
-                            name="HinhThucHuongDan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* // <InputComponent value={stateTaiGiangDayDetails['HinhThucHuongDan']} onChange={handleOnchangeDetails} name="HinhThucHuongDan" /> */}
-                            <Select
-                                name="HinhThucHuongDan"
-                                onChange={handleChangeSelect1}
-                                options={renderOptions(allHinhThucHuongdan?.data?.data)}
-                            />
-
-                        </Form.Item>
+                        
 
                         <Form.Item
-                            label="Học viên"
-                            name="HocVien"
+                            label="MaLop"
+                            name="MaLop"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails['HocVien']} onChange={handleOnchangeDetails} name="HocVien" />
+                            <InputComponent value={stateTaiGiangDayDetails['MaLop']} onChange={handleOnchangeDetails} name="MaLop" />
                         </Form.Item>
                         <Form.Item
-                            label="Lớp"
-                            name="Lop"
+                            label="MaMonHoc"
+                            name="MaMonHoc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails.Lop} onChange={handleOnchangeDetails} name="Lop" />
+                            <InputComponent value={stateTaiGiangDayDetails.MaMonHoc} onChange={handleOnchangeDetails} name="MaMonHoc" />
                         </Form.Item>
                         <Form.Item
-                            label="Đề tài"
-                            name="DeTai"
+                            label="TenMonHoc"
+                            name="TenMonHoc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails.DeTai} onChange={handleOnchangeDetails} name="DeTai" />
+                            <InputComponent value={stateTaiGiangDayDetails.TenMonHoc} onChange={handleOnchangeDetails} name="TenMonHoc" />
                         </Form.Item>
                         <Form.Item
-                            label="Ngày bắt đầu"
-                            name="NgayBatDau"
+                            label="SoTinChi"
+                            name="SoTinChi"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails.NgayBatDau} onChange={handleOnchangeDetails} name="NgayBatDau" />
+                            <InputComponent value={stateTaiGiangDayDetails.SoTinChi} onChange={handleOnchangeDetails} name="SoTinChi" />
                         </Form.Item>
                         <Form.Item
-                            label="Quý"
-                            name="Quy"
+                            label="GioChuan"
+                            name="GioChuan"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
+                            <InputComponent value={stateTaiGiangDayDetails.GioChuan} onChange={handleOnchangeDetails} name="GioChuan" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm"
-                            name="Nam"
+                            label="SiSo"
+                            name="SiSo"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                            <InputComponent value={stateTaiGiangDayDetails.SiSo} onChange={handleOnchangeDetails} name="SiSo" />
                         </Form.Item>
-                        <Form.Item
-                            label="Số CB hướng dẫn"
-                            name="SoCBHuongDan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateTaiGiangDayDetails.SoCBHuongDan} onChange={handleOnchangeDetails} name="SoCBHuongDan" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Định mức"
-                            name="DinhMuc"
-                        //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateTaiGiangDayDetails.DinhMuc} onChange={handleOnchangeDetails} name="DinhMuc" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Số giờ chuẩn"
-                            name="SoGioChuan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateTaiGiangDayDetails.SoGioChuan} onChange={handleOnchangeDetails} name="SoGioChuan" />
-                        </Form.Item>
+                        
                         <Form.Item
                             label="Trạng thái"
                             name="TrangThai"
@@ -1065,26 +1113,99 @@ const TaiGiangDay = ({ }) => {
                         >
                             <InputComponent value={stateTaiGiangDayDetails.TrangThai} onChange={handleOnchangeDetails} name="TrangThai" />
                         </Form.Item>
+                    
+                        <TableComponent columns={columns3} isLoading={isLoadingTaiGiangDay} data={dataTable2} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected2(record._id);
+                            }
+
+                        };
+                    }} />
+
+                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
+                            <Button type="primary" htmlType="submit" onClick={onUpdateTaiGiangDay}>
+                                Cập nhật
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Loading>
+            </DrawerComponent>
+            <DrawerComponent title='Cập nhật chi tiết hình thức công việc' isOpen={isOpenDrawer2}  onClose={() => setIsOpenDrawer2(false)} width="70%">
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated2}>
+
+                    <Form
+                        name="basic"
+                        labelCol={{ span: 5 }}
+                        wrapperCol={{ span: 22 }}
+                        autoComplete="on"
+                        form={form}
+                    >
+                        
+
                         {/* <Form.Item
-                            label=""
-                            name="image"
+                            label="MaLop"
+                            name="MaLop"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateTaiGiangDayDetails?.image && (
-                                    <img src={stateTaiGiangDayDetails?.image} style={{
-                                        height: '60px',
-                                        width: '60px',
-                                        borderRadius: '50%',
-                                        objectFit: 'cover',
-                                        marginLeft: '10px'
-                                    }} alt="avatar" />
-                                )}
-                            </WrapperUploadFile>
+                            <InputComponent value={stateTaiGiangDayDetails['MaLop']} onChange={handleOnchangeDetails} name="MaLop" />
+                        </Form.Item>
+                        <Form.Item
+                            label="MaMonHoc"
+                            name="MaMonHoc"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateTaiGiangDayDetails.MaMonHoc} onChange={handleOnchangeDetails} name="MaMonHoc" />
+                        </Form.Item>
+                        <Form.Item
+                            label="TenMonHoc"
+                            name="TenMonHoc"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateTaiGiangDayDetails.TenMonHoc} onChange={handleOnchangeDetails} name="TenMonHoc" />
+                        </Form.Item>
+                        <Form.Item
+                            label="SoTinChi"
+                            name="SoTinChi"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateTaiGiangDayDetails.SoTinChi} onChange={handleOnchangeDetails} name="SoTinChi" />
+                        </Form.Item>
+                        <Form.Item
+                            label="GioChuan"
+                            name="GioChuan"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateTaiGiangDayDetails.GioChuan} onChange={handleOnchangeDetails} name="GioChuan" />
+                        </Form.Item>
+                        <Form.Item
+                            label="SiSo"
+                            name="SiSo"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateTaiGiangDayDetails.SiSo} onChange={handleOnchangeDetails} name="SiSo" />
                         </Form.Item> */}
+                        
+                        <Form.Item
+                            label="HoTen"
+                            name="HoTen"
+                            // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            {false && <InputComponent value={stateHTCVDetails.HoTen} />}
+                            <InputComponent value={stateHTCVDetails.HoTen} onChange={handleOnchangeDetails2} name="HoTen" />
+                        </Form.Item>
+                        <Form.Item
+                            label="HinhThucCV"
+                            name="HinhThucCV"
+                            // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            {false && <InputComponent value={stateHTCVDetails.HinhThucCV} />}
+                            <InputComponent value={stateHTCVDetails.HinhThucCV} onChange={handleOnchangeDetails2} name="HinhThucCV" />
+                        </Form.Item>
+                    
+
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" onClick={onUpdateHTCV}>
                                 Cập nhật
                             </Button>
                         </Form.Item>

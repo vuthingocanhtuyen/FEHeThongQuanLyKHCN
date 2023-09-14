@@ -26,7 +26,7 @@ export const updateTaiGiangDay = async (id, access_token, data) => {
 export const getDetailsTaiGiangDay = async (id) => {
     // const res = await axios.get(`${process.env.REACT_APP_API_URL}/taigiangday/get-details/${id}`);
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/taigiangday/get-details/${id}`);
-    console.log("res: ", res.data)
+    
     return res.data;
 };
 

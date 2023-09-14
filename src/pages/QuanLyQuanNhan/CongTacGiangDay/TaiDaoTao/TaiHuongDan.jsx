@@ -197,7 +197,6 @@ const TaiHuongDan = ({ }) => {
 
     const queryTaiHuongDan = useQuery({ queryKey: ['taihuongdan'], queryFn: getAllTaiHuongDans })
     const taihuongdanDetails = useQuery(['hosoquannhantaihuongdan', quannhanId], fetchGetTaiHuongDan, { enabled: !!quannhanId })
-    console.log("tai huong dan:", taihuongdanDetails.data, queryTaiHuongDan.data)
     const { isLoading: isLoadingTaiHuongDan, data: quatrinhcongtacs } = queryTaiHuongDan
     const renderAction = () => {
         return (
