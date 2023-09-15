@@ -38,30 +38,30 @@ const TaiGiangDay = ({ }) => {
     const quannhanId = user.QuanNhanId;
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
-    
-          try {
-            // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
-            const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
-            
-    
-            if (response.data && response.data.length > 0) {
-              const firstData = response.data[0];
-              
-              const donViValue = firstData.DonVi[0];
-              setCurrentUserDonVi(donViValue);
-              setCurrentUserDonViCode(donViValue);
+
+            try {
+                // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
+                const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
+
+
+                if (response.data && response.data.length > 0) {
+                    const firstData = response.data[0];
+
+                    const donViValue = firstData.DonVi[0];
+                    setCurrentUserDonVi(donViValue);
+                    setCurrentUserDonViCode(donViValue);
+                }
+
+            } catch (error) {
+                console.error('Error fetching ChucVuDonVi:', error);
             }
-    
-          } catch (error) {
-            console.error('Error fetching ChucVuDonVi:', error);
-          }
         };
-    
+
         fetchGetChucVuDonVi();
-      }, [user.QuanNhanId, user.access_token]);
+    }, [user.QuanNhanId, user.access_token]);
     const inittial = () => ({
         code: '',
-        
+
         MaLop: '',
         MaMonHoc: '',
         TenMonHoc: '',
@@ -98,38 +98,39 @@ const TaiGiangDay = ({ }) => {
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
-        
+
         (data) => {
-            const { code, QuanNhanId = quannhanId, MaLop, MaMonHoc, TenMonHoc, SoTinChi, GioChuan, SiSo, HTDT, KetThuc,Quy, Nam,HocKy,HTThi,SoTiet,FileCM,TrangThai, edituser, edittime, GhiChu  } = data
+            const { code, QuanNhanId = quannhanId, MaLop, MaMonHoc, TenMonHoc, SoTinChi, GioChuan, SiSo, HTDT, KetThuc, Quy, Nam, HocKy, HTThi, SoTiet, FileCM, TrangThai, edituser, edittime, GhiChu } = data
             const res = TaiGiangDayService.createTaiGiangDay({
-                code, QuanNhanId, MaLop, MaMonHoc, TenMonHoc, SoTinChi, GioChuan, SiSo, HTDT, KetThuc,Quy, Nam,HocKy,HTThi,SoTiet,FileCM,TrangThai, edituser, edittime, GhiChu 
+                code, QuanNhanId, MaLop, MaMonHoc, TenMonHoc, SoTinChi, GioChuan, SiSo, HTDT, KetThuc, Quy, Nam, HocKy, HTThi, SoTiet, FileCM, TrangThai, edituser, edittime, GhiChu
             }).then(res => {
-                try{
-                settaigiangdayId(res.data._id);
-                return res;
-            }catch{};
+                try {
+                    settaigiangdayId(res.data._id);
+                    return res;
+                } catch { };
             });
         }
     )
     const mutation2 = useMutationHooks(
-        
+
         (data) => {
-            try{
-            const { HinhThucCV, QuanNhanId,HoTen,KhoiLuongCV,DonVi,SoTiet,SoGioQuyDoi, GhiChu } = data
-            const res = HTCVService.createHTCV({
-                HinhThucCV, QuanNhanId,HoTen,KhoiLuongCV,DonVi,SoTiet,SoGioQuyDoi, GhiChu
-            }).then(res => {
-                sethtcvId(res.data._id);
-                return res;
-            });}
-            catch{}
+            try {
+                const { HinhThucCV, QuanNhanId, HoTen, KhoiLuongCV, DonVi, SoTiet, SoGioQuyDoi, GhiChu } = data
+                const res = HTCVService.createHTCV({
+                    HinhThucCV, QuanNhanId, HoTen, KhoiLuongCV, DonVi, SoTiet, SoGioQuyDoi, GhiChu
+                }).then(res => {
+                    sethtcvId(res.data._id);
+                    return res;
+                });
+            }
+            catch { }
         }
     )
-    
+
 
     const mutationUpdate = useMutationHooks(
         (data) => {
-          
+
             const { id,
                 token,
                 ...rests } = data
@@ -143,7 +144,7 @@ const TaiGiangDay = ({ }) => {
     )
     const mutationUpdate2 = useMutationHooks(
         (data) => {
-          
+
             const { id,
                 token,
                 ...rests } = data
@@ -155,7 +156,7 @@ const TaiGiangDay = ({ }) => {
         },
 
     )
-     
+
     const mutationDeleted = useMutationHooks(
         (data) => {
             const { id,
@@ -201,11 +202,11 @@ const TaiGiangDay = ({ }) => {
 
     const fetchGetTaiGiangDay = async (context) => {
         const quannhanId = context?.queryKey && context?.queryKey[1]
-       
+
         if (quannhanId) {
 
             const res = await TaiGiangDayService.getTaiGiangDayByQuanNhanId(quannhanId)
-           
+
             if (res?.data) {
                 setStateTaiGiangDayDetails({
                     code: res?.data.code,
@@ -237,11 +238,11 @@ const TaiGiangDay = ({ }) => {
         setIsLoadingUpdate(false)
     }
     const fetchGetHTCV = async () => {
-       
+
         if (taigiangdayId) {
             const res = await TaiGiangDayService.getDetailsTaiGiangDay(taigiangdayId)
-           
-            
+
+
             // if (res?.data) {
             //     setStateHTCVDetails({
             //         // HinhThucCV: res?.data?.CacHTCV[0].HinhThucCV,
@@ -257,7 +258,7 @@ const TaiGiangDay = ({ }) => {
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
             // console.log("chi tiết qtct:", setStateTaiGiangDayDetails)
-            
+
             return res.data.CacHTCV
         }
         setIsLoadingUpdate(false)
@@ -269,7 +270,7 @@ const TaiGiangDay = ({ }) => {
             form.setFieldsValue(inittial())
         }
     }, [form, stateTaiGiangDayDetails, isModalOpen])
-    
+
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true);
@@ -305,7 +306,7 @@ const TaiGiangDay = ({ }) => {
     const getQuanNhanFromDonVi = async () => {
         const res = await QuanNhanService.getQuanNhanFromDonVi(currentUserDonVi)
         return res
-      }
+    }
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
@@ -314,7 +315,7 @@ const TaiGiangDay = ({ }) => {
     const { data: dataDeleted2, isLoading: isLoadingDeleted2, isSuccess: isSuccessDelected2, isError: isErrorDeleted2 } = mutationDeleted2
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
-    
+
     const queryTaiGiangDay = useQuery({ queryKey: ['taigiangday'], queryFn: getAllTaiGiangDays })
     const taigiangdayDetails = useQuery(['hosoquannhantaigiangday', quannhanId], fetchGetTaiGiangDay, { enabled: !!quannhanId })
     const HTCVDetails = useQuery(['hinhthuccongviec', taigiangdayId], fetchGetHTCV, { enabled: !!taigiangdayId })
@@ -341,9 +342,9 @@ const TaiGiangDay = ({ }) => {
     const onChange = () => { }
     useEffect(() => {
         if (isModalOpen2) {
-          queryQuanNhan.refetch(); // Gọi queryQuanNhan khi isModalOpen2 thay đổi và isModalOpen2 = true
+            queryQuanNhan.refetch(); // Gọi queryQuanNhan khi isModalOpen2 thay đổi và isModalOpen2 = true
         }
-      }, [isModalOpen2, queryQuanNhan.refetch]);
+    }, [isModalOpen2, queryQuanNhan.refetch]);
     const fetchGetDetailsTaiGiangDay = async (rowSelected) => {
         console.log("detail row");
         const res = await TaiGiangDayService.getDetailsTaiGiangDay(rowSelected)
@@ -581,10 +582,10 @@ const TaiGiangDay = ({ }) => {
             key: 'HoTen',
             render: (text, record) => (
                 <span onClick={() => handleNameClick(record.HoTen, record._id)}>{text}</span>
-            ), 
+            ),
             ...getColumnSearchProps('HoTen')
         },
-        
+
 
 
     ];
@@ -593,7 +594,7 @@ const TaiGiangDay = ({ }) => {
         setStateHTCV(prevState => ({
             ...prevState,
             QuanNhanId: objectId,
-            HoTen:name,
+            HoTen: name,
         }));
         console.log(stateHTCV);
     };
@@ -635,25 +636,25 @@ const TaiGiangDay = ({ }) => {
         setIsOpenDrawer(false);
         setStateTaiGiangDayDetails({
             code: '',
-        // QuanNhanId: '',
-        MaLop: '',
-        MaMonHoc: '',
-        TenMonHoc: '',
-        SoTinChi: '',
-        GioChuan: '',
-        SiSo: '',
-        HTDT: '',
-        KetThuc: '',
-        Quy: '',
-        Nam: '',
-        HocKy: '',
-        HTThi: '',
-        SoTiet: '',
-        FileCM: '',
-        THCSDT: '',
-        CacHTCV: '',
-        TrangThai: '',
-        GhiChu: '',
+            // QuanNhanId: '',
+            MaLop: '',
+            MaMonHoc: '',
+            TenMonHoc: '',
+            SoTinChi: '',
+            GioChuan: '',
+            SiSo: '',
+            HTDT: '',
+            KetThuc: '',
+            Quy: '',
+            Nam: '',
+            HocKy: '',
+            HTThi: '',
+            SoTiet: '',
+            FileCM: '',
+            THCSDT: '',
+            CacHTCV: '',
+            TrangThai: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -661,13 +662,13 @@ const TaiGiangDay = ({ }) => {
         setIsOpenDrawer2(false);
         setStateHTCVDetails({
             HinhThucCV: '',
-        QuanNhanId: '',
-        HoTen: '',
-        KhoiLuongCV: '',
-        DonVi: '',
-        SoTiet: '',
-        SoGioQuyDoi: '',
-        GhiChu: '',
+            QuanNhanId: '',
+            HoTen: '',
+            KhoiLuongCV: '',
+            DonVi: '',
+            SoTiet: '',
+            SoGioQuyDoi: '',
+            GhiChu: '',
         })
         form.resetFields()
     };
@@ -740,7 +741,7 @@ const TaiGiangDay = ({ }) => {
         form.resetFields()
     };
     const handleCancel2 = () => {
-        
+
         setIsModalOpen2(false);
         setStateHTCV({
             HinhThucCV: '',
@@ -790,14 +791,14 @@ const TaiGiangDay = ({ }) => {
         const params = {
             HinhThucCV: stateHTCV.HinhThucCV,
             HoTen: stateHTCV.HoTen,
-            QuanNhanId:stateHTCV.QuanNhanId,
-            KhoiLuongCV:stateHTCV.KhoiLuongCV,
-            DonVi:stateHTCV.DonVi,
-            SoTiet:stateHTCV.SoTiet,
-            SoGioQuyDoi:stateHTCV.SoGioQuyDoi,
-            GhiChu:stateHTCV.GhiChu,
+            QuanNhanId: stateHTCV.QuanNhanId,
+            KhoiLuongCV: stateHTCV.KhoiLuongCV,
+            DonVi: stateHTCV.DonVi,
+            SoTiet: stateHTCV.SoTiet,
+            SoGioQuyDoi: stateHTCV.SoGioQuyDoi,
+            GhiChu: stateHTCV.GhiChu,
         }
-       
+
         mutation2.mutate(params, {
             onSettled: () => {
                 console.log("bat dau cv");
@@ -807,14 +808,14 @@ const TaiGiangDay = ({ }) => {
         })
     }
 
-    const onFinish3 = async () => {   
+    const onFinish3 = async () => {
         const data = {
             HTCVList: htcvId
-          };
-       
+        };
+
         try {
             const result = await TaiGiangDayService.updateHTCVLists(taigiangdayId, data, user?.access_token);
-           
+
             if (result.status === 'OK') {
                 message.success(result.message);
                 HTCVDetails.refetch();
@@ -827,17 +828,17 @@ const TaiGiangDay = ({ }) => {
             console.error(error);
             message.error('An error occurred');
         }
-    
-    };  
+
+    };
     useEffect(() => {
         if (htcvId) {
-          onFinish3();
-          
+            onFinish3();
+
         }
-      }, [htcvId]);
+    }, [htcvId]);
     const handleAddButtonClick = () => {
-        onFinish(); 
-        setIsModalOpen2(true); 
+        onFinish();
+        setIsModalOpen2(true);
     }
 
     const handleOnchange = (e) => {
@@ -856,22 +857,22 @@ const TaiGiangDay = ({ }) => {
     }
 
     const handleOnchangeDetails = (e) => {
-       
+
         setStateTaiGiangDayDetails({
             ...stateTaiGiangDayDetails,
             [e.target.name]: e.target.value
         })
 
-        
+
     }
     const handleOnchangeDetails2 = (e) => {
-       
+
         setStateHTCVDetails({
             ...stateHTCVDetails,
             [e.target.name]: e.target.value
         })
 
-        
+
     }
 
 
@@ -891,7 +892,7 @@ const TaiGiangDay = ({ }) => {
             }
         })
     }
-    
+
 
     const dataTable = taigiangdayDetails?.data?.length && taigiangdayDetails?.data?.map((taigiangdayDetails) => {
         return { ...taigiangdayDetails, key: taigiangdayDetails._id }
@@ -901,8 +902,8 @@ const TaiGiangDay = ({ }) => {
     })
     const dataTable3 = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
         return { ...quannhan, key: quannhan._id }
-      })
-    
+    })
+
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
             message.success()
@@ -917,7 +918,7 @@ const TaiGiangDay = ({ }) => {
         const res = await HinhThucHuongdanService.getAllType()
         return res
     }
-    
+
     const allHinhThucHuongdan = useQuery({ queryKey: ['all-hinhthuchuongdan'], queryFn: fetchAllHinhThucHuongDan })
     const handleChangeSelect1 = (value) => {
         setStateTaiGiangDay({
@@ -962,7 +963,7 @@ const TaiGiangDay = ({ }) => {
                         autoComplete="on"
                         form={form}
                     >
-                        
+
 
                         <Form.Item
                             label="MaLop"
@@ -1007,7 +1008,7 @@ const TaiGiangDay = ({ }) => {
                         >
                             <InputComponent value={stateTaiGiangDay.SiSo} onChange={handleOnchange} name="SiSo" />
                         </Form.Item>
-                
+
                         <Form.Item
                             label="Trạng thái"
                             name="TrangThai"
@@ -1021,18 +1022,18 @@ const TaiGiangDay = ({ }) => {
                             </Button>
                         </Form.Item>
                         <TableComponent columns={columns3} isLoading={isLoadingTaiGiangDay} data={dataTable2} onRow={(record, rowSelected) => {
-                        return {
-                            onClick: event => {
-                                setRowSelected(record._id);
-                            }
+                            return {
+                                onClick: event => {
+                                    setRowSelected(record._id);
+                                }
 
-                        };
-                    }} />
-                    <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                    <Button type="primary" onClick={handleCancel}>
+                            };
+                        }} />
+                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
+                            <Button type="primary" onClick={handleCancel}>
                                 Xong
                             </Button>
-                            </Form.Item>
+                        </Form.Item>
                     </Form>
                 </Loading>
             </ModalComponent>
@@ -1057,31 +1058,31 @@ const TaiGiangDay = ({ }) => {
                         </Form.Item>
                         <Form.Item label="Name" name="HoTen">
                             {selectedName}
-                    
-                        </Form.Item>
-                        
-                        
-                        <TableComponent columns={columns2} isLoading={isLoadingTaiGiangDay} data={dataTable3} onRow={(record, rowSelected) => {
-                        return {
-                            onClick: event => {
-                                // setRowSelected(record._id);
-                            }
 
-                        };
+                        </Form.Item>
+
+
+                        <TableComponent columns={columns2} isLoading={isLoadingTaiGiangDay} data={dataTable3} onRow={(record, rowSelected) => {
+                            return {
+                                onClick: event => {
+                                    // setRowSelected(record._id);
+                                }
+
+                            };
                         }} />
-                        
-                        
+
+
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit" onClick={() => {onFinish2();}}>
+                            <Button type="primary" htmlType="submit" onClick={() => { onFinish2(); }}>
                                 Ghi
                             </Button>
                         </Form.Item>
 
                     </Form>
                 </Loading>
-            </ModalComponent>        
-            
-            <DrawerComponent title='Cập nhật chi tiết tải hướng dẫn' isOpen={isOpenDrawer}  onClose={() => {setIsOpenDrawer(false);settaigiangdayId(null)}} width="70%">
+            </ModalComponent>
+
+            <DrawerComponent title='Cập nhật chi tiết tải hướng dẫn' isOpen={isOpenDrawer} onClose={() => { setIsOpenDrawer(false); settaigiangdayId(null) }} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
@@ -1092,7 +1093,7 @@ const TaiGiangDay = ({ }) => {
                         autoComplete="on"
                         form={form}
                     >
-                        
+
 
                         <Form.Item
                             label="MaLop"
@@ -1136,7 +1137,7 @@ const TaiGiangDay = ({ }) => {
                         >
                             <InputComponent value={stateTaiGiangDayDetails.SiSo} onChange={handleOnchangeDetails} name="SiSo" />
                         </Form.Item>
-                        
+
                         <Form.Item
                             label="Trạng thái"
                             name="TrangThai"
@@ -1144,15 +1145,15 @@ const TaiGiangDay = ({ }) => {
                         >
                             <InputComponent value={stateTaiGiangDayDetails.TrangThai} onChange={handleOnchangeDetails} name="TrangThai" />
                         </Form.Item>
-                    
-                        <TableComponent columns={columns3} isLoading={isLoadingTaiGiangDay} data={dataTable2} onRow={(record, rowSelected) => {
-                        return {
-                            onClick: event => {
-                                setRowSelected2(record._id);
-                            }
 
-                        };
-                    }} />
+                        <TableComponent columns={columns3} isLoading={isLoadingTaiGiangDay} data={dataTable2} onRow={(record, rowSelected) => {
+                            return {
+                                onClick: event => {
+                                    setRowSelected2(record._id);
+                                }
+
+                            };
+                        }} />
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit" onClick={onUpdateTaiGiangDay}>
@@ -1162,7 +1163,7 @@ const TaiGiangDay = ({ }) => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <DrawerComponent title='Cập nhật chi tiết hình thức công việc' isOpen={isOpenDrawer2}  onClose={() => setIsOpenDrawer2(false)} width="70%">
+            <DrawerComponent title='Cập nhật chi tiết hình thức công việc' isOpen={isOpenDrawer2} onClose={() => setIsOpenDrawer2(false)} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated2}>
 
                     <Form
@@ -1172,7 +1173,7 @@ const TaiGiangDay = ({ }) => {
                         autoComplete="on"
                         form={form}
                     >
-                        
+
 
                         {/* <Form.Item
                             label="MaLop"
@@ -1216,11 +1217,11 @@ const TaiGiangDay = ({ }) => {
                         >
                             <InputComponent value={stateTaiGiangDayDetails.SiSo} onChange={handleOnchangeDetails} name="SiSo" />
                         </Form.Item> */}
-                        
+
                         <Form.Item
                             label="HoTen"
                             name="HoTen"
-                            // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {false && <InputComponent value={stateHTCVDetails.HoTen} />}
                             <InputComponent value={stateHTCVDetails.HoTen} onChange={handleOnchangeDetails2} name="HoTen" />
@@ -1228,12 +1229,12 @@ const TaiGiangDay = ({ }) => {
                         <Form.Item
                             label="HinhThucCV"
                             name="HinhThucCV"
-                            // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {false && <InputComponent value={stateHTCVDetails.HinhThucCV} />}
                             <InputComponent value={stateHTCVDetails.HinhThucCV} onChange={handleOnchangeDetails2} name="HinhThucCV" />
                         </Form.Item>
-                    
+
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit" onClick={onUpdateHTCV}>

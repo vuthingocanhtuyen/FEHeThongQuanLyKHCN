@@ -11,7 +11,8 @@ import * as TaiHuongDanService from '../../../../services/TaiHuongDanService';
 import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
+
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -23,6 +24,9 @@ const TaiHuongDan = ({ }) => {
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+
+    const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
+    const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -60,7 +64,7 @@ const TaiHuongDan = ({ }) => {
                 SoCBHuongDan,
                 DinhMuc,
                 SoGioChuan,
-                TrangThai,
+                TrangThai = 0,
 
                 GhiChu } = data
             const res = TaiHuongDanService.createTaiHuongDan({
@@ -94,6 +98,37 @@ const TaiHuongDan = ({ }) => {
                 token,
                 { ...rests })
             return res
+        },
+
+    )
+    const mutationUpdateTrangThai = useMutationHooks(
+        (data) => {
+            console.log("data update:", data);
+            const { id, token, ...rests } = data;
+            const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
+            const res = TaiHuongDanService.updateTaiHuongDan(id, token, updatedData);
+            return res;
+
+        },
+
+    )
+
+
+    const handleCancelPheDuyet = () => {
+        setIsModalOpenPheDuyet(false)
+    }
+    const handleCancelNhapLai = () => {
+        setIsModalOpenNhapLai(false)
+    }
+
+    const mutationUpdateNhapLai = useMutationHooks(
+        (data) => {
+            console.log("data update:", data);
+            const { id, token, ...rests } = data;
+            const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
+            const res = TaiHuongDanService.updateTaiHuongDan(id, token, updatedData);
+            return res;
+
         },
 
     )
@@ -193,6 +228,8 @@ const TaiHuongDan = ({ }) => {
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
+    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
+    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
 
 
     const queryTaiHuongDan = useQuery({ queryKey: ['taihuongdan'], queryFn: getAllTaiHuongDans })
@@ -203,6 +240,8 @@ const TaiHuongDan = ({ }) => {
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
                 <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsTaiHuongDan} />
+                <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
             </div>
         )
     }
@@ -469,7 +508,7 @@ const TaiHuongDan = ({ }) => {
             SoCBHuongDan: stateTaiHuongDan.SoCBHuongDan,
             DinhMuc: stateTaiHuongDan.DinhMuc,
             SoGioChuan: stateTaiHuongDan.SoCBHuongDan,
-            TrangThai: stateTaiHuongDan.TrangThai,
+            //   TrangThai: stateTaiHuongDan.TrangThai,
             GhiChu: stateTaiHuongDan.GhiChu,
         }
         console.log("Finsh", stateTaiHuongDan)
@@ -511,7 +550,21 @@ const TaiHuongDan = ({ }) => {
         })
     }
 
+    const onUpdateNgoaiNguTrangThai = () => {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateTaiHuongDanDetails }, {
+            onSettled: () => {
+                taihuongdanDetails.refetch()
+            }
+        })
+    }
 
+    const onUpdateNgoaiNguNhapLai = () => {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateTaiHuongDanDetails }, {
+            onSettled: () => {
+                taihuongdanDetails.refetch()
+            }
+        })
+    }
 
     function getTrangThaiText(statusValue) {
         switch (statusValue) {
@@ -520,7 +573,7 @@ const TaiHuongDan = ({ }) => {
             case 1:
                 return 'Đã phê duyệt';
             case 2:
-                return 'Đã từ chối';
+                return 'Đã từ chối - Nhập lại';
             default:
                 return 'Trạng thái không hợp lệ';
         }
@@ -544,6 +597,24 @@ const TaiHuongDan = ({ }) => {
 
 
 
+    useEffect(() => {
+        if (isSuccessUpdatedNhapLai && dataUpdatedNhapLai?.status === 'OK') {
+            message.success()
+            handleCancelNhapLai()
+        } else if (isErrorUpdatedNhapLai) {
+            message.error()
+        }
+    }, [isSuccessUpdatedNhapLai])
+
+
+    useEffect(() => {
+        if (isSuccessUpdatedTT && dataUpdatedTT?.status === 'OK') {
+            message.success()
+            handleCancelPheDuyet()
+        } else if (isErrorUpdatedTT) {
+            message.error()
+        }
+    }, [isSuccessUpdatedTT])
 
 
     useEffect(() => {
@@ -658,8 +729,8 @@ const TaiHuongDan = ({ }) => {
                             name="NgayBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" /> */}
-                            <DatePicker value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
+                            <InputComponent value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
+                            {/* <DatePicker value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" /> */}
                         </Form.Item>
                         <Form.Item
                             label="Quý"
@@ -696,13 +767,13 @@ const TaiHuongDan = ({ }) => {
                         >
                             <InputComponent value={stateTaiHuongDan.SoGioChuan} onChange={handleOnchange} name="SoGioChuan" />
                         </Form.Item>
-                        <Form.Item
+                        {/* <Form.Item
                             label="Trạng thái"
                             name="TrangThai"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateTaiHuongDan.TrangThai} onChange={handleOnchange} name="TrangThai" />
-                        </Form.Item>
+                        </Form.Item> */}
 
 
                         {/* <Form.Item
@@ -824,13 +895,13 @@ const TaiHuongDan = ({ }) => {
                         >
                             <InputComponent value={stateTaiHuongDanDetails.SoGioChuan} onChange={handleOnchangeDetails} name="SoGioChuan" />
                         </Form.Item>
-                        <Form.Item
+                        {/* <Form.Item
                             label="Trạng thái"
                             name="TrangThai"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateTaiHuongDanDetails.TrangThai} onChange={handleOnchangeDetails} name="TrangThai" />
-                        </Form.Item>
+                        </Form.Item> */}
                         {/* <Form.Item
                             label=""
                             name="image"
@@ -860,6 +931,18 @@ const TaiHuongDan = ({ }) => {
             <ModalComponent title="Xóa tải hướng dẫn" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteTaiHuongDan}>
                 <Loading isLoading={isLoadingDeleted}>
                     <div>Bạn có chắc xóa tải hướng dẫn này không?</div>
+                </Loading>
+            </ModalComponent>
+
+            <ModalComponent title="Phê quyệt tải hướng dẫn" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc phê duyệt tải hướng dẫn này không?</div>
+                </Loading>
+            </ModalComponent>
+
+            <ModalComponent title="Yêu cầu nhập lại thông tin tải hướng dẫn" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc yêu cầu nhập lại tải hướng dẫn này không?</div>
                 </Loading>
             </ModalComponent>
 
