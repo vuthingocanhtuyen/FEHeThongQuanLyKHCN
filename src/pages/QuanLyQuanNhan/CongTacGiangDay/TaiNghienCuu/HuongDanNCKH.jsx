@@ -12,7 +12,8 @@ import * as LoaiDeTaiService from '../../../../services/LoaiDeTaiService';
 import * as PhanLoaiKetQuaService from '../../../../services/PhanLoaiKetQuaNCKHService';
 import { WrapperHeader } from '../style'
 import { useQuery } from '@tanstack/react-query'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
+
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -23,6 +24,8 @@ const HuongDanNCKH = ({ }) => {
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+    const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
+    const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -60,7 +63,7 @@ const HuongDanNCKH = ({ }) => {
                 HinhThucKhenThuong,
                 NgayNghiemThu,
                 Tai,
-                TrangThai,
+                TrangThai = 0,
                 GhiChu } = data
             const res = HuongDanNCKHService.createHuongDanNCKH({
                 QuanNhanId, Ten,
@@ -96,7 +99,37 @@ const HuongDanNCKH = ({ }) => {
         },
 
     )
+    const mutationUpdateTrangThai = useMutationHooks(
+        (data) => {
+            console.log("data update:", data);
+            const { id, token, ...rests } = data;
+            const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
+            const res = HuongDanNCKHService.updateHuongDanNCKH(id, token, updatedData);
+            return res;
 
+        },
+
+    )
+
+
+    const handleCancelPheDuyet = () => {
+        setIsModalOpenPheDuyet(false)
+    }
+    const handleCancelNhapLai = () => {
+        setIsModalOpenNhapLai(false)
+    }
+
+    const mutationUpdateNhapLai = useMutationHooks(
+        (data) => {
+            console.log("data update:", data);
+            const { id, token, ...rests } = data;
+            const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
+            const res = HuongDanNCKHService.updateHuongDanNCKH(id, token, updatedData);
+            return res;
+
+        },
+
+    )
     const mutationDeleted = useMutationHooks(
         (data) => {
             const { id,
@@ -194,6 +227,8 @@ const HuongDanNCKH = ({ }) => {
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
+    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
+    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
 
     const queryHuongDanNCKH = useQuery({ queryKey: ['huongdannckh'], queryFn: getAllHuongDanNCKHs })
     const huongdannckhDetails = useQuery(['hosoquannhanhuongdannckh', quannhanId], fetchGetHuongDanNCKH, { enabled: !!quannhanId })
@@ -204,6 +239,8 @@ const HuongDanNCKH = ({ }) => {
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
                 <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsHuongDanNCKH} />
+                <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
             </div>
         )
     }
@@ -419,7 +456,7 @@ const HuongDanNCKH = ({ }) => {
             HinhThucKhenThuong: '',
             NgayNghiemThu: '',
             Tai: '',
-            TrangThai: '',
+            // TrangThai: '',
             GhiChu: ''
         })
         form.resetFields()
@@ -460,7 +497,7 @@ const HuongDanNCKH = ({ }) => {
             HinhThucKhenThuong: '',
             NgayNghiemThu: '',
             Tai: '',
-            TrangThai: '',
+            //    TrangThai: '',
             GhiChu: ''
 
         })
@@ -480,7 +517,7 @@ const HuongDanNCKH = ({ }) => {
             HinhThucKhenThuong: stateHuongDanNCKH.HinhThucKhenThuong,
             NgayNghiemThu: stateHuongDanNCKH.NgayNghiemThu,
             Tai: stateHuongDanNCKH.Tai,
-            TrangThai: stateHuongDanNCKH.TrangThai,
+            //    TrangThai: stateHuongDanNCKH.TrangThai,
             GhiChu: stateHuongDanNCKH.GhiChu
 
         }
@@ -531,7 +568,21 @@ const HuongDanNCKH = ({ }) => {
             }
         })
     }
+    const onUpdateNgoaiNguTrangThai = () => {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateHuongDanNCKHDetails }, {
+            onSettled: () => {
+                huongdannckhDetails.refetch()
+            }
+        })
+    }
 
+    const onUpdateNgoaiNguNhapLai = () => {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateHuongDanNCKHDetails }, {
+            onSettled: () => {
+                huongdannckhDetails.refetch()
+            }
+        })
+    }
 
     function getTrangThaiText(statusValue) {
         switch (statusValue) {
@@ -540,7 +591,7 @@ const HuongDanNCKH = ({ }) => {
             case 1:
                 return 'Đã phê duyệt';
             case 2:
-                return 'Đã từ chối';
+                return 'Đã từ chối - Nhập lại';
             default:
                 return 'Trạng thái không hợp lệ';
         }
@@ -577,7 +628,24 @@ const HuongDanNCKH = ({ }) => {
         }
     })
 
+    useEffect(() => {
+        if (isSuccessUpdatedNhapLai && dataUpdatedNhapLai?.status === 'OK') {
+            message.success()
+            handleCancelNhapLai()
+        } else if (isErrorUpdatedNhapLai) {
+            message.error()
+        }
+    }, [isSuccessUpdatedNhapLai])
 
+
+    useEffect(() => {
+        if (isSuccessUpdatedTT && dataUpdatedTT?.status === 'OK') {
+            message.success()
+            handleCancelPheDuyet()
+        } else if (isErrorUpdatedTT) {
+            message.error()
+        }
+    }, [isSuccessUpdatedTT])
 
 
 
@@ -912,6 +980,18 @@ const HuongDanNCKH = ({ }) => {
             <ModalComponent title="Xóa hướng dẫn NCKH" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteHuongDanNCKH}>
                 <Loading isLoading={isLoadingDeleted}>
                     <div>Bạn có chắc xóa hướng dẫn NCKH này không?</div>
+                </Loading>
+            </ModalComponent>
+
+            <ModalComponent title="Phê quyệt hướng dẫn NCKH" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc phê duyệt hướng dẫn NCKH này không?</div>
+                </Loading>
+            </ModalComponent>
+
+            <ModalComponent title="Yêu cầu nhập lại thông tin hướng dẫn NCKH" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc yêu cầu nhập lại  hướng dẫn NCKH này không?</div>
                 </Loading>
             </ModalComponent>
 

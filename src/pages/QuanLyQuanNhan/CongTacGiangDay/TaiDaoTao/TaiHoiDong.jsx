@@ -3,14 +3,15 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
-import { renderOptions } from '../../../../utils'
+import { renderOptions, getBase64 } from '../../../../utils'
 import Loading from '../../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as TaiHoiDongService from '../../../../services/TaiHoiDongService';
 import * as CapHoiDongService from '../../../../services/CapHoiDongService';
 import * as VaiTroHoiDongService from '../../../../services/VaiTroHoiDongService';
-import { WrapperHeader } from './style'
+import { WrapperHeader, WrapperUploadFile } from './style'
+
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
 
@@ -40,6 +41,7 @@ const TaiHoiDong = ({ }) => {
         Nam: '',
         KhoiLuongCongViec: '',
         SoGioQuyDoi: '',
+        FileCM: '',
         TrangThai: 0,
         GhiChu: '',
     })
@@ -55,7 +57,7 @@ const TaiHoiDong = ({ }) => {
                 CapHoiDong,
                 LoaiHoiDong,
                 VaiTro,
-                ThoiDiem, Quy, Nam, KhoiLuongCongViec, SoGioQuyDoi, TrangThai = 0, GhiChu } = data
+                ThoiDiem, Quy, Nam, KhoiLuongCongViec, SoGioQuyDoi, FileCM, TrangThai = 0, GhiChu } = data
             const res = TaiHoiDongService.createTaiHoiDong({
                 QuanNhanId, ThoiDiem,
                 CapHoiDong,
@@ -63,7 +65,7 @@ const TaiHoiDong = ({ }) => {
                 VaiTro,
                 ThoiDiem, Quy, Nam,
                 KhoiLuongCongViec,
-                SoGioQuyDoi,
+                SoGioQuyDoi, FileCM,
                 TrangThai,
                 GhiChu
             })
@@ -169,6 +171,7 @@ const TaiHoiDong = ({ }) => {
                     Nam: res?.data.Nam,
                     KhoiLuongCongViec: res?.data.KhoiLuongCongViec,
                     SoGioQuyDoi: res?.data.SoGioQuyDoi,
+                    FileCM: res?.data.FileCM,
                     TrangThai: res?.data.TrangThai,
                     GhiChu: res?.data.GhiChu,
                 })
@@ -247,6 +250,7 @@ const TaiHoiDong = ({ }) => {
                 MonHoc: res?.data.MonHoc,
                 KhoiLuongCongViec: res?.data.KhoiLuongCongViec,
                 SoGioQuyDoi: res?.data.SoGioQuyDoi,
+                FileCM: res?.data.FileCM,
                 TrangThai: res?.data.TrangThai,
                 GhiChu: res?.data.GhiChu,
             })
@@ -420,6 +424,7 @@ const TaiHoiDong = ({ }) => {
             Nam: '',
             KhoiLuongCongViec: '',
             SoGioQuyDoi: '',
+            FileCM: '',
             TrangThai: '',
             GhiChu: '',
         })
@@ -459,6 +464,7 @@ const TaiHoiDong = ({ }) => {
             Nam: '',
             KhoiLuongCongViec: '',
             SoGioQuyDoi: '',
+            FileCM: '',
             TrangThai: '',
             GhiChu: '',
 
@@ -476,7 +482,7 @@ const TaiHoiDong = ({ }) => {
             Nam: stateTaiHoiDong.Nam,
             KhoiLuongCongViec: stateTaiHoiDong.KhoiLuongCongViec,
             SoGioQuyDoi: stateTaiHoiDong.SoGioQuyDoi,
-            //   TrangThai: stateTaiHoiDong.TrangThai,
+            FileCM: stateTaiHoiDong.FileCM,
             GhiChu: stateTaiHoiDong.GhiChu,
         }
         console.log("Finsh", stateTaiHoiDong)
@@ -673,6 +679,29 @@ const TaiHoiDong = ({ }) => {
         })
         // console.log(stateQuanNhan)
     }
+
+    const handleOnchangeFileCM = async ({ fileList }) => {
+        const file = fileList[0]
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setStateTaiHoiDong({
+            ...stateTaiHoiDong,
+            FileCM: file.preview
+        })
+    }
+
+
+    const handleOnchangeFileCMDetails = async ({ fileList }) => {
+        const file = fileList[0]
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setStateTaiHoiDongDetails({
+            ...stateTaiHoiDongDetails,
+            FileCM: file.preview
+        })
+    }
     return (
         <div>
             <div>
@@ -798,15 +827,15 @@ const TaiHoiDong = ({ }) => {
                         </Form.Item> */}
 
 
-                        {/* <Form.Item
-
-                            name="image"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!'}]}
+                        <Form.Item
+                            label="File chứng minh"
+                            name="FileCM"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!'}]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
+                            <WrapperUploadFile onChange={handleOnchangeFileCM} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateTaiHoiDong?.image && (
-                                    <img src={stateTaiHoiDong?.image} style={{
+                                {stateTaiHoiDong?.FileCM && (
+                                    <img src={stateTaiHoiDong?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -815,7 +844,7 @@ const TaiHoiDong = ({ }) => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
 
 
 
@@ -929,15 +958,15 @@ const TaiHoiDong = ({ }) => {
                         >
                             <InputComponent value={stateTaiHoiDongDetails.TrangThai} onChange={handleOnchangeDetails} name="TrangThai" />
                         </Form.Item> */}
-                        {/* <Form.Item
-                            label=""
+                        <Form.Item
+                            label="File chứng minh"
                             name="image"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
+                            <WrapperUploadFile onChange={handleOnchangeFileCMDetails} maxCount={1}>
                                 <Button >Select File</Button>
-                                {stateTaiHoiDongDetails?.image && (
-                                    <img src={stateTaiHoiDongDetails?.image} style={{
+                                {stateTaiHoiDongDetails?.FileCM && (
+                                    <img src={stateTaiHoiDongDetails?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -946,7 +975,7 @@ const TaiHoiDong = ({ }) => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Cập nhật

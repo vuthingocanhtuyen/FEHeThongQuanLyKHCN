@@ -8,6 +8,7 @@ import GiaiThuongNCKH from './TaiNghienCuu/GiaiThuongNCKH';
 import SangChe from './TaiNghienCuu/SangChe';
 import HoatDongKhac from './TaiNghienCuu/HoatDongKhac';
 import BienSoan from './TaiNghienCuu/BienSoan';
+import HopDong from './TaiNghienCuu/HopDong';
 const { TabPane } = Tabs;
 
 function TabNghienCuu() {
@@ -31,7 +32,10 @@ function TabNghienCuu() {
             <TabPane tab="Sáng chế" key="6">
                 <SangChe />
             </TabPane>
-            <TabPane tab="Hoạt động khác" key="7">
+            <TabPane tab="Hợp đồng" key="7">
+                <HopDong />
+            </TabPane>
+            <TabPane tab="Hoạt động khác" key="8">
                 <HoatDongKhac />
             </TabPane>
         </Tabs>

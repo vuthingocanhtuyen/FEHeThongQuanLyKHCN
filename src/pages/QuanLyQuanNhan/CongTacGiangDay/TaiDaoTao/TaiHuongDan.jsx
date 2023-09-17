@@ -3,13 +3,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
-import { renderOptions } from '../../../../utils'
+import { renderOptions, getBase64 } from '../../../../utils'
 import Loading from '../../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as TaiHuongDanService from '../../../../services/TaiHuongDanService';
 import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
-import { WrapperHeader } from './style'
+import { WrapperHeader, WrapperUploadFile } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
 
@@ -41,6 +41,7 @@ const TaiHuongDan = ({ }) => {
         Nam: '',
         SoCBHuongDan: '',
         DinhMuc: '',
+        FileCM: '',
         SoGioChuan: '',
         TrangThai: '',
         GhiChu: '',
@@ -62,7 +63,7 @@ const TaiHuongDan = ({ }) => {
                 Quy,
                 Nam,
                 SoCBHuongDan,
-                DinhMuc,
+                DinhMuc, FileCM,
                 SoGioChuan,
                 TrangThai = 0,
 
@@ -78,7 +79,7 @@ const TaiHuongDan = ({ }) => {
                 SoCBHuongDan,
                 DinhMuc,
                 SoGioChuan,
-                TrangThai,
+                TrangThai, FileCM,
                 GhiChu
             })
             console.log("data create qtct:", res.data)
@@ -183,6 +184,7 @@ const TaiHuongDan = ({ }) => {
                     Nam: res?.data.Nam,
                     SoCBHuongDan: res?.data.SoCBHuongDan,
                     DinhMuc: res?.data.DinhMuc,
+                    FileCM: res?.data.FileCM,
                     SoGioChuan: res?.data.SoGioChuan,
                     TrangThai: res?.data.TrangThai,
                     GhiChu: res?.data.GhiChu,
@@ -261,6 +263,7 @@ const TaiHuongDan = ({ }) => {
                 Nam: res?.data.Nam,
                 SoCBHuongDan: res?.data.SoCBHuongDan,
                 DinhMuc: res?.data.DinhMuc,
+                FileCM: res?.data.FileCM,
                 SoGioChuan: res?.data.SoGioChuan,
                 TrangThai: res?.data.TrangThai,
                 GhiChu: res?.data.GhiChu,
@@ -442,12 +445,17 @@ const TaiHuongDan = ({ }) => {
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
         setStateTaiHuongDanDetails({
-            SoQuyetDinh: '',
-            NgayQuyetDinh: '',
-            ChucVu: '',
-            DonVi: '',
-            KetThuc: '',
-            DonViSinhHoatHocThuat: '',
+            HinhThucHuongDan: '',
+            HocVien: '',
+            Lop: '',
+            DeTai: '',
+            NgayBatDau: '',
+            Quy: '',
+            Nam: '',
+            SoCBHuongDan: '',
+            DinhMuc: '',
+            FileCM: '',
+            SoGioChuan: '',
             TrangThai: '',
             GhiChu: '',
         })
@@ -488,6 +496,7 @@ const TaiHuongDan = ({ }) => {
             Nam: '',
             SoCBHuongDan: '',
             DinhMuc: '',
+            FileCM: '',
             SoGioChuan: '',
             TrangThai: '',
 
@@ -508,7 +517,7 @@ const TaiHuongDan = ({ }) => {
             SoCBHuongDan: stateTaiHuongDan.SoCBHuongDan,
             DinhMuc: stateTaiHuongDan.DinhMuc,
             SoGioChuan: stateTaiHuongDan.SoCBHuongDan,
-            //   TrangThai: stateTaiHuongDan.TrangThai,
+            FileCM: stateTaiHuongDan.FileCM,
             GhiChu: stateTaiHuongDan.GhiChu,
         }
         console.log("Finsh", stateTaiHuongDan)
@@ -589,9 +598,28 @@ const TaiHuongDan = ({ }) => {
     })
 
 
+    const handleOnchangeFileCM = async ({ fileList }) => {
+        const file = fileList[0]
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setStateTaiHuongDan({
+            ...stateTaiHuongDan,
+            FileCM: file.preview
+        })
+    }
 
 
-
+    const handleOnchangeFileCMDetails = async ({ fileList }) => {
+        const file = fileList[0]
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setStateTaiHuongDanDetails({
+            ...stateTaiHuongDanDetails,
+            FileCM: file.preview
+        })
+    }
 
 
 
@@ -776,15 +804,15 @@ const TaiHuongDan = ({ }) => {
                         </Form.Item> */}
 
 
-                        {/* <Form.Item
-
-                            name="image"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!'}]}
+                        <Form.Item
+                            label="File chứng minh"
+                            name="FileCM"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!'}]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
+                            <WrapperUploadFile onChange={handleOnchangeFileCM} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateTaiHuongDan?.image && (
-                                    <img src={stateTaiHuongDan?.image} style={{
+                                {stateTaiHuongDan?.FileCM && (
+                                    <img src={stateTaiHuongDan?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -793,7 +821,7 @@ const TaiHuongDan = ({ }) => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
 
 
 
@@ -902,15 +930,15 @@ const TaiHuongDan = ({ }) => {
                         >
                             <InputComponent value={stateTaiHuongDanDetails.TrangThai} onChange={handleOnchangeDetails} name="TrangThai" />
                         </Form.Item> */}
-                        {/* <Form.Item
-                            label=""
-                            name="image"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        <Form.Item
+                            label="File chứng minh"
+                            name="FileCM"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
+                            <WrapperUploadFile onChange={handleOnchangeFileCMDetails} maxCount={1}>
                                 <Button >Select File</Button>
-                                {stateTaiHuongDanDetails?.image && (
-                                    <img src={stateTaiHuongDanDetails?.image} style={{
+                                {stateTaiHuongDanDetails?.FileCM && (
+                                    <img src={stateTaiHuongDanDetails?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -919,7 +947,7 @@ const TaiHuongDan = ({ }) => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Cập nhật

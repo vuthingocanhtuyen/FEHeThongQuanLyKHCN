@@ -3,13 +3,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
-import { renderOptions } from '../../../../utils'
+import { renderOptions, getBase64 } from '../../../../utils'
 import Loading from '../../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as TaiKhaoThiService from '../../../../services/TaiKhaoThiService';
 import * as HinhThucKhaoThiService from '../../../../services/HinhThucKhaoThiService';
-import { WrapperHeader } from './style'
+import { WrapperHeader, WrapperUploadFile } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
 
@@ -38,6 +38,7 @@ const TaiKhaoThi = ({ }) => {
         MonHoc: '',
         KhoiLuongCongViec: '',
         SoGioQuyDoi: '',
+        FileCM: '',
         TrangThai: '',
         GhiChu: '',
     })
@@ -58,7 +59,7 @@ const TaiKhaoThi = ({ }) => {
                 MaLopHocPhan,
                 MonHoc,
                 KhoiLuongCongViec,
-                SoGioQuyDoi,
+                SoGioQuyDoi, FileCM,
                 TrangThai = 0,
 
                 GhiChu } = data
@@ -71,7 +72,7 @@ const TaiKhaoThi = ({ }) => {
                 MaLopHocPhan,
                 MonHoc,
                 KhoiLuongCongViec,
-                SoGioQuyDoi,
+                SoGioQuyDoi, FileCM,
                 TrangThai,
 
                 GhiChu
@@ -177,6 +178,7 @@ const TaiKhaoThi = ({ }) => {
                     MonHoc: res?.data.MonHoc,
                     KhoiLuongCongViec: res?.data.KhoiLuongCongViec,
                     SoGioQuyDoi: res?.data.SoGioQuyDoi,
+                    FileCM: res?.data.FileCM,
                     TrangThai: res?.data.TrangThai,
                     GhiChu: res?.data.GhiChu,
                 })
@@ -255,6 +257,7 @@ const TaiKhaoThi = ({ }) => {
                 MonHoc: res?.data.MonHoc,
                 KhoiLuongCongViec: res?.data.KhoiLuongCongViec,
                 SoGioQuyDoi: res?.data.SoGioQuyDoi,
+                FileCM: res?.data.FileCM,
                 TrangThai: res?.data.TrangThai,
                 GhiChu: res?.data.GhiChu,
             })
@@ -430,12 +433,16 @@ const TaiKhaoThi = ({ }) => {
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
         setStateTaiKhaoThiDetails({
-            SoQuyetDinh: '',
-            NgayQuyetDinh: '',
-            ChucVu: '',
-            DonVi: '',
-            KetThuc: '',
-            DonViSinhHoatHocThuat: '',
+            ThoiDiem: '',
+            Quy: '',
+            Nam: '',
+            HocKy: '',
+            HinhThucKhaoThi: '',
+            MaLopHocPhan: '',
+            MonHoc: '',
+            KhoiLuongCongViec: '',
+            SoGioQuyDoi: '',
+            FileCM: '',
             TrangThai: '',
             GhiChu: '',
         })
@@ -476,6 +483,7 @@ const TaiKhaoThi = ({ }) => {
             MonHoc: '',
             KhoiLuongCongViec: '',
             SoGioQuyDoi: '',
+            FileCM: '',
             TrangThai: '',
             GhiChu: '',
 
@@ -495,7 +503,7 @@ const TaiKhaoThi = ({ }) => {
             MonHoc: stateTaiKhaoThi.MonHoc,
             KhoiLuongCongViec: stateTaiKhaoThi.KhoiLuongCongViec,
             SoGioQuyDoi: stateTaiKhaoThi.SoGioQuyDoi,
-            //  TrangThai: stateTaiKhaoThi.TrangThai,
+            FileCM: stateTaiKhaoThi.FileCM,
             GhiChu: stateTaiKhaoThi.GhiChu,
 
         }
@@ -505,17 +513,10 @@ const TaiKhaoThi = ({ }) => {
                 taikhaothiDetails.refetch()
             }
         })
-    }
+    };
 
 
 
-    const handleOnchange = (e) => {
-        console.log("e: ", e.target.name, e.target.value)
-        setStateTaiKhaoThi({
-            ...stateTaiKhaoThi,
-            [e.target.name]: e.target.value
-        })
-    }
 
 
     const handleOnchangeDetails = (e) => {
@@ -593,14 +594,6 @@ const TaiKhaoThi = ({ }) => {
     }, [isSuccessUpdatedTT])
 
 
-
-
-
-
-
-
-
-
     useEffect(() => {
         if (isSuccess && data?.status === 'OK') {
             message.success()
@@ -617,13 +610,7 @@ const TaiKhaoThi = ({ }) => {
     }
 
     const allHinhThucKhaoThi = useQuery({ queryKey: ['all-hinhthuckhaothi'], queryFn: fetchAllHinhThucKhaoThi })
-    const handleChangeSelect1 = (value) => {
-        setStateTaiKhaoThi({
-            ...stateTaiKhaoThi,
-            HinhThucKhaoThi: value
-        })
-        // console.log(stateQuanNhan)
-    }
+
     const handleChangeSelectDetails = (value) => {
         setStateTaiKhaoThiDetails({
             ...stateTaiKhaoThiDetails,
@@ -631,7 +618,59 @@ const TaiKhaoThi = ({ }) => {
         })
         // console.log(stateQuanNhan)
     }
+    // const handleChangeSelect1 = (value) => {
+    //     setStateTaiKhaoThi({
+    //         ...stateTaiKhaoThi,
+    //         HinhThucKhaoThi: value
+    //     })
+    //     // console.log(stateQuanNhan)
+    // }
+    // const handleOnchange = (e) => {
+    //     console.log("e: ", e.target.name, e.target.value)
 
+    //     setStateTaiKhaoThi({
+    //         ...stateTaiKhaoThi,
+    //         [e.target.name]: e.target.value
+    //     })
+    // }
+
+    const handleOnchangeFileCM = async ({ fileList }) => {
+        const file = fileList[0]
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setStateTaiKhaoThi({
+            ...stateTaiKhaoThi,
+            FileCM: file.preview
+        })
+    }
+    const handleChange = (e, value) => {
+        if (e.target) {
+            console.log("e: ", e.target.name, e.target.value);
+            setStateTaiKhaoThi({
+                ...stateTaiKhaoThi,
+                [e.target.name]: e.target.value
+            });
+        } else {
+            setStateTaiKhaoThi({
+                ...stateTaiKhaoThi,
+                HinhThucKhaoThi: value
+            })
+        }
+    };
+
+
+
+    const handleOnchangeFileCMDetails = async ({ fileList }) => {
+        const file = fileList[0]
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj);
+        }
+        setStateTaiKhaoThiDetails({
+            ...stateTaiKhaoThiDetails,
+            FileCM: file.preview
+        })
+    }
     return (
         <div>
             <div>
@@ -672,7 +711,7 @@ const TaiKhaoThi = ({ }) => {
                             name="ThoiDiem"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi['ThoiDiem']} onChange={handleOnchange} name="ThoiDiem" />
+                            <InputComponent value={stateTaiKhaoThi['ThoiDiem']} onChange={handleChange} name="ThoiDiem" />
 
 
 
@@ -683,7 +722,7 @@ const TaiKhaoThi = ({ }) => {
                             name="Quy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi['Quy']} onChange={handleOnchange} name="Quy" />
+                            <InputComponent value={stateTaiKhaoThi['Quy']} onChange={handleChange} name="Quy" />
                         </Form.Item>
 
                         <Form.Item
@@ -691,14 +730,14 @@ const TaiKhaoThi = ({ }) => {
                             name="Nam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi.Nam} onChange={handleOnchange} name="Nam" />
+                            <InputComponent value={stateTaiKhaoThi.Nam} onChange={handleChange} name="Nam" />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
                             name="HocKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi.HocKy} onChange={handleOnchange} name="HocKy" />
+                            <InputComponent value={stateTaiKhaoThi.HocKy} onChange={handleChange} name="HocKy" />
                         </Form.Item>
                         <Form.Item
                             label="Hình thức khảo thí"
@@ -709,7 +748,7 @@ const TaiKhaoThi = ({ }) => {
                         */}
                             <Select
                                 name="HinhThucKhaoThi"
-                                onChange={handleChangeSelect1}
+                                onChange={handleChange}
                                 options={renderOptions(allHinhThucKhaoThi?.data?.data)}
                             />
                         </Form.Item>
@@ -718,42 +757,42 @@ const TaiKhaoThi = ({ }) => {
                             name="MaLopHocPhan"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi.MaLopHocPhan} onChange={handleOnchange} name="MaLopHocPhan" />
+                            <InputComponent value={stateTaiKhaoThi.MaLopHocPhan} onChange={handleChange} name="MaLopHocPhan" />
                         </Form.Item>
                         <Form.Item
                             label="Môn học"
                             name="MonHoc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi.MonHoc} onChange={handleOnchange} name="MonHoc" />
+                            <InputComponent value={stateTaiKhaoThi.MonHoc} onChange={handleChange} name="MonHoc" />
                         </Form.Item>
                         <Form.Item
                             label="Khối lượng công việc"
                             name="KhoiLuongCongViec"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi.KhoiLuongCongViec} onChange={handleOnchange} name="KhoiLuongCongViec" />
+                            <InputComponent value={stateTaiKhaoThi.KhoiLuongCongViec} onChange={handleChange} name="KhoiLuongCongViec" />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ quy đổi"
                             name="SoGioQuyDoi"
                         //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi.SoGioQuyDoi} onChange={handleOnchange} name="SoGioQuyDoi" />
+                            <InputComponent value={stateTaiKhaoThi.SoGioQuyDoi} onChange={handleChange} name="SoGioQuyDoi" />
                         </Form.Item>
 
 
 
 
-                        {/* <Form.Item
-
-                            name="image"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!'}]}
+                        <Form.Item
+                            lable="File chứng minh"
+                            name="FileCM"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!'}]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatar} maxCount={1}>
+                            <WrapperUploadFile onChange={handleOnchangeFileCM} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateTaiKhaoThi?.image && (
-                                    <img src={stateTaiKhaoThi?.image} style={{
+                                {stateTaiKhaoThi?.FileCM && (
+                                    <img src={stateTaiKhaoThi?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -762,7 +801,7 @@ const TaiKhaoThi = ({ }) => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
 
 
 
@@ -864,15 +903,15 @@ const TaiKhaoThi = ({ }) => {
 
 
 
-                        {/* <Form.Item
-                            label=""
-                            name="image"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        <Form.Item
+                            label="File chứng minh"
+                            name="FileCM"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <WrapperUploadFile onChange={handleOnchangeAvatarDetails} maxCount={1}>
-                                <Button >Select File</Button>
-                                {stateTaiKhaoThiDetails?.image && (
-                                    <img src={stateTaiKhaoThiDetails?.image} style={{
+                            <WrapperUploadFile onChange={handleOnchangeFileCMDetails} maxCount={1}>
+                                <Button >File chứng minh</Button>
+                                {stateTaiKhaoThiDetails?.FileCM && (
+                                    <img src={stateTaiKhaoThiDetails?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -881,7 +920,7 @@ const TaiKhaoThi = ({ }) => {
                                     }} alt="avatar" />
                                 )}
                             </WrapperUploadFile>
-                        </Form.Item> */}
+                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Cập nhật

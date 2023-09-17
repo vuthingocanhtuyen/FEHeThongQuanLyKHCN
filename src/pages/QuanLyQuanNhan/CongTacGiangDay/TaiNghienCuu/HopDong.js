@@ -8,11 +8,11 @@ import Loading from '../../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../../components/InputComponent/InputComponent'
 import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
-import * as GiaiThuongNCKHService from '../../../../services/GiaiThuongService';
+import * as HopDongService from '../../../../services/HopDongService';
 import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
-import * as HTCVService from '../../../../services/HTCVGiaiThuongService';
+import * as HTCVService from '../../../../services/HTCVHopDongService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
@@ -20,11 +20,11 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const GiaiThuongNCKH = ({ }) => {
+const HopDong = ({ }) => {
     const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
     const [currentUserDonViCode, setCurrentUserDonViCode] = useState(null);
     const [htcvId, sethtcvId] = useState('')
-    const [giaithuongnckhId, setgiaithuongnckhId] = useState('')
+    const [hopdongId, sethopdongId] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -67,15 +67,17 @@ const GiaiThuongNCKH = ({ }) => {
         fetchGetChucVuDonVi();
     }, [user.QuanNhanId, user.access_token]);
     const inittial = () => ({
-        GiaiThuongId: '',
-        LoaiGiaiThuong: '',
-        TenGiaiThuong: '',
-        TenCongTrinh: '',
-        NgayGiaiThuong: '',
-        SoTacGia: '',
-        CacTacGia: '',
-        Quy: '',
-        Nam: '',
+        HopDongId: '',
+        TenHopDong: '',
+        BenA: '',
+        DonViChuTri: '',
+        GiaTriHopDong: '',
+        ThoiDiemKetThuc: '',
+        ThoiDiemBatDau: '',
+        NguoiChuTri: '',
+        SoThanhVien: '',
+        CacThanhVien: '',
+        NgayThanhLy: '',
         Tai: '',
         FileCM: '',
         TrangThai: '',
@@ -92,8 +94,8 @@ const GiaiThuongNCKH = ({ }) => {
         SoGioQuyDoi: '',
         GhiChu: '',
     })
-    const [stateGiaiThuongNCKH, setStateGiaiThuongNCKH] = useState(inittial())
-    const [stateGiaiThuongNCKHDetails, setStateGiaiThuongNCKHDetails] = useState(inittial())
+    const [stateHopDong, setStateHopDong] = useState(inittial())
+    const [stateHopDongDetails, setStateHopDongDetails] = useState(inittial())
     const [stateHTCVDetails, setStateHTCVDetails] = useState(inittialHTCV())
     const [stateHTCV, setStateHTCV] = useState(inittialHTCV())
     const [form] = Form.useForm();
@@ -101,12 +103,12 @@ const GiaiThuongNCKH = ({ }) => {
     const mutation = useMutationHooks(
 
         (data) => {
-            const { QuanNhanId = quannhanId, GiaiThuongId, LoaiGiaiThuong, TenGiaiThuong, TenCongTrinh, NgayGiaiThuong, SoTacGia, CacTacGia, Quy, Nam, Tai, FileCM, TrangThai = 0, edituser, edittime, GhiChu } = data
-            const res = GiaiThuongNCKHService.createGiaiThuongNCKH({
-                GiaiThuongId, QuanNhanId, LoaiGiaiThuong, TenGiaiThuong, TenCongTrinh, NgayGiaiThuong, SoTacGia, CacTacGia, Quy, Nam, Tai, FileCM, TrangThai, edituser, edittime, GhiChu
+            const { QuanNhanId = quannhanId, HopDongId, TenHopDong, BenA, DonViChuTri, GiaTriHopDong, ThoiDiemKetThuc, ThoiDiemBatDau, NguoiChuTri, SoThanhVien, CacThanhVien, NgayThanhLy, Tai, FileCM, TrangThai = 0, edituser, edittime, GhiChu } = data
+            const res = HopDongService.createHopDong({
+                HopDongId, QuanNhanId, TenHopDong, BenA, DonViChuTri, GiaTriHopDong, ThoiDiemKetThuc, ThoiDiemBatDau, NguoiChuTri, SoThanhVien, CacThanhVien, NgayThanhLy, Tai, FileCM, TrangThai, edituser, edittime, GhiChu
             }).then(res => {
                 try {
-                    setgiaithuongnckhId(res.data._id);
+                    sethopdongId(res.data._id);
                     return res;
                 } catch { };
             });
@@ -135,7 +137,7 @@ const GiaiThuongNCKH = ({ }) => {
             const { id,
                 token,
                 ...rests } = data
-            const res = GiaiThuongNCKHService.updateGiaiThuongNCKH(
+            const res = HopDongService.updateHopDong(
                 id,
                 token,
                 { ...rests })
@@ -149,7 +151,7 @@ const GiaiThuongNCKH = ({ }) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
-            const res = GiaiThuongNCKHService.updateGiaiThuongNCKH(id, token, updatedData);
+            const res = HopDongService.updateHopDong(id, token, updatedData);
             return res;
 
         },
@@ -169,7 +171,7 @@ const GiaiThuongNCKH = ({ }) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
-            const res = GiaiThuongNCKHService.updateGiaiThuongNCKH(id, token, updatedData);
+            const res = HopDongService.updateHopDong(id, token, updatedData);
             return res;
 
         },
@@ -195,7 +197,7 @@ const GiaiThuongNCKH = ({ }) => {
             const { id,
                 token,
             } = data
-            const res = GiaiThuongNCKHService.deleteGiaiThuongNCKH(
+            const res = HopDongService.deleteHopDong(
                 id,
                 token)
             return res
@@ -217,7 +219,7 @@ const GiaiThuongNCKH = ({ }) => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = GiaiThuongNCKHService.deleteManyGiaiThuongNCKH(
+            const res = HopDongService.deleteManyHopDong(
                 ids,
                 token)
             return res
@@ -225,32 +227,34 @@ const GiaiThuongNCKH = ({ }) => {
     )
 
 
-    const getAllGiaiThuongNCKHs = async () => {
-        const res = await GiaiThuongNCKHService.getAllGiaiThuongNCKH()
+    const getAllHopDongs = async () => {
+        const res = await HopDongService.getAllHopDong()
         return res
     }
 
     // show
 
 
-    const fetchGetGiaiThuongNCKH = async (context) => {
+    const fetchGetHopDong = async (context) => {
         const quannhanId = context?.queryKey && context?.queryKey[1]
 
         if (quannhanId) {
 
-            const res = await GiaiThuongNCKHService.getGiaiThuongNCKHByQuanNhanId(quannhanId)
+            const res = await HopDongService.getHopDongByQuanNhanId(quannhanId)
 
             if (res?.data) {
-                setStateGiaiThuongNCKHDetails({
-                    GiaiThuongId: res?.data.GiaiThuongId,
-                    LoaiGiaiThuong: res?.data.LoaiGiaiThuong,
-                    TenGiaiThuong: res?.data.TenGiaiThuong,
-                    TenCongTrinh: res?.data.TenCongTrinh,
-                    NgayGiaiThuong: res?.data.NgayGiaiThuong,
-                    SoTacGia: res?.data.SoTacGia,
-                    CacTacGia: res?.data.CacTacGia,
-                    Quy: res?.data.Quy,
-                    Nam: res?.data.Nam,
+                setStateHopDongDetails({
+                    HopDongId: res?.data.HopDongId,
+                    TenHopDong: res?.data.TenHopDong,
+                    BenA: res?.data.BenA,
+                    DonViChuTri: res?.data.DonViChuTri,
+                    GiaTriHopDong: res?.data.GiaTriHopDong,
+                    ThoiDiemKetThuc: res?.data.ThoiDiemKetThuc,
+                    ThoiDiemBatDau: res?.data.ThoiDiemBatDau,
+                    NguoiChuTri: res?.data.NguoiChuTri,
+                    SoThanhVien: res?.data.SoThanhVien,
+                    CacThanhVien: res?.data.CacThanhVien,
+                    NgayThanhLy: res?.data.NgayThanhLy,
                     Tai: res?.data.Tai,
                     FileCM: res?.data.FileCM,
                     TrangThai: res?.data.TrangThai,
@@ -262,15 +266,15 @@ const GiaiThuongNCKH = ({ }) => {
             }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateGiaiThuongNCKHDetails)
+            // console.log("chi tiết qtct:", setStateHopDongDetails)
             return res.data
         }
         setIsLoadingUpdate(false)
     }
     const fetchGetHTCV = async () => {
 
-        if (giaithuongnckhId) {
-            const res = await GiaiThuongNCKHService.getDetailsGiaiThuongNCKH(giaithuongnckhId)
+        if (hopdongId) {
+            const res = await HopDongService.getDetailsHopDong(hopdongId)
 
 
             // if (res?.data) {
@@ -287,7 +291,7 @@ const GiaiThuongNCKH = ({ }) => {
             // }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateGiaiThuongNCKHDetails)
+            // console.log("chi tiết qtct:", setStateHopDongDetails)
 
             return res.data.CacHTCV
         }
@@ -295,17 +299,17 @@ const GiaiThuongNCKH = ({ }) => {
     }
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateGiaiThuongNCKHDetails)
+            form.setFieldsValue(stateHopDongDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateGiaiThuongNCKHDetails, isModalOpen])
+    }, [form, stateHopDongDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true);
-            setgiaithuongnckhId(rowSelected);
-            fetchGetDetailsGiaiThuongNCKH(rowSelected);
+            sethopdongId(rowSelected);
+            fetchGetDetailsHopDong(rowSelected);
 
         }
     }, [rowSelected, isOpenDrawer])
@@ -318,7 +322,7 @@ const GiaiThuongNCKH = ({ }) => {
 
 
 
-    const handleDetailsGiaiThuongNCKH = () => {
+    const handleDetailsHopDong = () => {
         setIsOpenDrawer(true)
     }
     const handleDetailsHTCV = () => {
@@ -326,10 +330,10 @@ const GiaiThuongNCKH = ({ }) => {
     }
 
 
-    const handleDelteManyGiaiThuongNCKHs = (ids) => {
+    const handleDelteManyHopDongs = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                giaithuongnckhDetails.refetch()
+                hopdongDetails.refetch()
             }
         })
     }
@@ -350,17 +354,17 @@ const GiaiThuongNCKH = ({ }) => {
 
 
 
-    const queryGiaiThuongNCKH = useQuery({ queryKey: ['giaithuongnckh'], queryFn: getAllGiaiThuongNCKHs })
-    const giaithuongnckhDetails = useQuery(['hosoquannhangiaithuongnckh', quannhanId], fetchGetGiaiThuongNCKH, { enabled: !!quannhanId })
-    const HTCVDetails = useQuery(['hinhthuccongviecgiaithuong', giaithuongnckhId], fetchGetHTCV, { enabled: !!giaithuongnckhId })
-    const { isLoading: isLoadingGiaiThuongNCKH, data: quatrinhcongtacs } = queryGiaiThuongNCKH
+    const queryHopDong = useQuery({ queryKey: ['hopdong'], queryFn: getAllHopDongs })
+    const hopdongDetails = useQuery(['hosoquannhanhopdong', quannhanId], fetchGetHopDong, { enabled: !!quannhanId })
+    const HTCVDetails = useQuery(['hinhthuccongviechopdong', hopdongId], fetchGetHTCV, { enabled: !!hopdongId })
+    const { isLoading: isLoadingHopDong, data: quatrinhcongtacs } = queryHopDong
     const queryQuanNhan = useQuery({ queryKey: ['quannhans'], queryFn: getQuanNhanFromDonVi })
     const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsGiaiThuongNCKH} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsHopDong} />
                 <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
                 <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
             </div>
@@ -381,20 +385,22 @@ const GiaiThuongNCKH = ({ }) => {
             queryQuanNhan.refetch(); // Gọi queryQuanNhan khi isModalOpen2 thay đổi và isModalOpen2 = true
         }
     }, [isModalOpen2, queryQuanNhan.refetch]);
-    const fetchGetDetailsGiaiThuongNCKH = async (rowSelected) => {
+    const fetchGetDetailsHopDong = async (rowSelected) => {
         console.log("detail row");
-        const res = await GiaiThuongNCKHService.getDetailsGiaiThuongNCKH(rowSelected)
+        const res = await HopDongService.getDetailsHopDong(rowSelected)
         if (res?.data) {
-            setStateGiaiThuongNCKHDetails({
-                GiaiThuongId: res?.data.GiaiThuongId,
-                LoaiGiaiThuong: res?.data.LoaiGiaiThuong,
-                TenGiaiThuong: res?.data.TenGiaiThuong,
-                TenCongTrinh: res?.data.TenCongTrinh,
-                NgayGiaiThuong: res?.data.NgayGiaiThuong,
-                SoTacGia: res?.data.SoTacGia,
-                CacTacGia: res?.data.CacTacGia,
-                Quy: res?.data.Quy,
-                Nam: res?.data.Nam,
+            setStateHopDongDetails({
+                HopDongId: res?.data.HopDongId,
+                TenHopDong: res?.data.TenHopDong,
+                BenA: res?.data.BenA,
+                DonViChuTri: res?.data.DonViChuTri,
+                GiaTriHopDong: res?.data.GiaTriHopDong,
+                ThoiDiemKetThuc: res?.data.ThoiDiemKetThuc,
+                ThoiDiemBatDau: res?.data.ThoiDiemBatDau,
+                NguoiChuTri: res?.data.NguoiChuTri,
+                SoThanhVien: res?.data.SoThanhVien,
+                CacThanhVien: res?.data.CacThanhVien,
+                NgayThanhLy: res?.data.NgayThanhLy,
                 Tai: res?.data.Tai,
                 FileCM: res?.data.FileCM,
                 TrangThai: res?.data.TrangThai,
@@ -433,7 +439,7 @@ const GiaiThuongNCKH = ({ }) => {
 
     // useEffect(() => {
     //     if (rowSelected) {
-    //         fetchGetDetailsGiaiThuongNCKH(rowSelected)
+    //         fetchGetDetailsHopDong(rowSelected)
     //     }
     //     setIsLoadingUpdate(false)
     // }, [rowSelected])
@@ -441,11 +447,11 @@ const GiaiThuongNCKH = ({ }) => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateGiaiThuongNCKHDetails)
+            form.setFieldsValue(stateHopDongDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateGiaiThuongNCKHDetails, isModalOpen])
+    }, [form, stateHopDongDetails, isModalOpen])
 
 
 
@@ -532,21 +538,21 @@ const GiaiThuongNCKH = ({ }) => {
 
         },
         {
-            title: 'Nội dung giải thưởng',
-            dataIndex: 'TenGiaiThuong',
-            key: 'TenGiaiThuong',
-            ...getColumnSearchProps('TenGiaiThuong')
+            title: 'Nội dung hợp đồng chuyển giao công nghệ',
+            dataIndex: 'TenHopDong',
+            key: 'TenHopDong',
+            ...getColumnSearchProps('TenHopDong')
         },
         {
             title: 'Tác giả',
-            dataIndex: 'CacTacGia',
-            key: 'CacTacGia',
+            dataIndex: 'CacThanhVien',
+            key: 'CacThanhVien',
         },
 
         {
             title: 'Loại',
-            dataIndex: 'LoaiGiaiThuong',
-            key: 'LoaiGiaiThuong',
+            dataIndex: '',
+            key: '',
         },
         {
             title: 'Vai trò',
@@ -555,9 +561,10 @@ const GiaiThuongNCKH = ({ }) => {
         },
         {
             title: 'Số tác giả',
-            dataIndex: 'SoTacGia',
-            key: 'SoTacGia',
+            dataIndex: 'SoThanhVien',
+            key: 'SoThanhVien',
         },
+
         {
             title: 'Tải',
             dataIndex: '',
@@ -694,19 +701,21 @@ const GiaiThuongNCKH = ({ }) => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateGiaiThuongNCKHDetails({
-            GiaiThuongId: '',
-            LoaiGiaiThuong: '',
-            TenGiaiThuong: '',
-            TenCongTrinh: '',
-            NgayGiaiThuong: '',
-            SoTacGia: '',
-            CacTacGia: '',
-            Quy: '',
-            Nam: '',
+        setStateHopDongDetails({
+            HopDongId: '',
+            TenHopDong: '',
+            BenA: '',
+            DonViChuTri: '',
+            GiaTriHopDong: '',
+            ThoiDiemKetThuc: '',
+            ThoiDiemBatDau: '',
+            NguoiChuTri: '',
+            SoThanhVien: '',
+            CacThanhVien: '',
+            NgayThanhLy: '',
             Tai: '',
             FileCM: '',
-            //  TrangThai:'', 
+            //     TrangThai:'',
             CacHTCV: '',
             GhiChu: '',
         })
@@ -751,10 +760,10 @@ const GiaiThuongNCKH = ({ }) => {
     }
 
 
-    const handleDeleteGiaiThuongNCKH = () => {
+    const handleDeleteHopDong = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                giaithuongnckhDetails.refetch()
+                hopdongDetails.refetch()
             }
         })
     }
@@ -766,22 +775,24 @@ const GiaiThuongNCKH = ({ }) => {
         })
     }
     const handleCancel = () => {
-        giaithuongnckhDetails.refetch();
-        setgiaithuongnckhId(null);
+        hopdongDetails.refetch();
+        sethopdongId(null);
         setIsModalOpen(false);
-        setStateGiaiThuongNCKH({
-            GiaiThuongId: '',
-            LoaiGiaiThuong: '',
-            TenGiaiThuong: '',
-            TenCongTrinh: '',
-            NgayGiaiThuong: '',
-            SoTacGia: '',
-            CacTacGia: '',
-            Quy: '',
-            Nam: '',
+        setStateHopDong({
+            HopDongId: '',
+            TenHopDong: '',
+            BenA: '',
+            DonViChuTri: '',
+            GiaTriHopDong: '',
+            ThoiDiemKetThuc: '',
+            ThoiDiemBatDau: '',
+            NguoiChuTri: '',
+            SoThanhVien: '',
+            CacThanhVien: '',
+            NgayThanhLy: '',
             Tai: '',
             FileCM: '',
-            //   TrangThai:'', 
+            //    TrangThai:'',
             CacHTCV: '',
             GhiChu: '',
         })
@@ -806,27 +817,31 @@ const GiaiThuongNCKH = ({ }) => {
     const onFinish = () => {
         const params = {
 
+            HopDongId: stateHopDong.HopDongId,
+            TenHopDong: stateHopDong.TenHopDong,
+            BenA: stateHopDong.BenA,
+            DonViChuTri: stateHopDong.DonViChuTri,
+            GiaTriHopDong: stateHopDong.GiaTriHopDong,
+            ThoiDiemKetThuc: stateHopDong.ThoiDiemKetThuc,
+            ThoiDiemBatDau: stateHopDong.ThoiDiemBatDau,
+            NguoiChuTri: stateHopDong.NguoiChuTri,
+            SoThanhVien: stateHopDong.SoThanhVien,
+            CacThanhVien: stateHopDong.CacThanhVien,
 
-            GiaiThuongId: stateGiaiThuongNCKH.GiaiThuongId,
-            LoaiGiaiThuong: stateGiaiThuongNCKH.LoaiGiaiThuong,
-            TenGiaiThuong: stateGiaiThuongNCKH.TenGiaiThuong,
+            NgayThanhLy: stateHopDong.NgayThanhLy,
 
-            TenCongTrinh: stateGiaiThuongNCKH.TenCongTrinh,
-            NgayGiaiThuong: stateGiaiThuongNCKH.NgayGiaiThuong,
+            //  TrangThai: stateHopDong.TrangThai,
 
-            SoTacGia: stateGiaiThuongNCKH.SoTacGia,
-            CacTacGia: stateGiaiThuongNCKH.CacTacGia,
-            Quy: stateGiaiThuongNCKH.Quy,
-            Nam: stateGiaiThuongNCKH.Nam,
-            Tai: stateGiaiThuongNCKH.Tai,
-            FileCM: stateGiaiThuongNCKH.FileCM,
-            CacHTCV: stateGiaiThuongNCKH.CacHTCV,
-            GhiChu: stateGiaiThuongNCKH.GhiChu,
+
+            Tai: stateHopDong.Tai,
+            FileCM: stateHopDong.FileCM,
+            CacHTCV: stateHopDong.CacHTCV,
+            GhiChu: stateHopDong.GhiChu,
         }
-        console.log("Finsh", stateGiaiThuongNCKH)
+        console.log("Finsh", stateHopDong)
         mutation.mutate(params, {
             onSettled: () => {
-                // giaithuongnckhDetails.refetch()
+                // hopdongDetails.refetch()
             }
         })
     }
@@ -834,8 +849,8 @@ const GiaiThuongNCKH = ({ }) => {
     const handleChangeCheckTHCSDT = (e) => {
         const checkedValue = e.target.checked ? 1 : 0;
         console.log("e: ", e.target.name, e.target.value)
-        setStateGiaiThuongNCKH({
-            ...stateGiaiThuongNCKH,
+        setStateHopDong({
+            ...stateHopDong,
             THCSDT: checkedValue,
             [e.target.name]: e.target.value
         });
@@ -868,13 +883,13 @@ const GiaiThuongNCKH = ({ }) => {
         };
 
         try {
-            const result = await GiaiThuongNCKHService.updateHTCVLists(giaithuongnckhId, data, user?.access_token);
+            const result = await HopDongService.updateHTCVLists(hopdongId, data, user?.access_token);
 
             if (result.status === 'OK') {
                 message.success(result.message);
                 HTCVDetails.refetch();
                 // handleCancel();
-                //nho them giaithuongnckhDetails.refetch()
+                //nho them hopdongDetails.refetch()
             } else {
                 message.error(result.message);
             }
@@ -897,8 +912,8 @@ const GiaiThuongNCKH = ({ }) => {
 
     const handleOnchange = (e) => {
         console.log("e: ", e.target.name, e.target.value)
-        setStateGiaiThuongNCKH({
-            ...stateGiaiThuongNCKH,
+        setStateHopDong({
+            ...stateHopDong,
             [e.target.name]: e.target.value
         })
     }
@@ -912,8 +927,8 @@ const GiaiThuongNCKH = ({ }) => {
 
     const handleOnchangeDetails = (e) => {
 
-        setStateGiaiThuongNCKHDetails({
-            ...stateGiaiThuongNCKHDetails,
+        setStateHopDongDetails({
+            ...stateHopDongDetails,
             [e.target.name]: e.target.value
         })
 
@@ -930,26 +945,26 @@ const GiaiThuongNCKH = ({ }) => {
     }
 
 
-    const onUpdateGiaiThuongNCKH = () => {
+    const onUpdateHopDong = () => {
         console.log("bat dau update");
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateGiaiThuongNCKHDetails }, {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateHopDongDetails }, {
             onSettled: () => {
-                giaithuongnckhDetails.refetch()
+                hopdongDetails.refetch()
             }
         })
     }
     const onUpdateNgoaiNguTrangThai = () => {
-        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateGiaiThuongNCKHDetails }, {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateHopDongDetails }, {
             onSettled: () => {
-                giaithuongnckhDetails.refetch()
+                hopdongDetails.refetch()
             }
         })
     }
 
     const onUpdateNgoaiNguNhapLai = () => {
-        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateGiaiThuongNCKHDetails }, {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateHopDongDetails }, {
             onSettled: () => {
-                giaithuongnckhDetails.refetch()
+                hopdongDetails.refetch()
             }
         })
     }
@@ -988,11 +1003,11 @@ const GiaiThuongNCKH = ({ }) => {
 
 
 
-    const dataTable = giaithuongnckhDetails?.data?.length && giaithuongnckhDetails?.data?.map((giaithuongnckhDetails) => {
+    const dataTable = hopdongDetails?.data?.length && hopdongDetails?.data?.map((hopdongDetails) => {
         return {
-            ...giaithuongnckhDetails,
-            key: giaithuongnckhDetails._id,
-            TrangThai: getTrangThaiText(giaithuongnckhDetails.TrangThai)
+            ...hopdongDetails,
+            key: hopdongDetails._id,
+            TrangThai: getTrangThaiText(hopdongDetails.TrangThai)
         }
     })
     const dataTable2 = HTCVDetails?.data?.length && HTCVDetails?.data?.map((HTCVDetails) => {
@@ -1037,8 +1052,8 @@ const GiaiThuongNCKH = ({ }) => {
 
     const allHinhThucHuongdan = useQuery({ queryKey: ['all-hinhthuchuongdan'], queryFn: fetchAllHinhThucHuongDan })
     const handleChangeSelect1 = (value) => {
-        setStateGiaiThuongNCKH({
-            ...stateGiaiThuongNCKH,
+        setStateHopDong({
+            ...stateHopDong,
             HinhThucHuongDan: value
         })
         // console.log(stateQuanNhan)
@@ -1049,8 +1064,8 @@ const GiaiThuongNCKH = ({ }) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setStateGiaiThuongNCKH({
-            ...stateGiaiThuongNCKH,
+        setStateHopDong({
+            ...stateHopDong,
             FileCM: file.preview
         })
     }
@@ -1061,16 +1076,16 @@ const GiaiThuongNCKH = ({ }) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setStateGiaiThuongNCKHDetails({
-            ...stateGiaiThuongNCKHDetails,
+        setStateHopDongDetails({
+            ...stateHopDongDetails,
             FileCM: file.preview
         })
     }
 
     const handleChangeCheckTHCSDTDeTail = (e) => {
         const checkedValue = e.target.checked ? 1 : 0;
-        setStateGiaiThuongNCKHDetails({
-            ...stateGiaiThuongNCKHDetails,
+        setStateHopDongDetails({
+            ...stateHopDongDetails,
             THCSDT: checkedValue,
         });
     };
@@ -1078,15 +1093,15 @@ const GiaiThuongNCKH = ({ }) => {
     return (
         <div>
             <div>
-                <WrapperHeader>Giải thưởng khoa học</WrapperHeader>
+                <WrapperHeader>Hợp đồng</WrapperHeader>
                 <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
                 </div>
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (
-                    // <Table dataSource={giaithuongnckhDetails} columns={columns} />
-                    <TableComponent columns={columns} isLoading={isLoadingGiaiThuongNCKH} data={dataTable} onRow={(record, rowSelected) => {
+                    // <Table dataSource={hopdongDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingHopDong} data={dataTable} onRow={(record, rowSelected) => {
                         return {
                             onClick: event => {
                                 setRowSelected(record._id);
@@ -1099,7 +1114,7 @@ const GiaiThuongNCKH = ({ }) => {
                 )}
 
             </div>
-            <ModalComponent forceRender title="Thêm chi tiết giải thưởng" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm chi tiết hợp đồng" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -1113,61 +1128,68 @@ const GiaiThuongNCKH = ({ }) => {
 
 
                         <Form.Item
-                            label="Loại giải thưởng"
-                            name="LoaiGiaiThuong"
+                            label="Tên hợp đồng"
+                            name="TenHopDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.LoaiGiaiThuong} onChange={handleOnchange} name="LoaiGiaiThuong" />
+                            <InputComponent value={stateHopDong.TenHopDong} onChange={handleOnchange} name="TenHopDong" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Tên"
-                            name="TenGiaiThuong"
+                            label="Bên A"
+                            name="BenA"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.TenGiaiThuong} onChange={handleOnchange} name="TenGiaiThuong" />
+                            <InputComponent value={stateHopDong.BenA} onChange={handleOnchange} name="BenA" />
                         </Form.Item>
                         <Form.Item
-                            label="Tên công trình"
-                            name="TenCongTrinh"
+                            label="Đơn vị chủ trì"
+                            name="DonViChuTri"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.TenCongTrinh} onChange={handleOnchange} name="TenCongTrinh" />
+                            <InputComponent value={stateHopDong.DonViChuTri} onChange={handleOnchange} name="DonViChuTri" />
                         </Form.Item>
                         <Form.Item
-                            label="Ngày giải thưởng"
-                            name="NgayGiaiThuong"
+                            label="Giá trị hợp đồng"
+                            name="GiaTriHopDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.NgayGiaiThuong} onChange={handleOnchange} name="NgayGiaiThuong" />
+                            <InputComponent value={stateHopDong.GiaTriHopDong} onChange={handleOnchange} name="GiaTriHopDong" />
                         </Form.Item>
                         <Form.Item
-                            label="Số tác giả"
-                            name="SoTacGia"
+                            label="Thời điểm bắt đầu"
+                            name="ThoiDiemBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.SoTacGia} onChange={handleOnchange} name="SoTacGia" />
+                            <InputComponent value={stateHopDong.ThoiDiemBatDau} onChange={handleOnchange} name="ThoiDiemBatDau" />
                         </Form.Item>
                         <Form.Item
-                            label="Các tác giả"
-                            name="CacTacGia"
+                            label="Thời điểm kết thúc"
+                            name="ThoiDiemKetThuc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.CacTacGia} onChange={handleOnchange} name="CacTacGia" />
+                            <InputComponent value={stateHopDong.ThoiDiemKetThuc} onChange={handleOnchange} name="ThoiDiemKetThuc" />
                         </Form.Item>
                         <Form.Item
-                            label="Quý"
-                            name="Quy"
+                            label="Người chủ trì"
+                            name="NguoiChuTri"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.Quy} onChange={handleOnchange} name="Quy" />
+                            <InputComponent value={stateHopDong.NguoiChuTri} onChange={handleOnchange} name="NguoiChuTri" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm"
-                            name="Nam"
+                            label="Số thành viên"
+                            name="SoThanhVien"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.Nam} onChange={handleOnchange} name="Nam" />
+                            <InputComponent value={stateHopDong.SoThanhVien} onChange={handleOnchange} name="SoThanhVien" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Ngày thanh lý"
+                            name="NgayThanhLy"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHopDong.NgayThanhLy} onChange={handleOnchange} name="NgayThanhLy" />
                         </Form.Item>
 
                         <Form.Item
@@ -1176,8 +1198,8 @@ const GiaiThuongNCKH = ({ }) => {
                         >
                             <WrapperUploadFile onChange={handleOnchangeFileCM} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateGiaiThuongNCKH?.FileCM && (
-                                    <img src={stateGiaiThuongNCKH?.FileCM} style={{
+                                {stateHopDong?.FileCM && (
+                                    <img src={stateHopDong?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -1192,7 +1214,7 @@ const GiaiThuongNCKH = ({ }) => {
                                 Thêm HTCV
                             </Button>
                         </Form.Item>
-                        <TableComponent columns={columns3} isLoading={isLoadingGiaiThuongNCKH} data={dataTable2} onRow={(record, rowSelected) => {
+                        <TableComponent columns={columns3} isLoading={isLoadingHopDong} data={dataTable2} onRow={(record, rowSelected) => {
                             return {
                                 onClick: event => {
                                     setRowSelected(record._id);
@@ -1242,7 +1264,7 @@ const GiaiThuongNCKH = ({ }) => {
 
 
 
-                        <TableComponent columns={columns2} isLoading={isLoadingGiaiThuongNCKH} data={dataTable3} onRow={(record, rowSelected) => {
+                        <TableComponent columns={columns2} isLoading={isLoadingHopDong} data={dataTable3} onRow={(record, rowSelected) => {
                             return {
                                 onClick: event => {
                                     // setRowSelected(record._id);
@@ -1262,14 +1284,14 @@ const GiaiThuongNCKH = ({ }) => {
                 </Loading>
             </ModalComponent>
 
-            <DrawerComponent title='Cập nhật chi tiết giải thưởng' isOpen={isOpenDrawer} onClose={() => { setIsOpenDrawer(false); setgiaithuongnckhId(null) }} width="70%">
+            <DrawerComponent title='Cập nhật chi tiết hợp đồng' isOpen={isOpenDrawer} onClose={() => { setIsOpenDrawer(false); sethopdongId(null) }} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        // onFinish={onUpdateGiaiThuongNCKH}
+                        // onFinish={onUpdateHopDong}
                         autoComplete="on"
                         form={form}
                     >
@@ -1277,62 +1299,71 @@ const GiaiThuongNCKH = ({ }) => {
 
 
 
+
+
                         <Form.Item
-                            label="Loại giải thưởng"
-                            name="LoaiGiaiThuong"
+                            label="Tên hợp đồng"
+                            name="TenHopDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.LoaiGiaiThuong} onChange={handleOnchangeDetails} name="LoaiGiaiThuong" />
+                            <InputComponent value={stateHopDongDetails.TenHopDong} onChange={handleOnchangeDetails} name="TenHopDong" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Tên"
-                            name="TenGiaiThuong"
+                            label="Bên A"
+                            name="BenA"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.TenGiaiThuong} onChange={handleOnchangeDetails} name="TenGiaiThuong" />
+                            <InputComponent value={stateHopDongDetails.BenA} onChange={handleOnchangeDetails} name="BenA" />
                         </Form.Item>
                         <Form.Item
-                            label="Tên công trình"
-                            name="TenCongTrinh"
+                            label="Đơn vị chủ trì"
+                            name="DonViChuTri"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.TenCongTrinh} onChange={handleOnchangeDetails} name="TenCongTrinh" />
+                            <InputComponent value={stateHopDongDetails.DonViChuTri} onChange={handleOnchangeDetails} name="DonViChuTri" />
                         </Form.Item>
                         <Form.Item
-                            label="Ngày giải thưởng"
-                            name="NgayGiaiThuong"
+                            label="Giá trị hợp đồng"
+                            name="GiaTriHopDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.NgayGiaiThuong} onChange={handleOnchangeDetails} name="NgayGiaiThuong" />
+                            <InputComponent value={stateHopDongDetails.GiaTriHopDong} onChange={handleOnchangeDetails} name="GiaTriHopDong" />
                         </Form.Item>
                         <Form.Item
-                            label="Số tác giả"
-                            name="SoTacGia"
+                            label="Thời điểm bắt đầu"
+                            name="ThoiDiemBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.SoTacGia} onChange={handleOnchangeDetails} name="SoTacGia" />
+                            <InputComponent value={stateHopDongDetails.ThoiDiemBatDau} onChange={handleOnchangeDetails} name="ThoiDiemBatDau" />
                         </Form.Item>
                         <Form.Item
-                            label="Các tác giả"
-                            name="CacTacGia"
+                            label="Thời điểm kết thúc"
+                            name="ThoiDiemKetThuc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.CacTacGia} onChange={handleOnchangeDetails} name="CacTacGia" />
+                            <InputComponent value={stateHopDongDetails.ThoiDiemKetThuc} onChange={handleOnchangeDetails} name="ThoiDiemKetThuc" />
                         </Form.Item>
                         <Form.Item
-                            label="Quý"
-                            name="Quy"
+                            label="Người chủ trì"
+                            name="NguoiChuTri"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
+                            <InputComponent value={stateHopDongDetails.NguoiChuTri} onChange={handleOnchangeDetails} name="NguoiChuTri" />
                         </Form.Item>
                         <Form.Item
-                            label="Năm"
-                            name="Nam"
+                            label="Số thành viên"
+                            name="SoThanhVien"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                            <InputComponent value={stateHopDongDetails.SoThanhVien} onChange={handleOnchangeDetails} name="SoThanhVien" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Ngày thanh lý"
+                            name="NgayThanhLy"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHopDongDetails.NgayThanhLy} onChange={handleOnchangeDetails} name="NgayThanhLy" />
                         </Form.Item>
 
 
@@ -1344,8 +1375,8 @@ const GiaiThuongNCKH = ({ }) => {
                         >
                             <WrapperUploadFile onChange={handleOnchangeFileCMDetails} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateGiaiThuongNCKHDetails?.FileCM && (
-                                    <img src={stateGiaiThuongNCKHDetails?.FileCM} style={{
+                                {stateHopDongDetails?.FileCM && (
+                                    <img src={stateHopDongDetails?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -1356,7 +1387,7 @@ const GiaiThuongNCKH = ({ }) => {
                             </WrapperUploadFile>
                         </Form.Item>
 
-                        <TableComponent columns={columns3} isLoading={isLoadingGiaiThuongNCKH} data={dataTable2} onRow={(record, rowSelected) => {
+                        <TableComponent columns={columns3} isLoading={isLoadingHopDong} data={dataTable2} onRow={(record, rowSelected) => {
                             return {
                                 onClick: event => {
                                     setRowSelected2(record._id);
@@ -1366,7 +1397,7 @@ const GiaiThuongNCKH = ({ }) => {
                         }} />
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit" onClick={onUpdateGiaiThuongNCKH}>
+                            <Button type="primary" htmlType="submit" onClick={onUpdateHopDong}>
                                 Cập nhật
                             </Button>
                         </Form.Item>
@@ -1420,9 +1451,9 @@ const GiaiThuongNCKH = ({ }) => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa giải thưởng" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteGiaiThuongNCKH}>
+            <ModalComponent title="Xóa hợp đồng" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteHopDong}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa giải thưởng này không?</div>
+                    <div>Bạn có chắc xóa hợp đồng này không?</div>
                 </Loading>
             </ModalComponent>
             <ModalComponent title="Xóa công việc này" open={isModalOpenDelete2} onCancel={handleCancelDelete2} onOk={handleDeleteHTCV}>
@@ -1430,15 +1461,15 @@ const GiaiThuongNCKH = ({ }) => {
                     <div>Bạn có chắc xóa hình thức công việc này không?</div>
                 </Loading>
             </ModalComponent>
-            <ModalComponent title="Phê quyệt giải thưởng" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+            <ModalComponent title="Phê quyệt hợp đồng" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
                 <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc phê duyệt giải thưởng này không?</div>
+                    <div>Bạn có chắc phê duyệt hợp đồng này không?</div>
                 </Loading>
             </ModalComponent>
 
-            <ModalComponent title="Yêu cầu nhập lại thông tin giải thưởng" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+            <ModalComponent title="Yêu cầu nhập lại thông tin hợp đồng" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
                 <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc yêu cầu nhập lại  giải thưởng này không?</div>
+                    <div>Bạn có chắc yêu cầu nhập lại  hợp đồng này không?</div>
                 </Loading>
             </ModalComponent>
 
@@ -1448,4 +1479,4 @@ const GiaiThuongNCKH = ({ }) => {
     );
 };
 
-export default GiaiThuongNCKH;
+export default HopDong;
