@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space } from 'antd';
+import { Form, Input, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
 import { getBase64 } from '../../../utils'
@@ -28,7 +28,7 @@ const QTCongTac = ({ }) => {
   const quannhanId = user.QuanNhanId;
   const inittial = () => ({
     SoQuyetDinh: '',
-    NgayQuyetDinh: '',
+    NgayQuyetDinh: moment(),
     ChucVu: '',
     DonVi: '',
     KetThuc: '',
@@ -461,11 +461,15 @@ const QTCongTac = ({ }) => {
 
 
   const handleOnchangeDetails = (e) => {
-    console.log('check', e.target.name, e.target.value)
+    console.log('check', e.target.name, e.target.value, convertDateToString(stateQuaTrinhCongTacDetails.NgayQuyetDinh))
+
     setStateQuaTrinhCongTacDetails({
       ...stateQuaTrinhCongTacDetails,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
+
+
     })
+
   }
 
 
@@ -677,7 +681,14 @@ const QTCongTac = ({ }) => {
               name="NgayQuyetDinh"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <InputComponent value={stateQuaTrinhCongTacDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
+              <Input
+                name="NgayQuyetDinh"
+                //  prefix={convertDateToString(stateQuaTrinhCongTacDetails.NgayQuyetDinh)}
+                value={stateQuaTrinhCongTacDetails.NgayQuyetDinh}
+
+                onChange={handleOnchangeDetails}
+
+              />
             </Form.Item>
 
             <Form.Item
@@ -701,7 +712,7 @@ const QTCongTac = ({ }) => {
               name="KetThuc"
             // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <InputComponent value={stateQuaTrinhCongTacDetails['KetThuc']} onChange={handleOnchangeDetails} name="KetThuc" />
+              <InputComponent value={convertDateToString(stateQuaTrinhCongTacDetails['KetThuc'])} onChange={handleOnchangeDetails} name="KetThuc" />
             </Form.Item>
 
             <Form.Item

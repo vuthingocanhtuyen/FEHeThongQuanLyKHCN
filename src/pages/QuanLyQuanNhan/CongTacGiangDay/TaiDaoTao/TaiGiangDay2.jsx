@@ -631,8 +631,8 @@ const TaiGiangDay = ({ }) => {
         },
         {
             title: 'Khối lượng công việc',
-            dataIndex: 'KhoiLuongCV',
-            key: 'KhoiLuongCV',
+            dataIndex: 'SoTietCV',
+            key: 'SoTietCV',
         },
         {
             title: 'Đơn vị',
@@ -641,8 +641,8 @@ const TaiGiangDay = ({ }) => {
         },
         {
             title: 'Số giờ QĐ',
-            dataIndex: 'SoGioQD',
-            key: 'SoGioQD',
+            dataIndex: 'SoGioQuyDoi',
+            key: 'SoGioQuyDoi',
         },
         // {
         //     title: 'Trạng thái',
@@ -1019,12 +1019,19 @@ const TaiGiangDay = ({ }) => {
 
         setStateHTCVDetails({
             ...stateHTCVDetails,
+            HinhThucCV: e,
             [e.target.name]: e.target.value
         })
 
 
     }
+    const handleChangeSelectHTGiangDayDetails = (value) => {
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            HinhThucCV: value
+        })
 
+    }
 
     const onUpdateTaiGiangDay = () => {
         console.log("bat dau update");
@@ -1209,13 +1216,7 @@ const TaiGiangDay = ({ }) => {
     }
 
 
-    const handleChangeSelectHinhThucGiangDayDetails = (value) => {
-        setStateHTCVDetails({
-            ...stateHTCVDetails,
-            HinhThucCV: value
-        })
 
-    }
     // Hình thức thi
     const fetchAllHinhThucThi = async () => {
         const res = await HinhThucKhaoThiService.getAllType()
@@ -1699,7 +1700,7 @@ console.log(ketQua);
                             name="KetThuc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={convertDateToString(stateTaiGiangDayDetails.KetThuc)} onChange={handleOnchangeDetails} name="KetThuc" />
+                            <InputComponent value={stateTaiGiangDayDetails.KetThuc} onChange={handleOnchangeDetails} name="KetThuc" />
                         </Form.Item>
                         <Form.Item
                             label="Quý"
@@ -1836,9 +1837,9 @@ console.log(ketQua);
                             {/* <InputComponent value={stateHTCVDetails.HinhThucCV} onChange={handleOnchangeDetails2} name="HinhThucCV" /> */}
                             <Select
                                 name="HinhThucCV"
-                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+                                value={stateHTCVDetails['HinhThucCV']}
 
-                                onChange={handleChangeSelectHinhThucGiangDayDetails}
+                                onChange={handleChangeSelectHTGiangDayDetails}
                                 options={renderOptions(allHinhThucGiangDay?.data?.data)}
                             />
                         </Form.Item>

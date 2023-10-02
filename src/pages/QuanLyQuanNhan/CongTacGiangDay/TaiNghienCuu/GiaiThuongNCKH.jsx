@@ -550,8 +550,8 @@ const GiaiThuongNCKH = ({ }) => {
         },
         {
             title: 'Vai trò',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'VaiTro',
+            key: 'VaiTro',
         },
         {
             title: 'Số tác giả',

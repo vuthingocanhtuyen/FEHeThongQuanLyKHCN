@@ -20,6 +20,8 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
+
+import moment from 'moment';
 const BaiBaoKH = ({ }) => {
     const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
     const [currentUserDonViCode, setCurrentUserDonViCode] = useState(null);
@@ -1128,6 +1130,72 @@ const BaiBaoKH = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        //  return moment(date).format('DD/MM/YYYY');
+        // Parse the ISO 8601 date string into a Date object
+        const parsedDate = new Date(date);
+
+        // Extract the day, month, and year components from the Date object
+        const day = parsedDate.getDate();
+        const month = parsedDate.getMonth() + 1; // Months are zero-based, so add 1
+        const year = parsedDate.getFullYear();
+
+        // Format the date components into the desired format
+        const formattedDate = `${day}/${month}/${year}`;
+
+        return formattedDate;
+    }
+    function xacDinhQuy(date) {
+        // Chuyển đổi ngày thành đối tượng Date
+        if (typeof date === "string" && date.length > 0) {
+            const parts = date.split("/");
+            const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
+
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+            return quy
+        }
+        return null
+
+
+    }
+    //Năm
+    function xacDinhNam(date) {
+        // Chuyển đổi ngày thành đối tượng Date
+        if (typeof date === "string" && date.length > 0) {
+            const parts = date.split("/");
+            const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
+            const nam = ngay.getFullYear();
+            return nam
+        }
+
+        return null;
+    }
+    //học kỳ
+    function xacDinhHocKy(date) {
+        // Chuyển đổi ngày thành đối tượng Date
+        if (typeof date === "string" && date.length > 0) {
+            const parts = date.split("/");
+            const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
+
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+
+            let hocKy;
+            if (quy <= 2) {
+                hocKy = "Học kỳ 1";
+            } else if (quy <= 4) {
+                hocKy = "Học kỳ 2";
+            } else {
+                hocKy = "Học kỳ hè";
+            }
+
+            return hocKy;
+        }
+
+        return null;
+    }
 
     return (
         <div>
@@ -1266,7 +1334,8 @@ const BaiBaoKH = ({ }) => {
                             name="Quy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.Quy} onChange={handleOnchange} name="Quy" />
+                            {/* <InputComponent value={stateBaiBaoKH.Quy} onChange={handleOnchange} name="Quy" /> */}
+                            {xacDinhQuy(stateBaiBaoKH.ThoiDiemXuatBan)}
                         </Form.Item>
 
                         <Form.Item
@@ -1274,7 +1343,8 @@ const BaiBaoKH = ({ }) => {
                             name="Nam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.Nam} onChange={handleOnchange} name="Nam" />
+                            {/* <InputComponent value={stateBaiBaoKH.Nam} onChange={handleOnchange} name="Nam" /> */}
+                            {xacDinhNam(stateBaiBaoKH.ThoiDiemXuatBan)}
                         </Form.Item>
                         <Form.Item
                             label="Ngôn ngữ báo"
@@ -1497,7 +1567,8 @@ const BaiBaoKH = ({ }) => {
                             name="Quy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.Quy} onChange={handleOnchangeDetails} name="Quy" /> */}
+                            {xacDinhQuy(stateBaiBaoKHDetails.ThoiDiemXuatBan)}
                         </Form.Item>
 
                         <Form.Item
@@ -1505,7 +1576,8 @@ const BaiBaoKH = ({ }) => {
                             name="Nam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" /> */}
+                            {xacDinhNam(stateBaiBaoKHDetails.ThoiDiemXuatBan)}
                         </Form.Item>
                         <Form.Item
                             label="Ngôn ngữ báo"

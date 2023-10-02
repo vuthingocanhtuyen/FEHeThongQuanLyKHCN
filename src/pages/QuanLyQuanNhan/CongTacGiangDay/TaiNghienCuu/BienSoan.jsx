@@ -551,8 +551,8 @@ const BienSoan = ({ }) => {
         },
         {
             title: 'Tác giả',
-            dataIndex: 'CNDeTai',
-            key: 'CNDeTai',
+            dataIndex: 'CacTacGia',
+            key: 'CacTacGia',
         },
 
         {

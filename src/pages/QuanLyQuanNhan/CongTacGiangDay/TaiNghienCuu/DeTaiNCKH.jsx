@@ -13,6 +13,16 @@ import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanS
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
 import * as HTCVService from '../../../../services/HTCVDeTaiService';
+
+import * as DanhMucKhenThuongService from '../../../../services/DanhMucKhenThuongService';
+import * as LoaiDeTaiService from '../../../../services/LoaiDeTaiService';
+import * as PhanLoaiKetQuaNCKHService from '../../../../services/PhanLoaiKetQuaNCKHService'
+import * as VaiTroService from '../../../../services/VaiTroService'
+import * as HinhThucDeTaiService from '../../../../services/HinhThucDeTaiService';
+
+
+
+
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
@@ -570,9 +580,9 @@ const DeTaiNCKH = ({ }) => {
         },
         {
             title: 'Nội dung đề tài',
-            dataIndex: 'Ten',
-            key: 'Ten',
-            ...getColumnSearchProps('Ten')
+            dataIndex: 'TenDeTai',
+            key: 'TenDeTai',
+            ...getColumnSearchProps('TenDeTai')
         },
         {
             title: 'Tác giả',
@@ -1140,7 +1150,125 @@ const DeTaiNCKH = ({ }) => {
             QLDVHV: checkedValue,
         });
     };
+    // hình thức khen thưởng
 
+    const fetchAllHTKhenThuong = async () => {
+        const res = await DanhMucKhenThuongService.getAllType()
+        return res
+    }
+
+    const allHTKT = useQuery({ queryKey: ['all-htkhenthuong'], queryFn: fetchAllHTKhenThuong })
+    const handleChangeSelectHTKhenThuong = (value) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            HinhThucKhenThuong: value
+        })
+
+    }
+
+
+    const handleChangeSelectHTKhenThuongDetails = (value) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            HinhThucKhenThuong: value
+        })
+
+    }
+
+    // phân loại kết quả
+
+    const fetchAllPhanLoaiKetQua = async () => {
+        const res = await PhanLoaiKetQuaNCKHService.getAllType()
+        return res
+    }
+
+    const allPhanLoaiKetQua = useQuery({ queryKey: ['all-plkq'], queryFn: fetchAllPhanLoaiKetQua })
+    const handleChangeSelectPhanLoaiKetQua = (value) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            PhanLoaiKetQua: value
+        })
+
+    }
+
+
+    const handleChangeSelectPhanLoaiKetQuaDetails = (value) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            PhanLoaiKetQua: value
+        })
+
+    }
+
+    // vai trò
+    const fetchAllVaiTro = async () => {
+        const res = await VaiTroService.getAllType()
+        return res
+    }
+
+    const allVaiTro = useQuery({ queryKey: ['all-vaitro'], queryFn: fetchAllVaiTro })
+    const handleChangeSelectVaiTro = (value) => {
+        setStateDeTaiNCKH({
+            ...stateHTCV,
+            VaiTro: value
+        })
+
+    }
+
+
+    const handleChangeSelectVaiTroDetails = (value) => {
+        setStateDeTaiNCKHDetails({
+            ...stateHTCVDetails,
+            VaiTro: value
+        })
+
+    }
+    // loại đề tài
+    const fetchAllLoaiDeTai = async () => {
+        const res = await LoaiDeTaiService.getAllType()
+        return res
+    }
+
+    const allLoaiDeTai = useQuery({ queryKey: ['all-loaidetai'], queryFn: fetchAllLoaiDeTai })
+    const handleChangeSelectLoaiDeTai = (value) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            LoaiDeTai: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiDeTaiDetails = (value) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            LoaiDeTai: value
+        })
+
+    }
+    // hình thức đề tài
+    const fetchAllHinhThucDeTai = async () => {
+        const res = await HinhThucDeTaiService.getAllType()
+        return res
+    }
+
+    const allHinhThucDeTai = useQuery({ queryKey: ['all-hinhthucdetai'], queryFn: fetchAllHinhThucDeTai })
+    const handleChangeSelectHinhThucDeTai = (value) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            HinhThucDeTai: value
+        })
+
+    }
+
+
+    const handleChangeSelectHinhThucDeTaiDetails = (value) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            HinhThucDeTai: value
+        })
+
+    }
     return (
         <div>
             <div>
@@ -1183,7 +1311,13 @@ const DeTaiNCKH = ({ }) => {
                             name="LoaiDeTai"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.LoaiDeTai} onChange={handleOnchange} name="LoaiDeTai" />
+                            <Select
+                                name="LoaiDeTai"
+
+                                onChange={handleChangeSelectLoaiDeTai}
+                                options={renderOptions(allLoaiDeTai?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateDeTaiNCKH.LoaiDeTai} onChange={handleOnchange} name="LoaiDeTai" /> */}
                         </Form.Item>
 
                         <Form.Item
@@ -1269,7 +1403,14 @@ const DeTaiNCKH = ({ }) => {
                             name="HinhThucDeTai"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.HinhThucDeTai} onChange={handleOnchange} name="HinhThucDeTai" />
+                            <Select
+                                name="HinhThucDeTai"
+
+                                onChange={handleChangeSelectHinhThucDeTai}
+                                options={renderOptions(allHinhThucDeTai?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateDeTaiNCKH.HinhThucDeTai} onChange={handleOnchange} name="HinhThucDeTai" /> */}
+
                         </Form.Item>
                         <Form.Item
                             label="Thuộc CT dự án"
@@ -1283,14 +1424,27 @@ const DeTaiNCKH = ({ }) => {
                             name="PhanLoaiKetQua"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.PhanLoaiKetQua} onChange={handleOnchange} name="PhanLoaiKetQua" />
+                            <Select
+                                name="PhanLoaiKetQua"
+
+                                onChange={handleChangeSelectPhanLoaiKetQua}
+                                options={renderOptions(allPhanLoaiKetQua?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateDeTaiNCKH.PhanLoaiKetQua} onChange={handleOnchange} name="PhanLoaiKetQua" /> */}
+
                         </Form.Item>
                         <Form.Item
                             label="HT khen thưởng"
                             name="HinhThucKhenThuong"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.HinhThucKhenThuong} onChange={handleOnchange} name="HinhThucKhenThuong" />
+                            {/* <InputComponent value={stateDeTaiNCKH.HinhThucKhenThuong} onChange={handleOnchange} name="HinhThucKhenThuong" /> */}
+                            <Select
+                                name="HinhThucKhenThuong"
+
+                                onChange={handleChangeSelectHTKhenThuong}
+                                options={renderOptions(allHTKT?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Ngày nghiệm thu"
@@ -1381,7 +1535,13 @@ const DeTaiNCKH = ({ }) => {
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTro}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1432,7 +1592,13 @@ const DeTaiNCKH = ({ }) => {
                             name="LoaiDeTai"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.LoaiDeTai} onChange={handleOnchangeDetails} name="LoaiDeTai" />
+                            {/* <InputComponent value={stateDeTaiNCKHDetails.LoaiDeTai} onChange={handleOnchangeDetails} name="LoaiDeTai" /> */}
+                            <Select
+                                name="LoaiDeTai"
+
+                                onChange={handleChangeSelectLoaiDeTaiDetails}
+                                options={renderOptions(allLoaiDeTai?.data?.data)}
+                            />
                         </Form.Item>
 
                         <Form.Item
@@ -1518,7 +1684,13 @@ const DeTaiNCKH = ({ }) => {
                             name="HinhThucDeTai"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.HinhThucDeTai} onChange={handleOnchangeDetails} name="HinhThucDeTai" />
+                            {/* <InputComponent value={stateDeTaiNCKHDetails.HinhThucDeTai} onChange={handleOnchangeDetails} name="HinhThucDeTai" /> */}
+                            <Select
+                                name="HinhThucDeTai"
+
+                                onChange={handleChangeSelectHinhThucDeTaiDetails}
+                                options={renderOptions(allHinhThucDeTai?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Thuộc CT dự án"
@@ -1532,14 +1704,27 @@ const DeTaiNCKH = ({ }) => {
                             name="PhanLoaiKetQua"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.PhanLoaiKetQua} onChange={handleOnchangeDetails} name="PhanLoaiKetQua" />
+                            {/* <InputComponent value={stateDeTaiNCKHDetails.PhanLoaiKetQua} onChange={handleOnchangeDetails} name="PhanLoaiKetQua" /> */}
+                            <Select
+                                name="PhanLoaiKetQua"
+
+                                onChange={handleChangeSelectPhanLoaiKetQuaDetails}
+                                options={renderOptions(allPhanLoaiKetQua?.data?.data)}
+                            />
+
                         </Form.Item>
                         <Form.Item
                             label="HT khen thưởng"
                             name="HinhThucKhenThuong"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.HinhThucKhenThuong} onChange={handleOnchangeDetails} name="HinhThucKhenThuong" />
+                            {/* <InputComponent value={stateDeTaiNCKHDetails.HinhThucKhenThuong} onChange={handleOnchangeDetails} name="HinhThucKhenThuong" /> */}
+                            <Select
+                                name="HinhThucKhenThuong"
+
+                                onChange={handleChangeSelectHTKhenThuongDetails}
+                                options={renderOptions(allHTKT?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Ngày nghiệm thu"
@@ -1634,8 +1819,14 @@ const DeTaiNCKH = ({ }) => {
                             name="VaiTro"
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
-                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" />
+                            {/* {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
+                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTroDetails}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ "
