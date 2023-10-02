@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space } from 'antd';
+import { Form, Table, Button, Space ,DatePicker} from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
 import { getBase64 } from '../../../utils'
@@ -142,8 +142,8 @@ const QTCongTac = ({ }) => {
     }
   }, [form, stateQuaTrinhCongTacDetails, isModalOpen])
   useEffect(() => {
-    
-    setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
+    setNgayQD(moment(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
+    // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
   }, [form, stateQuaTrinhCongTacDetails, isOpenDrawer])
   useEffect(() => {
     if (rowSelected && isOpenDrawer) {
@@ -452,10 +452,16 @@ const QTCongTac = ({ }) => {
 
 
   const handleOnchangeDetails = (e) => {
-    console.log('check', e.target.name, e.target.value)
+    
     setStateQuaTrinhCongTacDetails({
       ...stateQuaTrinhCongTacDetails,
       [e.target.name]: e.target.value
+    })
+  }
+  const handleOnchangeDetailNgayQD = (date) => {
+    setStateQuaTrinhCongTacDetails({
+      ...stateQuaTrinhCongTacDetails,
+      NgayQuyetDinh: date 
     })
   }
 
@@ -668,7 +674,12 @@ const QTCongTac = ({ }) => {
               // name="NgayQuyetDinh"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <InputComponent value={NgayQD} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
+              {/* <InputComponent value={NgayQD} onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh" /> */}
+              <DatePicker 
+              value={NgayQD}
+              onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
+              format="DD/MM/YYYY" 
+              />
             </Form.Item>
 
             <Form.Item
