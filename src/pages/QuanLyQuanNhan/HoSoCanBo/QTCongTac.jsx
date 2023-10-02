@@ -18,11 +18,11 @@ import moment from 'moment';
 const QTCongTac = ({ }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [rowSelected, setRowSelected] = useState('')
+  const [rowSelected, setRowSelected] = useState('');
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-
+  const [NgayQD, setNgayQD] = useState('');
   const user = useSelector((state) => state?.user)
   const searchInput = useRef(null);
   const quannhanId = user.QuanNhanId;
@@ -141,7 +141,10 @@ const QTCongTac = ({ }) => {
       form.setFieldsValue(inittial())
     }
   }, [form, stateQuaTrinhCongTacDetails, isModalOpen])
+  useEffect(() => {
 
+    setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
+  }, [form, stateQuaTrinhCongTacDetails, isOpenDrawer])
   useEffect(() => {
     if (rowSelected && isOpenDrawer) {
       setIsLoadingUpdate(true)
@@ -209,18 +212,6 @@ const QTCongTac = ({ }) => {
     }
     setIsLoadingUpdate(false)
   }, [rowSelected])
-
-
-  useEffect(() => {
-    if (!isModalOpen) {
-      form.setFieldsValue(stateQuaTrinhCongTacDetails)
-    } else {
-      form.setFieldsValue(inittial())
-    }
-  }, [form, stateQuaTrinhCongTacDetails, isModalOpen])
-
-
-
 
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -678,17 +669,10 @@ const QTCongTac = ({ }) => {
 
             <Form.Item
               label="Ngày quyết định"
-              name="NgayQuyetDinh"
+              // name="NgayQuyetDinh"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <Input
-                name="NgayQuyetDinh"
-                //  prefix={convertDateToString(stateQuaTrinhCongTacDetails.NgayQuyetDinh)}
-                value={stateQuaTrinhCongTacDetails.NgayQuyetDinh}
-
-                onChange={handleOnchangeDetails}
-
-              />
+              <InputComponent value={NgayQD} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
             </Form.Item>
 
             <Form.Item
