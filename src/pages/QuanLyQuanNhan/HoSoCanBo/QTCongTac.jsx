@@ -691,7 +691,7 @@ const QTCongTac = ({ }) => {
             >
               {/* <InputComponent value={NgayQD} onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh" /> */}
               <DatePicker
-                value={NgayQDDetail}
+                // value={NgayQDDetail}
                 onChange={handleOnchangeDetailNgayQDDeTail} name="NgayQuyetDinh"
                 format="DD/MM/YYYY"
               />
