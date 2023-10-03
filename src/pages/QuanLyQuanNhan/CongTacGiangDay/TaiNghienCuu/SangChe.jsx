@@ -9,6 +9,8 @@ import InputComponent from '../../../../components/InputComponent/InputComponent
 import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as SangCheService from '../../../../services/SangCheService';
+import * as LoaiDangKyService from '../../../../services/LoaiDangKyService';
+import * as VaiTroService from '../../../../services/VaiTroService';
 import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
@@ -1078,7 +1080,52 @@ const SangChe = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+    // loại đăng ký
+    const fetchAllLoaiDangKy = async () => {
+        const res = await LoaiDangKyService.getAllType()
+        return res
+    }
 
+    const allLoaiDangKy = useQuery({ queryKey: ['all-loaidangky'], queryFn: fetchAllLoaiDangKy })
+    const handleChangeSelectLoaiDangKy = (value) => {
+        setStateSangChe({
+            ...stateSangChe,
+            LoaiDangKySach: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiDangKyDetails = (value) => {
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
+            LoaiDangKySach: value
+        })
+
+    }
+    // vai trò
+    const fetchAllVaiTro = async () => {
+        const res = await VaiTroService.getAllType()
+        return res
+    }
+
+    const allVaiTro = useQuery({ queryKey: ['all-vaitrosc'], queryFn: fetchAllVaiTro })
+    const handleChangeSelectVaiTro = (value) => {
+        setStateHTCV({
+            ...stateHTCV,
+            VaiTro: value
+        })
+
+    }
+
+
+    const handleChangeSelectVaiTroDetails = (value) => {
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            VaiTro: value
+        })
+
+    }
     return (
         <div>
             <div>
@@ -1129,7 +1176,12 @@ const SangChe = ({ }) => {
                             name="LoaiDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateSangChe.LoaiDangKy} onChange={handleOnchange} name="LoaiDangKy" />
+                            {/* <InputComponent value={stateSangChe.LoaiDangKy} onChange={handleOnchange} name="LoaiDangKy" /> */}
+                            <Select name="LoaiDangKy"
+
+                                onChange={handleChangeSelectLoaiDangKy}
+                                options={renderOptions(allLoaiDangKy?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Đơn vị cấp"
@@ -1242,7 +1294,12 @@ const SangChe = ({ }) => {
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
+                            <Select name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTro}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1302,7 +1359,13 @@ const SangChe = ({ }) => {
                             name="LoaiDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateSangCheDetails.LoaiDangKy} onChange={handleOnchangeDetails} name="LoaiDangKy" />
+                            {/* <InputComponent value={stateSangCheDetails.LoaiDangKy} onChange={handleOnchangeDetails} name="LoaiDangKy" /> */}
+                            <Select name="LoaiDangKy"
+
+                                onChange={handleChangeSelectLoaiDangKyDetails}
+                                options={renderOptions(allLoaiDangKy?.data?.data)}
+                            />
+
                         </Form.Item>
                         <Form.Item
                             label="Đơn vị cấp"
@@ -1420,7 +1483,12 @@ const SangChe = ({ }) => {
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
-                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" /> */}
+                            <Select name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTroDetails}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ "

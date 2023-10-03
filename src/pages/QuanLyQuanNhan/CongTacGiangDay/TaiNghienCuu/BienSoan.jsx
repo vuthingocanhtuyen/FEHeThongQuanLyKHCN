@@ -9,14 +9,15 @@ import InputComponent from '../../../../components/InputComponent/InputComponent
 import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as BienSoanService from '../../../../services/BienSoanService';
-import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
+import * as LoaiTaiLieuService from '../../../../services/LoaiTaiLieuService';
+import * as NgonNguService from '../../../../services/NgonNguService';
+import * as VaiTroService from '../../../../services/VaiTroService';
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
 import * as HTCVService from '../../../../services/HTCVBienSoanService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -1060,19 +1061,7 @@ const BienSoan = ({ }) => {
     }, [isSuccess])
 
 
-    const fetchAllHinhThucHuongDan = async () => {
-        const res = await HinhThucHuongdanService.getAllType()
-        return res
-    }
 
-    const allHinhThucHuongdan = useQuery({ queryKey: ['all-hinhthuchuongdan'], queryFn: fetchAllHinhThucHuongDan })
-    const handleChangeSelect1 = (value) => {
-        setStateBienSoan({
-            ...stateBienSoan,
-            HinhThucHuongDan: value
-        })
-        // console.log(stateQuanNhan)
-    }
 
     const handleOnchangeFileCM = async ({ fileList }) => {
         const file = fileList[0]
@@ -1104,6 +1093,77 @@ const BienSoan = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+
+    // vai trò
+    const fetchAllVaiTro = async () => {
+        const res = await VaiTroService.getAllType()
+        return res
+    }
+
+    const allVaiTro = useQuery({ queryKey: ['all-vaitrobs'], queryFn: fetchAllVaiTro })
+    const handleChangeSelectVaiTro = (value) => {
+        setStateHTCV({
+            ...stateHTCV,
+            VaiTro: value
+        })
+
+    }
+
+
+    const handleChangeSelectVaiTroDetails = (value) => {
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            VaiTro: value
+        })
+
+    }
+    //ngôn ngữ
+    const fetchAllNgonNgu = async () => {
+        const res = await NgonNguService.getAllType()
+        return res
+    }
+
+    const allNgonNgu = useQuery({ queryKey: ['all-ngonngu'], queryFn: fetchAllNgonNgu })
+    const handleChangeSelectNgonNgu = (value) => {
+        setStateBienSoan({
+            ...stateBienSoan,
+            NgonNguSach: value
+        })
+
+    }
+
+
+    const handleChangeSelectNgonNguDetails = (value) => {
+        setStateBienSoanDetails({
+            ...stateBienSoanDetails,
+            NgonNguSach: value
+        })
+
+    }
+    // loại tài liệu
+    const fetchAllLoaiTaiLieu = async () => {
+        const res = await LoaiTaiLieuService.getAllType()
+        return res
+    }
+
+    const allLoaiTaiLieu = useQuery({ queryKey: ['all-loaitailieu'], queryFn: fetchAllLoaiTaiLieu })
+    const handleChangeSelectLoaiTaiLieu = (value) => {
+        setStateBienSoan({
+            ...stateBienSoan,
+            LoaiTaiLieu: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiTaiLieuDetails = (value) => {
+        setStateBienSoanDetails({
+            ...stateBienSoanDetails,
+            LoaiTaiLieu: value
+        })
+
+    }
+
 
     return (
         <div>
@@ -1155,7 +1215,14 @@ const BienSoan = ({ }) => {
                             name="LoaiTaiLieu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.LoaiTaiLieu} onChange={handleOnchange} name="LoaiTaiLieu" />
+                            {/* <InputComponent value={stateBienSoan.LoaiTaiLieu} onChange={handleOnchange} name="LoaiTaiLieu" /> */}
+                            <Select
+                                name="LoaiTaiLieu"
+
+                                onChange={handleChangeSelectLoaiTaiLieu}
+                                options={renderOptions(allLoaiTaiLieu?.data?.data)}
+                            />
+
                         </Form.Item>
                         <Form.Item
                             label="Số trang"
@@ -1218,12 +1285,19 @@ const BienSoan = ({ }) => {
                             name="NgonNguSach"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.NgonNguSach} onChange={handleOnchange} name="NgonNguSach" />
+                            {/* <InputComponent value={stateBienSoan.NgonNguSach} onChange={handleOnchange} name="NgonNguSach" /> */}
+                            <Select
+                                name="NgonNguSach"
+
+                                onChange={handleChangeSelectNgonNgu}
+                                options={renderOptions(allNgonNgu?.data?.data)}
+                            />
+
                         </Form.Item>
                         <Form.Item
                             label="Nhóm nghiên cứu"
                             name="NhomNghienCuu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateBienSoan.NhomNghienCuu} onChange={handleOnchange} name="NhomNghienCuu" />
                         </Form.Item>
@@ -1291,7 +1365,14 @@ const BienSoan = ({ }) => {
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTro}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
+
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1299,6 +1380,13 @@ const BienSoan = ({ }) => {
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateHTCV.SoGioQuyDoi} onChange={handleOnchange2} name="SoGioQuyDoi" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Số trang"
+                            name="Trang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHTCV.Trang} onChange={handleOnchange2} name="Trang" />
                         </Form.Item>
 
 
@@ -1351,7 +1439,13 @@ const BienSoan = ({ }) => {
                             name="LoaiTaiLieu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoanDetails.LoaiTaiLieu} onChange={handleOnchangeDetails} name="LoaiTaiLieu" />
+                            {/* <InputComponent value={stateBienSoanDetails.LoaiTaiLieu} onChange={handleOnchangeDetails} name="LoaiTaiLieu" /> */}
+                            <Select
+                                name="LoaiTaiLieu"
+
+                                onChange={handleChangeSelectLoaiTaiLieuDetails}
+                                options={renderOptions(allLoaiTaiLieu?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số trang"
@@ -1414,7 +1508,13 @@ const BienSoan = ({ }) => {
                             name="NgonNguSach"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoanDetails.NgonNguSach} onChange={handleOnchangeDetails} name="NgonNguSach" />
+                            {/* <InputComponent value={stateBienSoanDetails.NgonNguSach} onChange={handleOnchangeDetails} name="NgonNguSach" /> */}
+                            <Select
+                                name="NgonNguSach"
+
+                                onChange={handleChangeSelectNgonNguDetails}
+                                options={renderOptions(allNgonNgu?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Nhóm nghiên cứu"
@@ -1490,7 +1590,13 @@ const BienSoan = ({ }) => {
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
-                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTroDetails}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Trang"

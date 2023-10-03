@@ -13,6 +13,10 @@ import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanS
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
 import * as HTCVService from '../../../../services/HTCVHoatDongNCKhacService';
+
+import * as NhomHoatDongNCService from '../../../../services/NhomHoatDongNCService';
+import * as LoaiHoatDongService from '../../../../services/LoaiHoatDongService';
+import * as VaiTroService from '../../../../services/VaiTroService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
@@ -1072,7 +1076,75 @@ const HoatDongKhac = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+    // vai trò
+    const fetchAllVaiTro = async () => {
+        const res = await VaiTroService.getAllType()
+        return res
+    }
 
+    const allVaiTro = useQuery({ queryKey: ['all-vaitronck'], queryFn: fetchAllVaiTro })
+    const handleChangeSelectVaiTro = (value) => {
+        setStateHTCV({
+            ...stateHTCV,
+            VaiTro: value
+        })
+
+    }
+
+
+    const handleChangeSelectVaiTroDetails = (value) => {
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            VaiTro: value
+        })
+
+    }
+    // loại hoạt động
+    const fetchAllLoaiHoatDong = async () => {
+        const res = await LoaiHoatDongService.getAllType()
+        return res
+    }
+
+    const allLoaiHoatDong = useQuery({ queryKey: ['all-loaihoatdong'], queryFn: fetchAllLoaiHoatDong })
+    const handleChangeSelectLoaiHoatDong = (value) => {
+        setStateHoatDongKhac({
+            ...stateHoatDongKhac,
+            LoaiHoatDong: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiHoatDongDetails = (value) => {
+        setStateHoatDongKhacDetails({
+            ...stateHoatDongKhacDetails,
+            LoaiHoatDong: value
+        })
+
+    }
+    // nhos óốạt động nc
+    const fetchAllNhomHoatDongNC = async () => {
+        const res = await NhomHoatDongNCService.getAllType()
+        return res
+    }
+
+    const allNhomHoatDongNC = useQuery({ queryKey: ['all-nhomhdnc'], queryFn: fetchAllNhomHoatDongNC })
+    const handleChangeSelectNhomHoatDongNC = (value) => {
+        setStateHoatDongKhac({
+            ...stateHoatDongKhac,
+            NhomHoatDongNCSach: value
+        })
+
+    }
+
+
+    const handleChangeSelectNhomHoatDongNCDetails = (value) => {
+        setStateHoatDongKhacDetails({
+            ...stateHoatDongKhacDetails,
+            NhomHoatDongNCSach: value
+        })
+
+    }
     return (
         <div>
             <div>
@@ -1115,7 +1187,14 @@ const HoatDongKhac = ({ }) => {
                             name="NhomNghienCuu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHoatDongKhac.NhomNghienCuu} onChange={handleOnchange} name="NhomNghienCuu" />
+                            {/* <InputComponent value={stateHoatDongKhac.NhomNghienCuu} onChange={handleOnchange} name="NhomNghienCuu" /> */}
+                            <Select
+                                name="NhomNghienCuu"
+
+                                onChange={handleChangeSelectNhomHoatDongNC}
+                                options={renderOptions(allNhomHoatDongNC?.data?.data)}
+                            />
+
                         </Form.Item>
 
                         <Form.Item
@@ -1123,7 +1202,13 @@ const HoatDongKhac = ({ }) => {
                             name="LoaiHoatDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHoatDongKhac.LoaiHoatDong} onChange={handleOnchange} name="LoaiHoatDong" />
+                            {/* <InputComponent value={stateHoatDongKhac.LoaiHoatDong} onChange={handleOnchange} name="LoaiHoatDong" /> */}
+                            <Select
+                                name="LoaiHoatDong"
+
+                                onChange={handleChangeSelectLoaiHoatDong}
+                                options={renderOptions(allLoaiHoatDong?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Nội dung thực hiện"
@@ -1229,7 +1314,13 @@ const HoatDongKhac = ({ }) => {
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTro}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1285,7 +1376,14 @@ const HoatDongKhac = ({ }) => {
                             name="NhomNghienCuu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHoatDongKhacDetails.NhomNghienCuu} onChange={handleOnchangeDetails} name="NhomNghienCuu" />
+                            {/* <InputComponent value={stateHoatDongKhacDetails.NhomNghienCuu} onChange={handleOnchangeDetails} name="NhomNghienCuu" /> */}
+                            <Select
+                                name="NhomNghienCuu"
+
+                                onChange={handleChangeSelectNhomHoatDongNCDetails}
+                                options={renderOptions(allNhomHoatDongNC?.data?.data)}
+                            />
+
                         </Form.Item>
 
                         <Form.Item
@@ -1293,7 +1391,14 @@ const HoatDongKhac = ({ }) => {
                             name="LoaiHoatDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHoatDongKhacDetails.LoaiHoatDong} onChange={handleOnchangeDetails} name="LoaiHoatDong" />
+                            {/* <InputComponent value={stateHoatDongKhacDetails.LoaiHoatDong} onChange={handleOnchangeDetails} name="LoaiHoatDong" /> */}
+                            <Select
+                                name="LoaiHoatDong"
+
+                                onChange={handleChangeSelectLoaiHoatDongDetails}
+                                options={renderOptions(allLoaiHoatDong?.data?.data)}
+                            />
+
                         </Form.Item>
                         <Form.Item
                             label="Nội dung thực hiện"
@@ -1401,7 +1506,13 @@ const HoatDongKhac = ({ }) => {
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
-                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTroDetails}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"

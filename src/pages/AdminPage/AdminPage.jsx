@@ -38,8 +38,8 @@ import CapNhatHSCB from '../QuanLyQuanNhan/HoSoCanBo/CapNhatHSCB';
 
 import TabNghienCuu from '../QuanLyQuanNhan/CongTacGiangDay/TabNghienCuu';
 import TabDaoTao from '../QuanLyQuanNhan/CongTacGiangDay/TabDaoTao';
-import QTKhenThuong from '../QuanLyQuanNhan/HoSoCanBo/QTKhenThuong';
-import QTKyLuat from '../QuanLyQuanNhan/HoSoCanBo/QTKyLuat';
+// import QTKhenThuong from '../QuanLyQuanNhan/HoSoCanBo/QTKhenThuong';
+// import QTKyLuat from '../QuanLyQuanNhan/HoSoCanBo/QTKyLuat';
 import ThongTinCaNhan from '../QuanLyQuanNhan/CongTacGiangDay/ThongTinCaNhan';
 
 import PhanQuyenNSD from '../Quyen_ChucNang/PhanQuyenNSD';
@@ -251,7 +251,7 @@ const AdminPage = () => {
 
   const getAllUsers = async () => {
     console.log("abcd");
-    console.log("abcd"+user?.isAdmin);
+    console.log("abcd" + user?.isAdmin);
     const res = await UserService.getAllUser(user?.access_token)
     console.log('res', res)
     return { data: res?.data, key: 'users' }
@@ -403,18 +403,18 @@ const AdminPage = () => {
         )
 
 
-      case 'khenthuong':
-        return (
-          <QTKhenThuong />
-        )
-      case 'kyluat':
-        return (
-          <QTKyLuat />
-        )
-      case 'thannhantaisan':
-        return (
-          <TabThanhNhanTaiSan />
-        )
+      // case 'khenthuong':
+      //   return (
+      //     <QTKhenThuong />
+      //   )
+      // case 'kyluat':
+      //   return (
+      //     <QTKyLuat />
+      //   )
+      // case 'thannhantaisan':
+      //   return (
+      //     <TabThanhNhanTaiSan />
+      //   )
 
 
 

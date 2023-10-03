@@ -10,7 +10,8 @@ import { useMutationHooks } from '../../../hooks/useMutationHook'
 import * as SauDaiHocService from '../../../services/SauDaiHocService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
+
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
@@ -22,9 +23,14 @@ const SauDaiHoc = () => {
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
 
+    const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
+    const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
+
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
+    const quyen = user.isAdmin;
     const inittial = () => ({
         LoaiBang: '',
         LinhVuc: '',
@@ -49,7 +55,7 @@ const SauDaiHoc = () => {
                 LinhVuc,
                 TenLuanVan,
                 Truong, QuocGia, NamNhan,
-                TrangThai,
+                TrangThai = 0,
                 GhiChu } = data
             const res = SauDaiHocService.createSauDaiHoc({
                 QuanNhanId,
@@ -93,6 +99,39 @@ const SauDaiHoc = () => {
             return res
         },
     )
+
+    const mutationUpdateTrangThai = useMutationHooks(
+        (data) => {
+            console.log("data update:", data);
+            const { id, token, ...rests } = data;
+            const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
+            const res = SauDaiHocService.updateSauDaiHoc(id, token, updatedData);
+            return res;
+
+        },
+
+    )
+
+
+    const handleCancelPheDuyet = () => {
+        setIsModalOpenPheDuyet(false)
+    }
+    const handleCancelNhapLai = () => {
+        setIsModalOpenNhapLai(false)
+    }
+
+    const mutationUpdateNhapLai = useMutationHooks(
+        (data) => {
+            console.log("data update:", data);
+            const { id, token, ...rests } = data;
+            const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
+            const res = SauDaiHocService.updateSauDaiHoc(id, token, updatedData);
+            return res;
+
+        },
+
+    )
+
 
     const mutationDeletedMany = useMutationHooks(
         (data) => {
@@ -174,16 +213,29 @@ const SauDaiHoc = () => {
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
+    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
+    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
+
 
     const querySauDaiHoc = useQuery({ queryKey: ['saudaihocs'], queryFn: getAllSauDaiHocs })
     const saudaihocDetails = useQuery(['hosoquannhansaudaihoc', quannhanId], fetchGetSauDaiHoc, { enabled: !!quannhanId })
     console.log("dauhoc:", saudaihocDetails.data)
     const { isLoading: isLoadingSauDaiHoc, data: saudaihocs } = querySauDaiHoc
     const renderAction = () => {
+        let additionalActions = null;
+        if (quyen === "admin") {
+            additionalActions = (
+                <>
+                    <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                    <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
+                </>
+            );
+        }
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
                 <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsSauDaiHoc} />
+                {additionalActions}
             </div>
         )
     }
@@ -382,6 +434,24 @@ const SauDaiHoc = () => {
             message.error()
         }
     }, [isSuccessDelectedMany])
+    useEffect(() => {
+        if (isSuccessUpdatedNhapLai && dataUpdatedNhapLai?.status === 'OK') {
+            message.success()
+            handleCancelNhapLai()
+        } else if (isErrorUpdatedNhapLai) {
+            message.error()
+        }
+    }, [isSuccessUpdatedNhapLai])
+
+
+    useEffect(() => {
+        if (isSuccessUpdatedTT && dataUpdatedTT?.status === 'OK') {
+            message.success()
+            handleCancelPheDuyet()
+        } else if (isErrorUpdatedTT) {
+            message.error()
+        }
+    }, [isSuccessUpdatedTT])
 
     useEffect(() => {
         if (isSuccessDelected && dataDeleted?.status === 'OK') {
@@ -453,7 +523,7 @@ const SauDaiHoc = () => {
             Truong: stateSauDaiHoc.Truong,
             QuocGia: stateSauDaiHoc.QuocGia,
             NamNhan: stateSauDaiHoc.NamNhan,
-            TrangThai: stateSauDaiHoc.TrangThai,
+            //     TrangThai: stateSauDaiHoc.TrangThai,
             GhiChu: stateSauDaiHoc.GhiChu,
         }
         console.log("Finsh", stateSauDaiHoc)
@@ -491,6 +561,22 @@ const SauDaiHoc = () => {
             }
         })
     }
+    const onUpdateNgoaiNguTrangThai = () => {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateSauDaiHocDetails }, {
+            onSettled: () => {
+                saudaihocDetails.refetch()
+            }
+        })
+    }
+
+    const onUpdateNgoaiNguNhapLai = () => {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateSauDaiHocDetails }, {
+            onSettled: () => {
+                saudaihocDetails.refetch()
+            }
+        })
+    }
+
     function getTrangThaiText(statusValue) {
         switch (statusValue) {
             case 0:
@@ -498,7 +584,7 @@ const SauDaiHoc = () => {
             case 1:
                 return 'Đã phê duyệt';
             case 2:
-                return 'Đã từ chối';
+                return 'Đã từ chối - Nhập lại';
             default:
                 return 'Trạng thái không hợp lệ';
         }
@@ -640,19 +726,7 @@ const SauDaiHoc = () => {
                             />
                         </Form.Item>
 
-                        <Form.Item
-                            label="Trạng thái"
-                            name="TrangThai"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
 
-                                value={stateSauDaiHoc['TrangThai']}
-                                onChange={handleOnchange}
-                                name="TrangThai"
-                            />
-                        </Form.Item>
                         <Form.Item
                             label="Ghi chú"
                             name="GhiChu"
@@ -735,13 +809,7 @@ const SauDaiHoc = () => {
                             <InputComponent value={stateSauDaiHocDetails['NamNhan']} onChange={handleOnchangeDetails} name="NamNhan" />
                         </Form.Item>
 
-                        <Form.Item
-                            label="Trạng thái"
-                            name="TrangThai"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateSauDaiHocDetails['TrangThai']} onChange={handleOnchangeDetails} name="TrangThai" />
-                        </Form.Item>
+
 
                         <Form.Item
                             label="Ghi chú"
@@ -765,6 +833,17 @@ const SauDaiHoc = () => {
             <ModalComponent title="Xóa quá trình Sau đại học" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteSauDaiHoc}>
                 <Loading isLoading={isLoadingDeleted}>
                     <div>Bạn có chắc xóa quá trình Sau đại học này không?</div>
+                </Loading>
+            </ModalComponent>
+            <ModalComponent title="Phê quyệt Sau đại học" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc phê duyệt Sau đại học này không?</div>
+                </Loading>
+            </ModalComponent>
+
+            <ModalComponent title="Yêu cầu nhập lại thông tin Sau đại học" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc yêu cầu nhập lại  Sau đại họcnày không?</div>
                 </Loading>
             </ModalComponent>
 
