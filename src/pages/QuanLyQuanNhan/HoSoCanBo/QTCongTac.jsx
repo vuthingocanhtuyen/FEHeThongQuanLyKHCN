@@ -143,7 +143,6 @@ const QTCongTac = ({ }) => {
   }, [form, stateQuaTrinhCongTacDetails, isModalOpen])
   useEffect(() => {
     setNgayQD(moment(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
-    // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
   }, [form, stateQuaTrinhCongTacDetails, isOpenDrawer])
   useEffect(() => {
     if (rowSelected && isOpenDrawer) {
