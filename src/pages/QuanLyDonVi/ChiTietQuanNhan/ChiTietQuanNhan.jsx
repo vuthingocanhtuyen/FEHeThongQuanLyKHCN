@@ -35,12 +35,12 @@ function ChiTietQuanNhan() {
                 <TabPane tab="Công tác NCKH" key="4">
                     <CongTacNCKH idQuanNhan={id} />
                 </TabPane>
-                <TabPane tab="Thân nhân" key="5">
+                {/* <TabPane tab="Thân nhân" key="5">
                     <ThanNhan idQuanNhan={id} />
                 </TabPane>
                 <TabPane tab="Tài sản" key="6">
                     <TaiSan idQuanNhan={id} />
-                </TabPane>
+                </TabPane> */}
 
             </Tabs>
         </>

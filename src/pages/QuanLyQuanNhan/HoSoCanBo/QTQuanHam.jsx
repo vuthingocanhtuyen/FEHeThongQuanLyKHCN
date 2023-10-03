@@ -576,7 +576,7 @@ const QTQuanHam = () => {
                         <Form.Item
                             label="Ghi chú"
                             name="GhiChu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
@@ -642,7 +642,7 @@ const QTQuanHam = () => {
                         <Form.Item
                             label="Ghi chú"
                             name="GhiChu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateQuaTrinhQuanHamDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
                         </Form.Item>

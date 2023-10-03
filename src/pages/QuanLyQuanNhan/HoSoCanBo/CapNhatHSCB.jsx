@@ -28,7 +28,8 @@ import DaiHoc from './DaiHoc'
 import SauDaiHoc from './SauDaiHoc'
 import TinhTrangCT from './TinhTrangCT'
 import QuaTrinhHocHam from './QuaTrinhHocHam'
-
+import QuaTrinhHocVi from './QuaTrinhHocVi'
+import moment from 'moment';
 const CapNhatHSCB = () => {
     // const [quannhanObjectId, setQuannhanObjectId] = useState([]);
     const [quannhann, setQuannhan] = useState([]);
@@ -135,7 +136,10 @@ const CapNhatHSCB = () => {
     }
 
 
-
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
 
     const fetchGetDetailsQuanNhan = async () => {
         console.log("bat dau 2");
@@ -162,7 +166,7 @@ const CapNhatHSCB = () => {
 
     return (
         <div>
-            <div style={{ width: '1270px', margin: '0 auto', height: '800px', padding: '30px' }}>
+            <div style={{ width: '1270px', margin: '0 auto', height: '700px', padding: '30px' }}>
                 <WrapperHeader>Cập nhật thông tin cá nhân: {HoTen}</WrapperHeader>
 
 
@@ -174,69 +178,25 @@ const CapNhatHSCB = () => {
                             <WrapperInput>
                                 <WrapperLabel htmlFor="id">Mã cán bộ</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="id" value={id} onChange={handleOnchangeId} readOnly />
-                                <ButtonComponent
-                                    // onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
 
                             <WrapperInput>
                                 <WrapperLabel htmlFor="HoatDong">Trạng thái</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="HoatDong" value={HoatDong} readOnly />
-                                <ButtonComponent
-                                    //   onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
 
                             <WrapperInput>
                                 <WrapperLabel htmlFor="HoTen">Họ và Tên</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="HoTen" value={HoTen} onChange={handleOnchangeHoTen} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
 
                             <WrapperInput>
                                 <WrapperLabel htmlFor="NgaySinh">Ngày sinh</WrapperLabel>
-                                <InputForm style={{ width: '500px' }} id="NgaySinh" value={NgaySinh} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+                                <InputForm style={{ width: '500px' }} id="NgaySinh" value={convertDateToString(NgaySinh)} />
+
                             </WrapperInput>
                             <WrapperInput>
                                 <WrapperLabel htmlFor="GioiTinh">Giới tính</WrapperLabel>
@@ -244,103 +204,49 @@ const CapNhatHSCB = () => {
                                     id="GioiTinh" value={GioiTinh}
                                     checked={GioiTinh === 'Nu'}
                                     onChange={handleChangeCheckGioiTinh} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
 
 
                             <WrapperInput>
                                 <WrapperLabel htmlFor="DonVi">Đơn vị</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="DonVi" value={DonVi} onChange={handleOnchangeDonVi} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
                             <WrapperInput>
                                 <WrapperLabel htmlFor="DiaChi">Địa chỉ</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="DiaChi" value={DiaChi} onChange={handleOnchangeDiaChi} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
                             <WrapperInput>
                                 <WrapperLabel htmlFor="QueQuan">Quê quán</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="QueQuan" value={QueQuan} onChange={handleOnchangeQueQuan} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
 
                             <WrapperInput>
                                 <WrapperLabel htmlFor="SoDienThoai">Số điện thoại</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="SoDienThoai" value={SoDienThoai} onChange={handleOnchangeSdt} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
+
                             </WrapperInput>
                             <WrapperInput>
                                 <WrapperLabel htmlFor="Email">Email</WrapperLabel>
                                 <InputForm style={{ width: '500px' }} id="Email" value={Email} onChange={handleOnchangeEmail} />
-                                <ButtonComponent
-                                    onClick={handleUpdate}
-                                    size={40}
-                                    styleButton={{
-                                        height: '30px',
-                                        width: 'fit-content',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px 6px'
-                                    }}
-                                    textbutton={'Cập nhật'}
-                                    styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                                ></ButtonComponent>
-                            </WrapperInput>
 
+                            </WrapperInput>
+                            <ButtonComponent
+                                onClick={handleUpdate}
+                                size={40}
+                                styleButton={{
+                                    height: '30px',
+                                    width: 'fit-content',
+                                    borderRadius: '4px',
+                                    padding: '2px 6px 6px',
+                                    marginLeft: '660px',
+                                }}
+                                textbutton={'Cập nhật'}
+                                styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
+                            ></ButtonComponent>
                         </WrapperContentProfile>
                     </Loading>
 
@@ -361,15 +267,15 @@ const CapNhatHSCB = () => {
             </div>
 
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QTNgoaiNgu />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <DaiHoc />
             </div>
             <br />
-            <div style={{ width: '1270px', margin: '0 auto', height: '400px', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <SauDaiHoc />
             </div>
             <br />
@@ -392,6 +298,10 @@ const CapNhatHSCB = () => {
             <br />
             <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QuaTrinhHocHam />
+            </div>
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QuaTrinhHocVi />
             </div>
             <br />
             <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>

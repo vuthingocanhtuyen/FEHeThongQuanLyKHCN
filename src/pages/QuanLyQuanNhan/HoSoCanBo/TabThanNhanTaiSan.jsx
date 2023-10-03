@@ -9,12 +9,12 @@ const { TabPane } = Tabs;
 function TabThanhNhanTaiSan() {
     return (
         <Tabs defaultActiveKey="1">
-            <TabPane tab="Thân nhân" key="1">
+            {/* <TabPane tab="Thân nhân" key="1">
                 <ThanNhan />
             </TabPane>
             <TabPane tab="Tài sản" key="2">
                 <TaiSan />
-            </TabPane>
+            </TabPane> */}
 
         </Tabs>
     );

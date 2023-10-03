@@ -13,10 +13,11 @@ import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanS
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
 import * as HTCVService from '../../../../services/HTCVHopDongService';
+import * as VaiTroService from '../../../../services/VaiTroService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
+import moment from 'moment';
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -43,6 +44,7 @@ const HopDong = ({ }) => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
+
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
 
@@ -545,19 +547,19 @@ const HopDong = ({ }) => {
         },
         {
             title: 'Tác giả',
-            dataIndex: 'CacThanhVien',
-            key: 'CacThanhVien',
+            dataIndex: 'NguoiChuTri',
+            key: 'NguoiChuTri',
         },
 
         {
             title: 'Loại',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'Loai',
+            key: 'Loai',
         },
         {
             title: 'Vai trò',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'VaiTro',
+            key: 'VaiTro',
         },
         {
             title: 'Số tác giả',
@@ -876,7 +878,10 @@ const HopDong = ({ }) => {
             }
         })
     }
-
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
     const onFinish3 = async () => {
         const data = {
             HTCVList: htcvId
@@ -944,7 +949,13 @@ const HopDong = ({ }) => {
 
     }
 
+    const handleChangeSelectHopDongDetails = (value) => {
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            VaiTro: value
+        })
 
+    }
     const onUpdateHopDong = () => {
         console.log("bat dau update");
         mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateHopDongDetails }, {
@@ -980,6 +991,25 @@ const HopDong = ({ }) => {
                 return 'Trạng thái không hợp lệ';
         }
     }
+    function getLoaiDeTaiext(statusValue) {
+
+        if (statusValue > 100000000 && statusValue < 2000000000)
+            return 'Hợp đồng chuyển giao từ 100 triệu dưới 2 tỷ';
+        else if (statusValue > 2000000000)
+            return 'Hợp đồng chuyển giao trên 2 tỷ';
+        else
+            return 'Không hợp lệ';
+
+    }
+    function getVaiTroText(a, b) {
+
+        if (a == b)
+            return 'Chủ trì hợp đồng';
+
+        else
+            return 'Thành viên';
+
+    }
     const onUpdateHTCV = () => {
         console.log("bat dau update");
         mutationUpdate2.mutate({ id: rowSelected2, token: user?.access_token, ...stateHTCVDetails }, {
@@ -1007,7 +1037,11 @@ const HopDong = ({ }) => {
         return {
             ...hopdongDetails,
             key: hopdongDetails._id,
-            TrangThai: getTrangThaiText(hopdongDetails.TrangThai)
+            TrangThai: getTrangThaiText(hopdongDetails.TrangThai),
+            Loai: getLoaiDeTaiext(hopdongDetails.GiaTriHopDong),
+
+
+
         }
     })
     const dataTable2 = HTCVDetails?.data?.length && HTCVDetails?.data?.map((HTCVDetails) => {
@@ -1089,7 +1123,20 @@ const HopDong = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+    // Vai trò
+    const fetchAllVaiTro = async () => {
+        const res = await VaiTroService.getAllType()
+        return res
+    }
 
+    const allVaiTro = useQuery({ queryKey: ['all-vaitro'], queryFn: fetchAllVaiTro })
+    const handleChangeSelectVaiTro = (value) => {
+        setStateHTCV({
+            ...stateHTCV,
+            HinhThucCV: value
+        })
+
+    }
     return (
         <div>
             <div>
@@ -1252,7 +1299,16 @@ const HopDong = ({ }) => {
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
+                            <Select
+                                name="VaiTro"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelectVaiTro}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
+
+
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1295,12 +1351,6 @@ const HopDong = ({ }) => {
                         autoComplete="on"
                         form={form}
                     >
-
-
-
-
-
-
                         <Form.Item
                             label="Tên hợp đồng"
                             name="TenHopDong"
@@ -1335,14 +1385,14 @@ const HopDong = ({ }) => {
                             name="ThoiDiemBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHopDongDetails.ThoiDiemBatDau} onChange={handleOnchangeDetails} name="ThoiDiemBatDau" />
+                            <InputComponent value={convertDateToString(stateHopDongDetails.ThoiDiemBatDau)} onChange={handleOnchangeDetails} name="ThoiDiemBatDau" />
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm kết thúc"
                             name="ThoiDiemKetThuc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHopDongDetails.ThoiDiemKetThuc} onChange={handleOnchangeDetails} name="ThoiDiemKetThuc" />
+                            <InputComponent value={convertDateToString(stateHopDongDetails.ThoiDiemKetThuc)} onChange={handleOnchangeDetails} name="ThoiDiemKetThuc" />
                         </Form.Item>
                         <Form.Item
                             label="Người chủ trì"
@@ -1363,7 +1413,7 @@ const HopDong = ({ }) => {
                             name="NgayThanhLy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHopDongDetails.NgayThanhLy} onChange={handleOnchangeDetails} name="NgayThanhLy" />
+                            <InputComponent value={convertDateToString(stateHopDongDetails.NgayThanhLy)} onChange={handleOnchangeDetails} name="NgayThanhLy" />
                         </Form.Item>
 
 
@@ -1430,8 +1480,15 @@ const HopDong = ({ }) => {
                             name="VaiTro"
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
-                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" />
+                            {false && <Select value={stateHTCVDetails.VaiTro} />}
+                            {/* <InputComponent value={stateHTCVDetails.HinhThucCV} onChange={handleOnchangeDetails2} name="HinhThucCV" /> */}
+                            <Select
+                                name="VaiTro"
+                                value={stateHTCVDetails['VaiTro']}
+
+                                onChange={handleChangeSelectHopDongDetails}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"

@@ -9,7 +9,9 @@ import InputComponent from '../../../../components/InputComponent/InputComponent
 import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as BaiBaoKHService from '../../../../services/BaiBaoKhoaHocService';
-import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
+import * as NganhXetChucDanhService from '../../../../services/NganhXetChucDanhService';
+import * as NgonNguService from '../../../../services/NgonNguService';
+import * as LoaiTapChiService from '../../../../services/LoaiTapChiService';
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
 import * as HTCVService from '../../../../services/HTCTBaiBaoService';
@@ -20,6 +22,8 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
+
+import moment from 'moment';
 const BaiBaoKH = ({ }) => {
     const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
     const [currentUserDonViCode, setCurrentUserDonViCode] = useState(null);
@@ -1128,6 +1132,144 @@ const BaiBaoKH = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        //  return moment(date).format('DD/MM/YYYY');
+        // Parse the ISO 8601 date string into a Date object
+        const parsedDate = new Date(date);
+
+        // Extract the day, month, and year components from the Date object
+        const day = parsedDate.getDate();
+        const month = parsedDate.getMonth() + 1; // Months are zero-based, so add 1
+        const year = parsedDate.getFullYear();
+
+        // Format the date components into the desired format
+        const formattedDate = `${day}/${month}/${year}`;
+
+        return formattedDate;
+    }
+    function xacDinhQuy(date) {
+        // Chuyển đổi ngày thành đối tượng Date
+        if (typeof date === "string" && date.length > 0) {
+            const parts = date.split("/");
+            const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
+
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+            return quy
+        }
+        return null
+
+
+    }
+    //Năm
+    function xacDinhNam(date) {
+        // Chuyển đổi ngày thành đối tượng Date
+        if (typeof date === "string" && date.length > 0) {
+            const parts = date.split("/");
+            const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
+            const nam = ngay.getFullYear();
+            return nam
+        }
+
+        return null;
+    }
+    //học kỳ
+    function xacDinhHocKy(date) {
+        // Chuyển đổi ngày thành đối tượng Date
+        if (typeof date === "string" && date.length > 0) {
+            const parts = date.split("/");
+            const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
+
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+
+            let hocKy;
+            if (quy <= 2) {
+                hocKy = "Học kỳ 1";
+            } else if (quy <= 4) {
+                hocKy = "Học kỳ 2";
+            } else {
+                hocKy = "Học kỳ hè";
+            }
+
+            return hocKy;
+        }
+
+        return null;
+    }
+    // ngon ngu
+
+    const fetchAllNgonNgu = async () => {
+        const res = await NgonNguService.getAllType()
+        return res
+    }
+
+    const allNgonNgu = useQuery({ queryKey: ['all-ngonngu'], queryFn: fetchAllNgonNgu })
+    const handleChangeSelectNgonNgu = (value) => {
+        setStateBaiBaoKH({
+            ...stateBaiBaoKH,
+            NgonNguBao: value
+        })
+
+    }
+
+
+    const handleChangeSelectNgonNguDetails = (value) => {
+        setStateBaiBaoKHDetails({
+            ...stateBaiBaoKHDetails,
+            NgonNgu: value
+        })
+
+    }
+
+    // loai tap chi
+    const fetchAllLoaiTapChi = async () => {
+        const res = await LoaiTapChiService.getAllType()
+        return res
+    }
+
+    const allLoaiTapChi = useQuery({ queryKey: ['all-loaitapchi'], queryFn: fetchAllLoaiTapChi })
+    const handleChangeSelectLoaiTapChi = (value) => {
+        setStateBaiBaoKH({
+            ...stateBaiBaoKH,
+            LoaiTapChiHoiThao: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiTapChiDetails = (value) => {
+        setStateBaiBaoKHDetails({
+            ...stateBaiBaoKHDetails,
+            LoaiTapChiHoiThao: value
+        })
+
+    }
+    // nganhxetchucdanh
+    const fetchAllNganhXetChucDanh = async () => {
+        const res = await NganhXetChucDanhService.getAllType()
+        return res
+    }
+
+    const allNganhXetChucDanh = useQuery({ queryKey: ['all-nxchucdanh'], queryFn: fetchAllNganhXetChucDanh })
+    const handleChangeSelectNganhXetChucDanh = (value) => {
+        setStateBaiBaoKH({
+            ...stateBaiBaoKH,
+            NganhXetChucDanh: value
+        })
+
+    }
+
+
+    const handleChangeSelectNganhXetChucDanhDetails = (value) => {
+        setStateBaiBaoKHDetails({
+            ...stateBaiBaoKHDetails,
+            NganhXetChucDanh: value
+        })
+
+    }
+
 
     return (
         <div>
@@ -1179,7 +1321,13 @@ const BaiBaoKH = ({ }) => {
                             name="LoaiTapChiHoiThao"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.LoaiTapChiHoiThao} onChange={handleOnchange} name="LoaiTapChiHoiThao" />
+                            {/* <InputComponent value={stateBaiBaoKH.LoaiTapChiHoiThao} onChange={handleOnchange} name="LoaiTapChiHoiThao" /> */}
+                            <Select
+                                name="LoaiTapChiHoiThao"
+
+                                onChange={handleChangeSelectLoaiTapChi}
+                                options={renderOptions(allLoaiTapChi?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Tên loại tạp chí hội thảo"
@@ -1214,7 +1362,13 @@ const BaiBaoKH = ({ }) => {
                             name="NganhXetChucDanh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.NganhXetChucDanh} onChange={handleOnchange} name="NganhXetChucDanh" />
+                            <Select
+                                name="NganhXetChucDanh"
+
+                                onChange={handleChangeSelectNganhXetChucDanh}
+                                options={renderOptions(allNganhXetChucDanh?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateBaiBaoKH.NganhXetChucDanh} onChange={handleOnchange} name="NganhXetChucDanh" /> */}
                         </Form.Item>
                         <Form.Item
                             label="Tập số"
@@ -1266,7 +1420,8 @@ const BaiBaoKH = ({ }) => {
                             name="Quy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.Quy} onChange={handleOnchange} name="Quy" />
+                            {/* <InputComponent value={stateBaiBaoKH.Quy} onChange={handleOnchange} name="Quy" /> */}
+                            {xacDinhQuy(stateBaiBaoKH.ThoiDiemXuatBan)}
                         </Form.Item>
 
                         <Form.Item
@@ -1274,14 +1429,21 @@ const BaiBaoKH = ({ }) => {
                             name="Nam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.Nam} onChange={handleOnchange} name="Nam" />
+                            {/* <InputComponent value={stateBaiBaoKH.Nam} onChange={handleOnchange} name="Nam" /> */}
+                            {xacDinhNam(stateBaiBaoKH.ThoiDiemXuatBan)}
                         </Form.Item>
                         <Form.Item
                             label="Ngôn ngữ báo"
                             name="NgonNguBao"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKH.NgonNguBao} onChange={handleOnchange} name="NgonNguBao" />
+                            <Select
+                                name="NgonNguBao"
+
+                                onChange={handleChangeSelectNgonNgu}
+                                options={renderOptions(allNgonNgu?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateBaiBaoKH.NgonNguBao} onChange={handleOnchange} name="NgonNguBao" /> */}
                         </Form.Item>
 
                         <Form.Item
@@ -1410,7 +1572,13 @@ const BaiBaoKH = ({ }) => {
                             name="LoaiTapChiHoiThao"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.LoaiTapChiHoiThao} onChange={handleOnchangeDetails} name="LoaiTapChiHoiThao" />
+                            <Select
+                                name="LoaiTapChiHoiThao"
+
+                                onChange={handleChangeSelectLoaiTapChiDetails}
+                                options={renderOptions(allLoaiTapChi?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.LoaiTapChiHoiThao} onChange={handleOnchangeDetails} name="LoaiTapChiHoiThao" /> */}
                         </Form.Item>
                         <Form.Item
                             label="Tên loại tạp chí hội thảo"
@@ -1445,7 +1613,13 @@ const BaiBaoKH = ({ }) => {
                             name="NganhXetChucDanh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.NganhXetChucDanh} onChange={handleOnchangeDetails} name="NganhXetChucDanh" />
+                            <Select
+                                name="NganhXetChucDanh"
+
+                                onChange={handleChangeSelectNganhXetChucDanhDetails}
+                                options={renderOptions(allNganhXetChucDanh?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.NganhXetChucDanh} onChange={handleOnchangeDetails} name="NganhXetChucDanh" /> */}
                         </Form.Item>
                         <Form.Item
                             label="Tập số"
@@ -1497,7 +1671,8 @@ const BaiBaoKH = ({ }) => {
                             name="Quy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.Quy} onChange={handleOnchangeDetails} name="Quy" /> */}
+                            {xacDinhQuy(stateBaiBaoKHDetails.ThoiDiemXuatBan)}
                         </Form.Item>
 
                         <Form.Item
@@ -1505,14 +1680,21 @@ const BaiBaoKH = ({ }) => {
                             name="Nam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" /> */}
+                            {xacDinhNam(stateBaiBaoKHDetails.ThoiDiemXuatBan)}
                         </Form.Item>
                         <Form.Item
                             label="Ngôn ngữ báo"
                             name="NgonNguBao"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBaiBaoKHDetails.NgonNguBao} onChange={handleOnchangeDetails} name="NgonNguBao" />
+                            <Select
+                                name="NgonNguBao"
+
+                                onChange={handleChangeSelectNgonNguDetails}
+                                options={renderOptions(allNgonNgu?.data?.data)}
+                            />
+                            {/* <InputComponent value={stateBaiBaoKHDetails.NgonNguBao} onChange={handleOnchangeDetails} name="NgonNguBao" /> */}
                         </Form.Item>
 
                         <Form.Item

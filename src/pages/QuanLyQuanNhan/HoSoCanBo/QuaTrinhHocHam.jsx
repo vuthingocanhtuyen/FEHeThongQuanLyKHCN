@@ -299,9 +299,7 @@ const QuaTrinhHocHam = () => {
     //const { data: quatrinhhochamDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhHocHam, { enabled: !!quannhanId })
     //console.log("qtrinhcongtac:", quatrinhhochamDetails)
     console.log("idquannhancongtac:", quannhanId)
-    const handleChangeCheckCaoNhat = (e) => {
-        console.log(`checked: ${e.target.checked}`);
-    };
+
 
 
     const CheckboxAction = () => {
@@ -548,8 +546,24 @@ const QuaTrinhHocHam = () => {
         })
         // console.log(stateQuanNhan)
     }
+    const handleChangeCheckCaoNhat = (e) => {
+        const checkedValue = e.target.checked ? 1 : 0;
+        console.log("e: ", e.target.name, e.target.value)
+        setStateQuaTrinhHocHam({
+            ...stateQuaTrinhHocHam,
+            CaoNhat: checkedValue,
+            [e.target.name]: e.target.value
+        });
+    };
 
 
+    const handleChangeCheckCaoNhatDetail = (e) => {
+        const checkedValue = e.target.checked ? 1 : 0;
+        setStateQuaTrinhHocHamDetails({
+            ...stateQuaTrinhHocHamDetails,
+            CaoNhat: checkedValue,
+        });
+    };
     return (
         <div>
             <div>
@@ -595,7 +609,7 @@ const QuaTrinhHocHam = () => {
                                 style={{ width: '100%' }}
 
                                 value={stateQuaTrinhHocHam['QuyetDinh']}
-                                onChange={handleOnchange}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="QuyetDinh"
                             />
                         </Form.Item>
@@ -609,7 +623,7 @@ const QuaTrinhHocHam = () => {
                                 style={{ width: '100%' }}
 
                                 value={stateQuaTrinhHocHam['NgayQuyetDinh']}
-                                onChange={handleOnchange}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="NgayQuyetDinh"
                             />
                         </Form.Item>
@@ -631,13 +645,21 @@ const QuaTrinhHocHam = () => {
                             name="CaoNhat"
                         //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
+                            {/* <InputComponent
                                 style={{ width: '100%' }}
 
                                 value={stateQuaTrinhHocHam['CaoNhat']}
                                 onChange={handleOnchange}
                                 name="CaoNhat"
+                            /> */}
+                            <CheckboxComponent
+                                style={{ width: '25px' }}
+                                value={stateQuaTrinhHocHam['CaoNhat']}
+                                checked={stateQuaTrinhHocHam['CaoNhat'] === 1}
+                                onChange={handleChangeCheckCaoNhat}
+
                             />
+
                         </Form.Item>
 
                         <Form.Item
@@ -649,7 +671,7 @@ const QuaTrinhHocHam = () => {
                                 style={{ width: '100%' }}
 
                                 value={stateQuaTrinhHocHam['GhiChu']}
-                                onChange={handleOnchange}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="GhiChu"
                             />
                         </Form.Item>
@@ -712,12 +734,18 @@ const QuaTrinhHocHam = () => {
                             name="CaoNhat"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
+                            {/* <InputComponent
                                 style={{ width: '100%' }}
 
                                 value={stateQuaTrinhHocHamDetails['CaoNhat']}
                                 onChange={handleOnchangeDetails}
                                 name="CaoNhat"
+                            /> */}
+                            <CheckboxComponent
+                                style={{ width: '25px' }}
+                                value={stateQuaTrinhHocHamDetails['CaoNhat']}
+                                checked={stateQuaTrinhHocHamDetails['CaoNhat'] === 1}
+                                onChange={handleChangeCheckCaoNhatDetail}
                             />
                         </Form.Item>
 

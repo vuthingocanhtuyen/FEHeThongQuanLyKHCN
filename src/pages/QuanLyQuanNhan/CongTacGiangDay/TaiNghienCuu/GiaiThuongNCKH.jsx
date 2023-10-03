@@ -9,7 +9,8 @@ import InputComponent from '../../../../components/InputComponent/InputComponent
 import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
 import * as GiaiThuongNCKHService from '../../../../services/GiaiThuongService';
-import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
+import * as LoaiGiaiThuongService from '../../../../services/LoaiGiaiThuongService';
+import * as VaiTroService from '../../../../services/VaiTroService';
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
 import * as HTCVService from '../../../../services/HTCVGiaiThuongService';
@@ -550,8 +551,8 @@ const GiaiThuongNCKH = ({ }) => {
         },
         {
             title: 'Vai trò',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'VaiTro',
+            key: 'VaiTro',
         },
         {
             title: 'Số tác giả',
@@ -1030,19 +1031,7 @@ const GiaiThuongNCKH = ({ }) => {
     }, [isSuccess])
 
 
-    const fetchAllHinhThucHuongDan = async () => {
-        const res = await HinhThucHuongdanService.getAllType()
-        return res
-    }
 
-    const allHinhThucHuongdan = useQuery({ queryKey: ['all-hinhthuchuongdan'], queryFn: fetchAllHinhThucHuongDan })
-    const handleChangeSelect1 = (value) => {
-        setStateGiaiThuongNCKH({
-            ...stateGiaiThuongNCKH,
-            HinhThucHuongDan: value
-        })
-        // console.log(stateQuanNhan)
-    }
 
     const handleOnchangeFileCM = async ({ fileList }) => {
         const file = fileList[0]
@@ -1074,6 +1063,54 @@ const GiaiThuongNCKH = ({ }) => {
             THCSDT: checkedValue,
         });
     };
+    // loại giải thưởNg
+    const fetchAllLoaiGiaiThuong = async () => {
+        const res = await LoaiGiaiThuongService.getAllType()
+        return res
+    }
+
+    const allLoaiGiaiThuong = useQuery({ queryKey: ['all-loaigiaithuong'], queryFn: fetchAllLoaiGiaiThuong })
+    const handleChangeSelectLoaiGiaiThuong = (value) => {
+        setStateGiaiThuongNCKH({
+            ...stateGiaiThuongNCKH,
+            LoaiGiaiThuong: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiGiaiThuongDetails = (value) => {
+        setStateGiaiThuongNCKHDetails({
+            ...stateGiaiThuongNCKHDetails,
+            LoaiGiaiThuong: value
+        })
+
+    }
+
+    // vai trò
+    const fetchAllVaiTro = async () => {
+        const res = await VaiTroService.getAllType()
+        return res
+    }
+
+    const allVaiTro = useQuery({ queryKey: ['all-vaitro'], queryFn: fetchAllVaiTro })
+    const handleChangeSelectVaiTro = (value) => {
+        setStateHTCV({
+            ...stateHTCV,
+            VaiTro: value
+        })
+
+    }
+
+
+    const handleChangeSelectVaiTroDetails = (value) => {
+        setStateHTCVDetails({
+            ...stateHTCVDetails,
+            VaiTro: value
+        })
+
+    }
+
 
     return (
         <div>
@@ -1117,7 +1154,13 @@ const GiaiThuongNCKH = ({ }) => {
                             name="LoaiGiaiThuong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.LoaiGiaiThuong} onChange={handleOnchange} name="LoaiGiaiThuong" />
+                            {/* <InputComponent value={stateGiaiThuongNCKH.LoaiGiaiThuong} onChange={handleOnchange} name="LoaiGiaiThuong" /> */}
+                            <Select
+                                name="LoaiGiaiThuong"
+
+                                onChange={handleChangeSelectLoaiGiaiThuong}
+                                options={renderOptions(allLoaiGiaiThuong?.data?.data)}
+                            />
                         </Form.Item>
 
                         <Form.Item
@@ -1230,7 +1273,12 @@ const GiaiThuongNCKH = ({ }) => {
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
+                            <Select name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTro}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1282,7 +1330,12 @@ const GiaiThuongNCKH = ({ }) => {
                             name="LoaiGiaiThuong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.LoaiGiaiThuong} onChange={handleOnchangeDetails} name="LoaiGiaiThuong" />
+                            {/* <InputComponent value={stateGiaiThuongNCKHDetails.LoaiGiaiThuong} onChange={handleOnchangeDetails} name="LoaiGiaiThuong" /> */}
+                            <Select name="LoaiGiaiThuong"
+
+                                onChange={handleChangeSelectLoaiGiaiThuongDetails}
+                                options={renderOptions(allLoaiGiaiThuong?.data?.data)}
+                            />
                         </Form.Item>
 
                         <Form.Item
@@ -1400,7 +1453,12 @@ const GiaiThuongNCKH = ({ }) => {
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
-                            <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" />
+                            {/* <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" /> */}
+                            <Select name="VaiTro"
+
+                                onChange={handleChangeSelectVaiTroDetails}
+                                options={renderOptions(allVaiTro?.data?.data)}
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"

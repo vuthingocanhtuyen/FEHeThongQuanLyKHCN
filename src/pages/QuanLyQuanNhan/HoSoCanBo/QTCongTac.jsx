@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space ,DatePicker} from 'antd';
+import { Form, Table, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
 import { getBase64 } from '../../../utils'
@@ -23,12 +23,13 @@ const QTCongTac = ({ }) => {
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
   const [NgayQD, setNgayQD] = useState('');
+  const [NgayQDDetail, setNgayQDDetail] = useState('');
   const user = useSelector((state) => state?.user)
   const searchInput = useRef(null);
   const quannhanId = user.QuanNhanId;
   const inittial = () => ({
     SoQuyetDinh: '',
-    NgayQuyetDinh: '',
+    NgayQuyetDinh: moment(),
     ChucVu: '',
     DonVi: '',
     KetThuc: '',
@@ -47,7 +48,7 @@ const QTCongTac = ({ }) => {
       const { QuanNhanId = quannhanId
         , SoQuyetDinh,
         NgayQuyetDinh, ChucVu, DonVi, KetThuc, DonViSinhHoatHocThuat,
-        TrangThai,
+        TrangThai = 0,
         GhiChu } = data
       const res = QuaTrinhCongTacService.createQuaTrinhCongTac({
         QuanNhanId, SoQuyetDinh,
@@ -141,6 +142,7 @@ const QTCongTac = ({ }) => {
       form.setFieldsValue(inittial())
     }
   }, [form, stateQuaTrinhCongTacDetails, isModalOpen])
+
   useEffect(() => {
     setNgayQD(moment(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
   }, [form, stateQuaTrinhCongTacDetails, isOpenDrawer])
@@ -376,7 +378,7 @@ const QTCongTac = ({ }) => {
       DonVi: '',
       KetThuc: '',
       DonViSinhHoatHocThuat: '',
-      TrangThai: '',
+      //    TrangThai: '',
       GhiChu: '',
     })
     form.resetFields()
@@ -413,7 +415,7 @@ const QTCongTac = ({ }) => {
       DonVi: '',
       KetThuc: '',
       DonViSinhHoatHocThuat: '',
-      TrangThai: '',
+      //  TrangThai: '',
       GhiChu: '',
     })
     form.resetFields()
@@ -428,7 +430,7 @@ const QTCongTac = ({ }) => {
       DonVi: stateQuaTrinhCongTac.DonVi,
       KetThuc: stateQuaTrinhCongTac.KetThuc,
       DonViSinhHoatHocThuat: stateQuaTrinhCongTac.DonViSinhHoatHocThuat,
-      TrangThai: stateQuaTrinhCongTac.TrangThai,
+      //   TrangThai: stateQuaTrinhCongTac.TrangThai,
       GhiChu: stateQuaTrinhCongTac.GhiChu,
     }
     console.log("Finsh", stateQuaTrinhCongTac)
@@ -451,16 +453,25 @@ const QTCongTac = ({ }) => {
 
 
   const handleOnchangeDetails = (e) => {
-    
+
     setStateQuaTrinhCongTacDetails({
       ...stateQuaTrinhCongTacDetails,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
+
+
+    })
+
+  }
+  const handleOnchangeDetailNgayQDDeTail = (date) => {
+    setStateQuaTrinhCongTacDetails({
+      ...stateQuaTrinhCongTacDetails,
+      NgayQuyetDinh: date
     })
   }
-  const handleOnchangeDetailNgayQD = (date) => {
-    setStateQuaTrinhCongTacDetails({
-      ...stateQuaTrinhCongTacDetails,
-      NgayQuyetDinh: date 
+  const handleOnchangeNgayQD = (date) => {
+    setStateQuaTrinhCongTac({
+      ...stateQuaTrinhCongTac,
+      NgayQuyetDinh: date
     })
   }
 
@@ -562,12 +573,17 @@ const QTCongTac = ({ }) => {
               name="NgayQuyetDinh"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <InputComponent
+              {/* <InputComponent
                 style={{ width: '100%' }}
 
                 value={stateQuaTrinhCongTac['NgayQuyetDinh']}
                 onChange={handleOnchange}
                 name="NgayQuyetDinh"
+              /> */}
+              <DatePicker
+                // value={NgayQD}
+                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
+                format="DD/MM/YYYY"
               />
             </Form.Item>
 
@@ -626,7 +642,7 @@ const QTCongTac = ({ }) => {
                 name="DonViSinhHoatHocThuat"
               />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               label="Trạng thái"
               name="TrangThai"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
@@ -638,7 +654,7 @@ const QTCongTac = ({ }) => {
                 onChange={handleOnchange}
                 name="TrangThai"
               />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Thêm
@@ -674,10 +690,10 @@ const QTCongTac = ({ }) => {
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
               {/* <InputComponent value={NgayQD} onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh" /> */}
-              <DatePicker 
-              value={NgayQD}
-              onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
-              format="DD/MM/YYYY" 
+              <DatePicker
+                value={NgayQDDetail}
+                onChange={handleOnchangeDetailNgayQDDeTail} name="NgayQuyetDinh"
+                format="DD/MM/YYYY"
               />
             </Form.Item>
 
@@ -702,7 +718,7 @@ const QTCongTac = ({ }) => {
               name="KetThuc"
             // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <InputComponent value={stateQuaTrinhCongTacDetails['KetThuc']} onChange={handleOnchangeDetails} name="KetThuc" />
+              <InputComponent value={convertDateToString(stateQuaTrinhCongTacDetails['KetThuc'])} onChange={handleOnchangeDetails} name="KetThuc" />
             </Form.Item>
 
             <Form.Item
@@ -713,13 +729,13 @@ const QTCongTac = ({ }) => {
               <InputComponent value={stateQuaTrinhCongTacDetails['DonViSinhHoatHocThuat']} onChange={handleOnchangeDetails} name="DonViSinhHoatHocThuat" />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               label="Trạng thái"
               name="TrangThai"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
               <InputComponent value={stateQuaTrinhCongTacDetails['TrangThai']} onChange={handleOnchangeDetails} name="TrangThai" />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">

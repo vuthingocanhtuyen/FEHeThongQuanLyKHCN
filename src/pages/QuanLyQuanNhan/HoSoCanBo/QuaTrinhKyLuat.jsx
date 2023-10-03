@@ -1,72 +1,60 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space } from 'antd';
+import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { getBase64 } from '../../../utils'
+import { getBase64, renderOptions } from '../../../utils'
 import Loading from '../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../components/InputComponent/InputComponent'
 import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as NgoaiNguService from '../../../services/NgoaiNguService';
+import * as QuaTrinhKyLuatService from '../../../services/QuaTrinhKyLuatService';
+import * as DanhMucKyLuatService from '../../../services/DanhMucKyLuatService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
+
 import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-const NgoaiNgu = () => {
+import moment from 'moment';
+const QuaTrinhKyLuat = ({ }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
-    const quyen = user.isAdmin;
-    console.log(quyen);
     const inittial = () => ({
-        NgonNgu: '',
-        LoaiBang: '',
-        NamNhan: '',
-        CapDo: '',
-        TuongDuong: '',
-        HinhThucBang: '',
+        SoQuyetDinh: '',
+        NgayQuyetDinh: '',
+        HinhThucKyLuat: '',
+        CapKyLuat: '',
         TrangThai: '',
         GhiChu: '',
+        TenQuyetDinh: '',
     })
-    const [stateNgoaiNgu, setStateNgoaiNgu] = useState(inittial())
-    const [stateNgoaiNguDetails, setStateNgoaiNguDetails] = useState(inittial())
+    const [stateQuaTrinhKyLuat, setStateQuaTrinhKyLuat] = useState(inittial())
+    const [stateQuaTrinhKyLuatDetails, setStateQuaTrinhKyLuatDetails] = useState(inittial())
 
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { QuanNhanId = quannhanId,
-                code = 123,
-                NgonNgu,
-                LoaiBang,
-                NamNhan,
-                CapDo,
-                TuongDuong,
-                HinhThucBang,
+            const { QuanNhanId = quannhanId
+                , SoQuyetDinh,
+                NgayQuyetDinh, HinhThucKyLuat, CapKyLuat, TenQuyetDinh,
                 TrangThai = 0,
                 GhiChu } = data
-            const res = NgoaiNguService.createNgoaiNgu({
-                QuanNhanId,
-                code,
-                NgonNgu,
-                LoaiBang,
-                NamNhan,
-                CapDo,
-                TuongDuong,
-                HinhThucBang,
+            const res = QuaTrinhKyLuatService.createQuaTrinhKyLuat({
+                QuanNhanId, SoQuyetDinh,
+                NgayQuyetDinh, HinhThucKyLuat, CapKyLuat, TenQuyetDinh,
                 TrangThai,
                 GhiChu
             })
@@ -82,7 +70,7 @@ const NgoaiNgu = () => {
             const { id,
                 token,
                 ...rests } = data
-            const res = NgoaiNguService.updateNgoaiNgu(
+            const res = QuaTrinhKyLuatService.updateQuaTrinhKyLuat(
                 id,
                 token,
                 { ...rests })
@@ -95,31 +83,38 @@ const NgoaiNgu = () => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
-            const res = NgoaiNguService.updateNgoaiNgu(id, token, updatedData);
+            const res = QuaTrinhKyLuatService.updateQuaTrinhKyLuat(id, token, updatedData);
             return res;
 
         },
 
     )
+
+
+    const handleCancelPheDuyet = () => {
+        setIsModalOpenPheDuyet(false)
+    }
+    const handleCancelNhapLai = () => {
+        setIsModalOpenNhapLai(false)
+    }
 
     const mutationUpdateNhapLai = useMutationHooks(
         (data) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
-            const res = NgoaiNguService.updateNgoaiNgu(id, token, updatedData);
+            const res = QuaTrinhKyLuatService.updateQuaTrinhKyLuat(id, token, updatedData);
             return res;
 
         },
 
     )
-
     const mutationDeleted = useMutationHooks(
         (data) => {
             const { id,
                 token,
             } = data
-            const res = NgoaiNguService.deleteNgoaiNgu(
+            const res = QuaTrinhKyLuatService.deleteQuaTrinhKyLuat(
                 id,
                 token)
             return res
@@ -130,7 +125,7 @@ const NgoaiNgu = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = NgoaiNguService.deleteManyNgoaiNgu(
+            const res = QuaTrinhKyLuatService.deleteManyQuaTrinhKyLuat(
                 ids,
                 token)
             return res
@@ -138,64 +133,64 @@ const NgoaiNgu = () => {
     )
 
 
-    const getAllNgoaiNgus = async () => {
-        const res = await NgoaiNguService.getAllNgoaiNgu()
+    const getAllQuaTrinhKyLuats = async () => {
+        const res = await QuaTrinhKyLuatService.getAllQuaTrinhKyLuat()
         return res
     }
 
     // show
 
 
-    const fetchGetNgoaiNgu = async (context) => {
+    const fetchGetQuaTrinhKyLuat = async (context) => {
         const quannhanId = context?.queryKey && context?.queryKey[1]
         console.log("idquannhancongtacfe:", quannhanId)
         if (quannhanId) {
 
-            const res = await NgoaiNguService.getNgoaiNguByQuanNhanId(quannhanId)
+            const res = await QuaTrinhKyLuatService.getQuaTrinhKyLuatByQuanNhanId(quannhanId)
             console.log("qtct res: ", res)
             if (res?.data) {
-                setStateNgoaiNguDetails({
-                    NgonNgu: res?.data.NgonNgu,
-                    LoaiBang: res?.data.LoaiBang,
-                    NamNhan: res?.data.NamNhan,
-                    CapDo: res?.data.CapDo,
-                    TuongDuong: res?.data.TuongDuong,
-                    HinhThucBang: res?.data.HinhThucBang,
+                setStateQuaTrinhKyLuatDetails({
+                    SoQuyetDinh: res?.data.SoQuyetDinh,
+                    NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                    HinhThucKyLuat: res?.data.HinhThucKyLuat,
+
+                    CapKyLuat: res?.data.CapKyLuat,
+                    TenQuyetDinh: res?.data.TenQuyetDinh,
                     TrangThai: res?.data.TrangThai,
                     GhiChu: res?.data.GhiChu,
                 })
             }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateNgoaiNguDetails)
+            // console.log("chi tiết qtct:", setStateQuaTrinhKyLuatDetails)
             return res.data
         }
         setIsLoadingUpdate(false)
     }
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateNgoaiNguDetails)
+            form.setFieldsValue(stateQuaTrinhKyLuatDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateNgoaiNguDetails, isModalOpen])
+    }, [form, stateQuaTrinhKyLuatDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsNgoaiNgu(rowSelected)
+            fetchGetDetailsQuaTrinhKyLuat(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsNgoaiNgu = () => {
+    const handleDetailsQuaTrinhKyLuat = () => {
         setIsOpenDrawer(true)
     }
 
 
-    const handleDelteManyNgoaiNgus = (ids) => {
+    const handleDelteManyQuaTrinhKyLuats = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                qtngonnguDetails.refetch()
+                quatrinhkyluatDetails.refetch()
             }
         })
     }
@@ -203,50 +198,39 @@ const NgoaiNgu = () => {
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
-    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
-    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
+    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
+    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
 
 
-    const queryNgoaiNgu = useQuery({ queryKey: ['ngoaingus'], queryFn: getAllNgoaiNgus })
-    const qtngonnguDetails = useQuery(['hosoquannhanngoaingu', quannhanId], fetchGetNgoaiNgu, { enabled: !!quannhanId })
-
-    const { isLoading: isLoadingNgoaiNgu, data: ngoaingus } = queryNgoaiNgu
+    const queryQuaTrinhKyLuat = useQuery({ queryKey: ['quatrinhkyluats'], queryFn: getAllQuaTrinhKyLuats })
+    const quatrinhkyluatDetails = useQuery(['hosoquannhankyluat', quannhanId], fetchGetQuaTrinhKyLuat, { enabled: !!quannhanId })
+    console.log("qt kỷ luật:", quatrinhkyluatDetails.data, queryQuaTrinhKyLuat.data)
+    const { isLoading: isLoadingQuaTrinhKyLuat, data: quatrinhkyluats } = queryQuaTrinhKyLuat
     const renderAction = () => {
-        let additionalActions = null;
-
-        if (quyen === "admin") {
-            additionalActions = (
-                <>
-                    <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
-                    <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
-                </>
-            );
-        }
-
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsNgoaiNgu} />
-                {additionalActions}
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuaTrinhKyLuat} />
+                <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
             </div>
         )
     }
 
-
     const onChange = () => { }
 
-    const fetchGetDetailsNgoaiNgu = async (rowSelected) => {
-        const res = await NgoaiNguService.getDetailsNgoaiNgu(rowSelected)
+    const fetchGetDetailsQuaTrinhKyLuat = async (rowSelected) => {
+        const res = await QuaTrinhKyLuatService.getDetailsQuaTrinhKyLuat(rowSelected)
         if (res?.data) {
-            setStateNgoaiNguDetails({
-                NgonNgu: res?.data.NgonNgu,
-                LoaiBang: res?.data.LoaiBang,
-                NamNhan: res?.data.NamNhan,
-                CapDo: res?.data.CapDo,
-                TuongDuong: res?.data.TuongDuong,
-                HinhThucBang: res?.data.HinhThucBang,
+            setStateQuaTrinhKyLuatDetails({
+                SoQuyetDinh: res?.data.SoQuyetDinh,
+                NgayQuyetDinh: res?.data.NgayQuyetDinh,
+                HinhThucKyLuat: res?.data.HinhThucKyLuat,
+
+                CapKyLuat: res?.data.CapKyLuat,
+                TenQuyetDinh: res?.data.TenQuyetDinh,
                 TrangThai: res?.data.TrangThai,
                 GhiChu: res?.data.GhiChu,
             })
@@ -258,7 +242,7 @@ const NgoaiNgu = () => {
 
     useEffect(() => {
         if (rowSelected) {
-            fetchGetDetailsNgoaiNgu(rowSelected)
+            fetchGetDetailsQuaTrinhKyLuat(rowSelected)
         }
         setIsLoadingUpdate(false)
     }, [rowSelected])
@@ -266,11 +250,11 @@ const NgoaiNgu = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateNgoaiNguDetails)
+            form.setFieldsValue(stateQuaTrinhKyLuatDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateNgoaiNguDetails, isModalOpen])
+    }, [form, stateQuaTrinhKyLuatDetails, isModalOpen])
 
 
 
@@ -348,8 +332,8 @@ const NgoaiNgu = () => {
 
     //Show dữ liệu
 
-    //const { data: qtngonnguDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetNgoaiNgu, { enabled: !!quannhanId })
-    //console.log("qtrinhcongtac:", qtngonnguDetails)
+    //const { data: quatrinhkyluatDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhKyLuat, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", quatrinhkyluatDetails)
     console.log("idquannhancongtac:", quannhanId)
 
 
@@ -361,46 +345,37 @@ const NgoaiNgu = () => {
             render: (text, record, index) => index + 1,
 
         },
+        {
+            title: 'Số quyết định',
+            dataIndex: 'SoQuyetDinh',
+            key: 'SoQuyetDinh',
+        },
+        {
+            title: 'Ngày quyết định',
+            dataIndex: 'NgayQuyetDinh',
+            key: 'NgayQuyetDinh',
+        },
+        {
+            title: 'Tên quyết định',
+            dataIndex: 'TenQuyetDinh',
+            key: 'TenQuyetDinh',
+        },
+        {
+            title: 'Hình thức kỷ luật',
+            dataIndex: 'HinhThucKyLuat',
+            key: 'HinhThucKyLuat',
+        },
 
         {
-            title: 'Ngôn ngữ',
-            dataIndex: 'NgonNgu',
-            key: 'NgonNgu',
+            title: 'Cấp kỷ luật',
+            dataIndex: 'CapKyLuat',
+            key: 'CapKyLuat',
         },
-        {
-            title: 'Loại bằng',
-            dataIndex: 'LoaiBang',
-            key: 'LoaiBang',
-        },
-        {
-            title: 'Năm nhận',
-            dataIndex: 'NamNhan',
-            key: 'NamNhan',
-        },
-        {
-            title: 'Cấp độ',
-            dataIndex: 'CapDo',
-            key: 'CapDo',
-        },
-        {
-            title: 'Tương đương',
-            dataIndex: 'TuongDuong',
-            key: 'TuongDuong',
-        },
-        {
-            title: 'Hình thức bằng',
-            dataIndex: 'HinhThucBang',
-            key: 'HinhThucBang',
-        },
+
         {
             title: 'Trạng thái',
             dataIndex: 'TrangThai',
             key: 'TrangThai',
-        },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'GhiChu',
-            key: 'GhiChu',
         },
         {
             title: 'Chức năng',
@@ -418,7 +393,6 @@ const NgoaiNgu = () => {
             message.error()
         }
     }, [isSuccessDelected])
-
     useEffect(() => {
         if (isSuccessUpdatedNhapLai && dataUpdatedNhapLai?.status === 'OK') {
             message.success()
@@ -437,8 +411,6 @@ const NgoaiNgu = () => {
             message.error()
         }
     }, [isSuccessUpdatedTT])
-
-
 
     useEffect(() => {
         if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
@@ -459,14 +431,14 @@ const NgoaiNgu = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateNgoaiNguDetails({
-            NgonNgu: '',
-            LoaiBang: '',
-            NamNhan: '',
-            CapDo: '',
-            TuongDuong: '',
-            HinhThucBang: '',
-            //   TrangThai: '',
+        setStateQuaTrinhKyLuatDetails({
+            SoQuyetDinh: '',
+            NgayQuyetDinh: '',
+            HinhThucKyLuat: '',
+
+            CapKyLuat: '',
+            TenQuyetDinh: '',
+            TrangThai: '',
             GhiChu: '',
         })
         form.resetFields()
@@ -484,34 +456,26 @@ const NgoaiNgu = () => {
     const handleCancelDelete = () => {
         setIsModalOpenDelete(false)
     }
-    const handleCancelPheDuyet = () => {
-        setIsModalOpenPheDuyet(false)
-    }
-    const handleCancelNhapLai = () => {
-        setIsModalOpenNhapLai(false)
-    }
 
-    const handleDeleteNgoaiNgu = () => {
+
+    const handleDeleteQuaTrinhKyLuat = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                qtngonnguDetails.refetch()
+                quatrinhkyluatDetails.refetch()
             }
         })
     }
 
-
-
-
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateNgoaiNgu({
-            NgonNgu: '',
-            LoaiBang: '',
-            NamNhan: '',
-            CapDo: '',
-            TuongDuong: '',
-            HinhThucBang: '',
-            //   TrangThai: '',
+        setStateQuaTrinhKyLuat({
+            SoQuyetDinh: '',
+            NgayQuyetDinh: '',
+            HinhThucKyLuat: '',
+
+            CapKyLuat: '',
+            TenQuyetDinh: '',
+            TrangThai: '',
             GhiChu: '',
         })
         form.resetFields()
@@ -520,20 +484,19 @@ const NgoaiNgu = () => {
 
     const onFinish = () => {
         const params = {
+            SoQuyetDinh: stateQuaTrinhKyLuat.SoQuyetDinh,
+            NgayQuyetDinh: stateQuaTrinhKyLuat.NgayQuyetDinh,
+            HinhThucKyLuat: stateQuaTrinhKyLuat.HinhThucKyLuat,
 
-            NgonNgu: stateNgoaiNgu.NgonNgu,
-            LoaiBang: stateNgoaiNgu.LoaiBang,
-            NamNhan: stateNgoaiNgu.NamNhan,
-            CapDo: stateNgoaiNgu.CapDo,
-            TuongDuong: stateNgoaiNgu.TuongDuong,
-            HinhThucBang: stateNgoaiNgu.HinhThucBang,
-            //     TrangThai: stateNgoaiNgu.TrangThai,
-            GhiChu: stateNgoaiNgu.GhiChu,
+            CapKyLuat: stateQuaTrinhKyLuat.CapKyLuat,
+            TenQuyetDinh: stateQuaTrinhKyLuat.TenQuyetDinh,
+            //   TrangThai: stateQuaTrinhKyLuat.TrangThai,
+            GhiChu: stateQuaTrinhKyLuat.GhiChu,
         }
-        console.log("Finsh", stateNgoaiNgu)
+        console.log("Finsh", stateQuaTrinhKyLuat)
         mutation.mutate(params, {
             onSettled: () => {
-                qtngonnguDetails.refetch()
+                quatrinhkyluatDetails.refetch()
             }
         })
     }
@@ -542,8 +505,8 @@ const NgoaiNgu = () => {
 
     const handleOnchange = (e) => {
         console.log("e: ", e.target.name, e.target.value)
-        setStateNgoaiNgu({
-            ...stateNgoaiNgu,
+        setStateQuaTrinhKyLuat({
+            ...stateQuaTrinhKyLuat,
             [e.target.name]: e.target.value
         })
     }
@@ -551,37 +514,35 @@ const NgoaiNgu = () => {
 
     const handleOnchangeDetails = (e) => {
         console.log('check', e.target.name, e.target.value)
-        setStateNgoaiNguDetails({
-            ...stateNgoaiNguDetails,
+        setStateQuaTrinhKyLuatDetails({
+            ...stateQuaTrinhKyLuatDetails,
             [e.target.name]: e.target.value
         })
     }
 
 
-    const onUpdateNgoaiNgu = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
+    const onUpdateQuaTrinhKyLuat = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhKyLuatDetails }, {
             onSettled: () => {
-                qtngonnguDetails.refetch()
+                quatrinhkyluatDetails.refetch()
             }
         })
     }
-
     const onUpdateNgoaiNguTrangThai = () => {
-        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhKyLuatDetails }, {
             onSettled: () => {
-                qtngonnguDetails.refetch()
+                quatrinhkyluatDetails.refetch()
             }
         })
     }
 
     const onUpdateNgoaiNguNhapLai = () => {
-        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhKyLuatDetails }, {
             onSettled: () => {
-                qtngonnguDetails.refetch()
+                quatrinhkyluatDetails.refetch()
             }
         })
     }
-
     function getTrangThaiText(statusValue) {
         switch (statusValue) {
             case 0:
@@ -595,11 +556,17 @@ const NgoaiNgu = () => {
         }
     }
 
-    const dataTable = qtngonnguDetails?.data?.length && qtngonnguDetails?.data?.map((qtngonnguDetails) => {
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
+    const dataTable = quatrinhkyluatDetails?.data?.length && quatrinhkyluatDetails?.data?.map((quatrinhkyluatDetails) => {
         return {
-            ...qtngonnguDetails,
-            key: qtngonnguDetails._id,
-            TrangThai: getTrangThaiText(qtngonnguDetails.TrangThai)
+            ...quatrinhkyluatDetails,
+            key: quatrinhkyluatDetails._id,
+            TrangThai: getTrangThaiText(quatrinhkyluatDetails.TrangThai),
+            NgayQuyetDinh: convertDateToString(quatrinhkyluatDetails.NgayQuyetDinh)
+
         }
     })
     useEffect(() => {
@@ -611,18 +578,39 @@ const NgoaiNgu = () => {
         }
     }, [isSuccess])
 
+    const fetchAllHinhThucKyLuat = async () => {
+        const res = await DanhMucKyLuatService.getAllType()
+        return res
+    }
+
+    const allKyLuat = useQuery({ queryKey: ['all-kyluat'], queryFn: fetchAllHinhThucKyLuat })
+    const handleChangeSelect1 = (value) => {
+        setStateQuaTrinhKyLuat({
+            ...stateQuaTrinhKyLuat,
+            HinhThucKyLuat: value
+        })
+        // console.log(stateQuanNhan)
+    }
+
+    const handleChangeSelectDetails = (value) => {
+        setStateQuaTrinhKyLuatDetails({
+            ...stateQuaTrinhKyLuatDetails,
+            HinhThucKyLuat: value
+        })
+        // console.log(stateQuanNhan)
+    }
     return (
         <div>
             <div>
-                <WrapperHeader>Ngôn ngữ</WrapperHeader>
+                <WrapperHeader>Quá trình kỷ luật</WrapperHeader>
                 <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
                 </div>
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (
-                    // <Table dataSource={qtngonnguDetails} columns={columns} />
-                    <TableComponent columns={columns} isLoading={isLoadingNgoaiNgu} data={dataTable} onRow={(record, rowSelected) => {
+                    // <Table dataSource={quatrinhkyluatDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingQuaTrinhKyLuat} data={dataTable} onRow={(record, rowSelected) => {
                         return {
                             onClick: event => {
                                 setRowSelected(record._id);
@@ -635,7 +623,7 @@ const NgoaiNgu = () => {
                 )}
 
             </div>
-            <ModalComponent forceRender title="Thêm mới ngôn ngữ" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm mới quá trình kỷ luật" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -648,102 +636,83 @@ const NgoaiNgu = () => {
                     >
 
                         <Form.Item
-                            label="Ngôn ngữ"
-                            name="NgonNgu"
+                            label="Số quyết định"
+                            name="SoQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateNgoaiNgu['NgonNgu']}
+                                value={stateQuaTrinhKyLuat['SoQuyetDinh']}
                                 onChange={handleOnchange}
-                                name="NgonNgu"
+                                name="SoQuyetDinh"
                             />
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại bằng"
-                            name="LoaiBang"
+                            label="Tên quyết định"
+                            name="TenQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateNgoaiNgu['LoaiBang']}
+                                value={stateQuaTrinhKyLuat['TenQuyetDinh']}
                                 onChange={handleOnchange}
-                                name="LoaiBang"
+                                name="TenQuyetDinh"
                             />
                         </Form.Item>
-
                         <Form.Item
-                            label="Năm nhận"
-                            name="NamNhan"
+                            label="Ngày quyết định"
+                            name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateNgoaiNgu['NamNhan']}
+                                value={stateQuaTrinhKyLuat['NgayQuyetDinh']}
                                 onChange={handleOnchange}
-                                name="NamNhan"
+                                name="NgayQuyetDinh"
                             />
                         </Form.Item>
 
                         <Form.Item
-                            label="Cấp độ"
-                            name="CapDo"
+                            label="Hình thức kỷ luật"
+                            name="HinhThucKyLuat"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
-                                style={{ width: '100%' }}
+                            {/* <InputComponent
+                style={{ width: '100%' }}
 
-                                value={stateNgoaiNgu['CapDo']}
-                                onChange={handleOnchange}
-                                name="CapDo"
+                value={stateQuaTrinhKyLuat['HinhThucKyLuat']}
+                onChange={handleOnchange}
+                name="HinhThucKyLuat"
+              /> */}
+                            <Select
+                                name="HinhThucKyLuat"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelect1}
+                                options={renderOptions(allKyLuat?.data?.data)}
                             />
                         </Form.Item>
 
+
                         <Form.Item
-                            label="Tương Đương"
-                            name="TuongDuong"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                            label="Cấp kỷ luật"
+                            name="CapKyLuat"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateNgoaiNgu['TuongDuong']}
+                                value={stateQuaTrinhKyLuat['CapKyLuat']}
                                 onChange={handleOnchange}
-                                name="TuongDuong"
+                                name="CapKyLuat"
                             />
                         </Form.Item>
 
-                        <Form.Item
-                            label="Hình thức bằng"
-                            name="HinhThucBang"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
 
-                                value={stateNgoaiNgu['HinhThucBang']}
-                                onChange={handleOnchange}
-                                name="HinhThucBang"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ghi chú"
-                            name="GhiChu"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateNgoaiNgu['GhiChu']}
-                                onChange={handleOnchange}
-                                name="GhiChu"
-                            />
-                        </Form.Item>
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
                                 Thêm
@@ -754,63 +723,64 @@ const NgoaiNgu = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Chi tiết ngôn ngữ' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
+            <DrawerComponent title='Chi tiết quá trình kỷ luật' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
                         labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateNgoaiNgu}
+                        onFinish={onUpdateQuaTrinhKyLuat}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Ngôn ngữ"
-                            name="NgonNgu"
+                            label="Số quyết định"
+                            name="SoQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateNgoaiNguDetails['NgonNgu']} onChange={handleOnchangeDetails} name="NgonNgu" />
+                            <InputComponent value={stateQuaTrinhKyLuatDetails['SoQuyetDinh']} onChange={handleOnchangeDetails} name="SoQuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại bằng"
-                            name="LoaiBang"
+                            label="Tên quyết định"
+                            name="TenQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateNgoaiNguDetails['LoaiBang']} onChange={handleOnchangeDetails} name="LoaiBang" />
+                            <InputComponent value={stateQuaTrinhKyLuatDetails['TenQuyetDinh']} onChange={handleOnchangeDetails} name="TenQuyetDinh" />
+                        </Form.Item>
+
+
+                        <Form.Item
+                            label="Ngày quyết định"
+                            name="NgayQuyetDinh"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateQuaTrinhKyLuatDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Năm nhận"
-                            name="NamNhan"
+                            label="Hình thức kỷ luật"
+                            name="HinhThucKyLuat"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateNgoaiNguDetails['NamNhan']} onChange={handleOnchangeDetails} name="NamNhan" />
+                            {/* <InputComponent value={stateQuaTrinhKyLuatDetails['HinhThucKyLuat']} onChange={handleOnchangeDetails} name="HinhThucKyLuat" />
+            */}
+                            <Select
+                                name="HinhThucKyLuat"
+                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
+                                onChange={handleChangeSelectDetails}
+                                options={renderOptions(allKyLuat?.data?.data)}
+                            />
                         </Form.Item>
 
                         <Form.Item
-                            label="Cấp độ"
-                            name="CapDo"
+                            label="Đơn vị"
+                            name="DonVi"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateNgoaiNguDetails['CapDo']} onChange={handleOnchangeDetails} name="CapDo" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Tương đương"
-                            name="TuongDuong"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateNgoaiNguDetails['TuongDuong']} onChange={handleOnchangeDetails} name="TuongDuong" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Hình thức bằng"
-                            name="HinhThucBang"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateNgoaiNguDetails['HinhThucBang']} onChange={handleOnchangeDetails} name="HinhThucBang" />
+                            <InputComponent value={stateQuaTrinhKyLuatDetails['DonVi']} onChange={handleOnchangeDetails} name="DonVi" />
                         </Form.Item>
 
 
@@ -824,22 +794,20 @@ const NgoaiNgu = () => {
                 </Loading>
             </DrawerComponent>
 
-            <ModalComponent title="Xóa ngôn ngữ" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteNgoaiNgu}>
+            <ModalComponent title="Xóa quá trình kỷ luật" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQuaTrinhKyLuat}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa ngôn ngữ này không?</div>
+                    <div>Bạn có chắc xóa quá trình kỷ luật này không?</div>
                 </Loading>
             </ModalComponent>
-
-
-            <ModalComponent title="Phê quyệt ngôn ngữ" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+            <ModalComponent title="Phê quyệt quá trình kỷ luật" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
                 <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc phê duyệt ngôn ngữ này không?</div>
+                    <div>Bạn có chắc phê duyệt quá trình kỷ luật này không?</div>
                 </Loading>
             </ModalComponent>
 
-            <ModalComponent title="Yêu cầu nhập lại thông tin ngôn ngữ" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
-                <Loading isLoading={isLoadingUpdatedNhapLai}>
-                    <div>Bạn có chắc yêu cầu nhập lại  ngôn ngữ này không?</div>
+            <ModalComponent title="Yêu cầu nhập lại thông tin quá trình kỷ luật" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+                <Loading isLoading={isLoadingUpdatedTT}>
+                    <div>Bạn có chắc yêu cầu nhập lại  quá trình kỷ luật này không?</div>
                 </Loading>
             </ModalComponent>
 
@@ -848,4 +816,4 @@ const NgoaiNgu = () => {
     );
 };
 
-export default NgoaiNgu;
+export default QuaTrinhKyLuat;

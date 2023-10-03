@@ -513,9 +513,7 @@ const QTCDCMKT = () => {
         }
     }, [isSuccess])
 
-    const handleChangeCheckCaoNhat = (e) => {
-        console.log(`checked: ${e.target.checked}`);
-    };
+
     const fetchAllCDCMKT = async () => {
         const res = await DanhMucCDCMKTService.getAllType()
         return res
@@ -536,7 +534,24 @@ const QTCDCMKT = () => {
         })
         // console.log(stateQuanNhan)
     }
+    const handleChangeCheckCaoNhat = (e) => {
+        const checkedValue = e.target.checked ? 1 : 0;
+        console.log("e: ", e.target.name, e.target.value)
+        setStateQTCDCMKT({
+            ...stateQTCDCMKT,
+            CaoNhat: checkedValue,
+            [e.target.name]: e.target.value
+        });
+    };
 
+
+    const handleChangeCheckCaoNhatDetail = (e) => {
+        const checkedValue = e.target.checked ? 1 : 0;
+        setStateQTCDCMKTDetails({
+            ...stateQTCDCMKTDetails,
+            CaoNhat: checkedValue,
+        });
+    };
 
     return (
         <div>
@@ -583,7 +598,7 @@ const QTCDCMKT = () => {
                                 style={{ width: '100%' }}
 
                                 value={stateQTCDCMKT['QuyetDinh']}
-                                onChange={handleOnchange}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="QuyetDinh"
                             />
                         </Form.Item>
@@ -597,7 +612,7 @@ const QTCDCMKT = () => {
                                 style={{ width: '100%' }}
 
                                 value={stateQTCDCMKT['NgayQuyetDinh']}
-                                onChange={handleOnchange}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="NgayQuyetDinh"
                             />
                         </Form.Item>
@@ -629,12 +644,19 @@ const QTCDCMKT = () => {
                             name="CaoNhat"
                         //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
+                            {/* <InputComponent
                                 style={{ width: '100%' }}
 
                                 value={stateQTCDCMKT['CaoNhat']}
                                 onChange={handleOnchange}
                                 name="CaoNhat"
+                            /> */}
+                            <CheckboxComponent
+                                style={{ width: '25px' }}
+                                value={stateQTCDCMKT['CaoNhat']}
+                                checked={stateQTCDCMKT['CaoNhat'] === 1}
+                                onChange={handleChangeCheckCaoNhat}
+
                             />
                         </Form.Item>
                         <Form.Item
@@ -646,7 +668,7 @@ const QTCDCMKT = () => {
                                 style={{ width: '100%' }}
 
                                 value={stateQTCDCMKT['GhiChu']}
-                                onChange={handleOnchange}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="GhiChu"
                             />
                         </Form.Item>
@@ -708,12 +730,18 @@ const QTCDCMKT = () => {
                             name="CaoNhat"
                         //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
+                            {/* <InputComponent
                                 style={{ width: '100%' }}
 
                                 value={stateQTCDCMKTDetails['CaoNhat']}
                                 onChange={handleOnchangeDetails}
                                 name="CaoNhat"
+                            /> */}
+                            <CheckboxComponent
+                                style={{ width: '25px' }}
+                                value={stateQTCDCMKTDetails['CaoNhat']}
+                                checked={stateQTCDCMKTDetails['CaoNhat'] === 1}
+                                onChange={handleChangeCheckCaoNhatDetail}
                             />
                         </Form.Item>
 
