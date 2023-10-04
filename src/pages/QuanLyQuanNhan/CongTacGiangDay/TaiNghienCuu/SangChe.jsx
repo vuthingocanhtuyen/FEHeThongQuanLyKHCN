@@ -571,8 +571,8 @@ const SangChe = ({ }) => {
 
         {
             title: 'Khối lượng công việc',
-            dataIndex: 'SoTiet',
-            key: 'SoTiet',
+            dataIndex: 'Tai',
+            key: 'Tai',
         },
         {
             title: 'Tác giả',
@@ -1252,7 +1252,13 @@ const SangChe = ({ }) => {
                         >
                             <InputComponent value={stateSangChe.Nam} onChange={handleOnchange} name="Nam" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangChe.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
 
                         <Form.Item
                             label="File chứng minh"
@@ -1440,7 +1446,13 @@ const SangChe = ({ }) => {
                         >
                             <InputComponent value={stateSangCheDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangCheDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
+                        </Form.Item>
 
 
                         <Form.Item

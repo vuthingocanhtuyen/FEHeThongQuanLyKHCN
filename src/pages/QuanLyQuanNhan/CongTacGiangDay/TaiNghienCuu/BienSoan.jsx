@@ -1318,6 +1318,13 @@ const BienSoan = ({ }) => {
 
                         </Form.Item>
                         <Form.Item
+                            label="Tải"
+                            name="Tai"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateBienSoan.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
+                        <Form.Item
                             label="Nhóm nghiên cứu"
                             name="NhomNghienCuu"
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
@@ -1543,6 +1550,13 @@ const BienSoan = ({ }) => {
                                 onChange={handleChangeSelectNgonNguDetails}
                                 options={renderOptions(allNgonNgu?.data?.data)}
                             />
+                        </Form.Item>
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateBienSoanDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
                         </Form.Item>
                         <Form.Item
                             label="Nhóm nghiên cứu"

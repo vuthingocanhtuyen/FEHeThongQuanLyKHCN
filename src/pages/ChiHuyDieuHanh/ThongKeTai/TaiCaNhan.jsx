@@ -1,261 +1,895 @@
 
-import React from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import * as UserService from '../../../services/UserService'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
+import React, { useEffect, useState, useRef } from 'react';
+import { Form, Table, Button, Space, DatePicker } from 'antd';
+import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
-import { updateUser } from '../../../redux/slides/userSlide'
 import { getBase64 } from '../../../utils'
-import { WrapperContentProfile, WrapperHeader, WrapperInput, WrapperLabel, WrapperUploadFile } from '../style'
+import Loading from '../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../hooks/useMutationHook'
+import * as ThongKeTaiService from '../../../services/ThongKeTaiService';
 
 
+import * as TaiGiangDayService from '../../../services/TaiGiangDayService';
+import * as TaiKhaoThiService from '../../../services/TaiKhaoThiService';
+import * as TaiHoiDongService from '../../../services/TaiHoiDongService';
+import * as TaiHuongDanService from '../../../services/TaiHuongDanService';
 
+import * as BaiBaiKhoaHocService from '../../../services/BaiBaoKhoaHocService';
+import * as SangCheService from '../../../services/SangCheService';
+import * as BienSoanService from '../../../services/BienSoanService';
+import * as GiaiThuongService from '../../../services/GiaiThuongService';
+import * as HoatDongNCKhacService from '../../../services/HoatDongNCKhacService';
+import * as HopDongService from '../../../services/HopDongService';
+import * as DeTaiNCKHService from '../../../services/DeTaiNCKHService';
+import * as HuongDanNCKHService from '../../../services/HuongDanNCKHService';
+import { WrapperHeader } from '../style'
+import { useQuery } from '@tanstack/react-query'
+import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
 
-
-import InputForm from '../../../components/InputForm/InputForm'
-
-
-import TaiGiangDay from './TaiDaoTao/TaiGiangDay'
-import TaiHuongDan from './TaiDaoTao/TaiHuongDan'
-import TaiKhaoThi from './TaiDaoTao/TaiKhaoThi'
-import TaiHoiDong from './TaiDaoTao/TaiHoiDong'
-import TongHopTai from './TongHopTai'
-
-import BaiBaoKH from './TaiNCKH/BaiBaoKH'
-import BienSoan from './TaiNCKH/BienSoan'
-import DeTaiNCKH from './TaiNCKH/DeTaiNCKH'
-import GiaiThuongNCKH from './TaiNCKH/GiaiThuongNCKH'
-import HoatDongKhac from './TaiNCKH/HoatDongKhac'
-import HuongDanNCKH from './TaiNCKH/HuongDanNCKH'
-import SangChe from './TaiNCKH/SangChe'
-
+import ModalComponent from '../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../components/TableComponent/TableComponent';
+import moment from 'moment';
 const TaiCaNhan = () => {
-    const user = useSelector((state) => state.user)
-    const [email, setEmail] = useState('')
-    const [name, setName] = useState('')
-    const [phone, setPhone] = useState('')
-    const [address, setAddress] = useState('')
-    const [avatar, setAvatar] = useState('')
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [rowSelected, setRowSelected] = useState('')
+    const [isOpenDrawer, setIsOpenDrawer] = useState(false)
+    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
+    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+    const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
+    const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
+
+
+    const [TongTaiGD, setTongTaiGD] = useState('');
+
+
+    const user = useSelector((state) => state?.user)
+    const searchInput = useRef(null);
+    const quannhanId = user.QuanNhanId;
+    const inittial = () => ({
+        TaiDaoTaoYeuCau: '',
+        TaiNCKHYeuCau: '',
+        TongTaiYeuCau: '',
+        TaiThucDaoTaoYeuCau: '',
+        TaiThucNCKHYeuCau: '',
+        TongThucTai: '',
+
+        GhiChu: '',
+    })
+
+    const getAllThongKeTais = async () => {
+        const res = await ThongKeTaiService.getAllThongKeTai()
+        return res
+    }
+
+    // show
+    // Tải giảng dạy
+    const getTaiGiangDayQuanNhan = async () => {
+        const res = await TaiGiangDayService.getTaiGiangDayByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.SoTiet, 0);
+        console.log("Sum of SoTiet GD:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanGD = useQuery({ queryKey: ['taigiangdayquannhans'], queryFn: getTaiGiangDayQuanNhan })
+
+    console.log("tai giangday:", queryQuanNhanGD.data)
+
+    // tải hội đồng
+    const getTaiHoiDongQuanNhan = async () => {
+        const res = await TaiHoiDongService.getTaiHoiDongByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.SoGioQuyDoi, 0);
+        console.log("Sum of SoTiet HD:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanHD = useQuery({ queryKey: ['taihoidongquannhans'], queryFn: getTaiHoiDongQuanNhan })
+
+    console.log("tai hoidong:", queryQuanNhanHD.data)
+    // tải  khảo thí
+    const getTaiKhaoThiQuanNhan = async () => {
+        const res = await TaiKhaoThiService.getTaiKhaoThiByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.SoGioQuyDoi, 0);
+        console.log("Sum of SoTiet KT:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanKT = useQuery({ queryKey: ['taikhaothiquannhans'], queryFn: getTaiKhaoThiQuanNhan })
+
+    console.log("tai khaothi:", queryQuanNhanKT.data)
+    // tải hướng dẫn
+    const getTaiHuongDanQuanNhan = async () => {
+        const res = await TaiHuongDanService.getTaiHuongDanByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.SoGioChuan, 0);
+        console.log("Sum of SoTiet HướNg dẫn:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanHuongDan = useQuery({ queryKey: ['taihuongdanquannhans'], queryFn: getTaiHuongDanQuanNhan })
+
+    console.log("tai hdân:", queryQuanNhanHuongDan.data)
+
+    // bài báo
+    const getTaiBaiBaoQuanNhan = async () => {
+        const res = await BaiBaiKhoaHocService.getBaiBaoKHByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.DiemToiDa, 0);
+        console.log("Sum of baibao:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanBaiBao = useQuery({ queryKey: ['baibaoquannhans'], queryFn: getTaiBaiBaoQuanNhan })
+
+    console.log("baibao:", queryQuanNhanBaiBao.data)
+    // biên soạn
+    const getTaiBienSoanQuanNhan = async () => {
+        const res = await BienSoanService.getBienSoanByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of biensoan:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanBienSoan = useQuery({ queryKey: ['biensoanquannhans'], queryFn: getTaiBienSoanQuanNhan })
+
+    console.log("biensoan:", queryQuanNhanBienSoan.data)
+    // hưỚng dẫn nckh
+    const getTaiHuongDanNCKHQuanNhan = async () => {
+        const res = await HuongDanNCKHService.getHuongDanNCKHByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of hdnckh:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanHuongDanNCKH = useQuery({ queryKey: ['hdnckhquannhans'], queryFn: getTaiHuongDanNCKHQuanNhan })
+
+
+    // đề tài NCKH
+    const getDeTaiNCKHQuanNhan = async () => {
+        const res = await DeTaiNCKHService.getDeTaiNCKHByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of detai:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanDeTai = useQuery({ queryKey: ['dtnckhquannhans'], queryFn: getDeTaiNCKHQuanNhan })
+    // sáng chế
+    const getSangCheQuanNhan = async () => {
+        const res = await SangCheService.getSangCheByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of sangche:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanSC = useQuery({ queryKey: ['scquannhans'], queryFn: getSangCheQuanNhan })
+    // hợp đồng
+    const getHopDongQuanNhan = async () => {
+        const res = await HopDongService.getHopDongByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of hopdong:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanHopDong = useQuery({ queryKey: ['hdquannhans'], queryFn: getHopDongQuanNhan })
+    // hoạt động khác
+    const getHoatDongNCKhacQuanNhan = async () => {
+        const res = await HoatDongNCKhacService.getHoatDongKhacByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of hdnckhac:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanNCKhac = useQuery({ queryKey: ['nckhacquannhans'], queryFn: getHoatDongNCKhacQuanNhan })
+    //giait thưởng nckh
+
+    const getGiaiThuongQuanNhan = async () => {
+        const res = await GiaiThuongService.getGiaiThuongNCKHByQuanNhanId(quannhanId)
+        const sumSoTiet = res?.data?.reduce((total, item) => total + item.Tai, 0);
+        console.log("Sum of giaithuong:", sumSoTiet);
+        return sumSoTiet
+    }
+    const queryQuanNhanGiaiThuong = useQuery({ queryKey: ['giaithuongquannhans'], queryFn: getGiaiThuongQuanNhan })
+
+
+    const [stateThongKeTai, setStateThongKeTai] = useState(inittial())
+    const [stateThongKeTaiDetails, setStateThongKeTaiDetails] = useState(inittial())
+
+
+    const [form] = Form.useForm();
+
     const mutation = useMutationHooks(
         (data) => {
-            const { id, access_token, ...rests } = data
-            UserService.updateUser(id, rests, access_token)
+            const { QuanNhanId = quannhanId
+                , TaiDaoTaoYeuCau = 150,
+                TaiNCKHYeuCau = 150, TongTaiYeuCau = 150, TaiThucDaoTaoYeuCau, TaiThucNCKHYeuCau, TongThucTai,
+
+                GhiChu } = data
+            const res = ThongKeTaiService.createThongKeTai({
+                QuanNhanId, TaiDaoTaoYeuCau,
+                TaiNCKHYeuCau, TongTaiYeuCau, TaiThucDaoTaoYeuCau, TaiThucNCKHYeuCau, TongThucTai,
+
+                GhiChu
+            })
+            console.log("data create qtct:", res.data)
+            return res
+
         }
     )
 
-    const dispatch = useDispatch()
+    const mutationUpdate = useMutationHooks(
+        (data) => {
+            console.log("data update:", data)
+            const { id,
+                token,
+                ...rests } = data
+            const res = ThongKeTaiService.updateThongKeTai(
+                id,
+                token,
+                { ...rests })
+            return res
+        },
+
+    )
+
+
+
+    const handleCancelPheDuyet = () => {
+        setIsModalOpenPheDuyet(false)
+    }
+    const handleCancelNhapLai = () => {
+        setIsModalOpenNhapLai(false)
+    }
+
+
+    const mutationDeleted = useMutationHooks(
+        (data) => {
+            const { id,
+                token,
+            } = data
+            const res = ThongKeTaiService.deleteThongKeTai(
+                id,
+                token)
+            return res
+        },
+    )
+
+    const mutationDeletedMany = useMutationHooks(
+        (data) => {
+            const { token, ...ids
+            } = data
+            const res = ThongKeTaiService.deleteManyThongKeTai(
+                ids,
+                token)
+            return res
+        },
+    )
+
+
+
+    // show
+
+
+    const fetchGetThongKeTai = async (context) => {
+        const quannhanId = context?.queryKey && context?.queryKey[1]
+        console.log("idquannhancongtacfe:", quannhanId)
+        if (quannhanId) {
+
+            const res = await ThongKeTaiService.getThongKeTaiByQuanNhanId(quannhanId)
+            console.log("qtct res: ", res)
+            if (res?.data) {
+                setStateThongKeTaiDetails({
+                    TaiDaoTaoYeuCau: res?.data.TaiDaoTaoYeuCau,
+                    TaiNCKHYeuCau: res?.data.TaiNCKHYeuCau,
+                    TongTaiYeuCau: res?.data.TongTaiYeuCau,
+                    TaiThucDaoTaoYeuCau: res?.data.TaiThucDaoTaoYeuCau,
+                    TaiThucNCKHYeuCau: res?.data.TaiThucNCKHYeuCau,
+                    TongThucTai: res?.data.TongThucTai,
+
+                    GhiChu: res?.data.GhiChu,
+                })
+            }
+            // setIsLoadingUpdate(false)
+            // console.log("qn:", res.data)
+            // console.log("chi tiết qtct:", setStateThongKeTaiDetails)
+            return res.data
+        }
+        setIsLoadingUpdate(false)
+    }
+    useEffect(() => {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateThongKeTaiDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateThongKeTaiDetails, isModalOpen])
+
+    useEffect(() => {
+        if (rowSelected && isOpenDrawer) {
+            setIsLoadingUpdate(true)
+            fetchGetDetailsThongKeTai(rowSelected)
+        }
+    }, [rowSelected, isOpenDrawer])
+
+
+    const handleDetailsThongKeTai = () => {
+        setIsOpenDrawer(true)
+    }
+
+
+    const handleDelteManyThongKeTais = (ids) => {
+        mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
+            onSettled: () => {
+                thongketaiDetails.refetch()
+            }
+        })
+    }
+
+
     const { data, isLoading, isSuccess, isError } = mutation
+    const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
+    const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
+    const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
+
+
+
+    const queryThongKeTai = useQuery({ queryKey: ['thongketais'], queryFn: getAllThongKeTais })
+    const thongketaiDetails = useQuery(['hosoquannhan', quannhanId], fetchGetThongKeTai, { enabled: !!quannhanId })
+    console.log("tk tải:", thongketaiDetails.data, queryThongKeTai.data)
+    const { isLoading: isLoadingThongKeTai, data: thongketais } = queryThongKeTai
+    const renderAction = () => {
+        return (
+            <div>
+                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsThongKeTai} />
+                <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
+            </div>
+        )
+    }
+
+    const onChange = () => { }
+
+    const fetchGetDetailsThongKeTai = async (rowSelected) => {
+        const res = await ThongKeTaiService.getDetailsThongKeTai(rowSelected)
+        if (res?.data) {
+            setStateThongKeTaiDetails({
+                TaiDaoTaoYeuCau: res?.data.TaiDaoTaoYeuCau,
+                TaiNCKHYeuCau: res?.data.TaiNCKHYeuCau,
+                TongTaiYeuCau: res?.data.TongTaiYeuCau,
+                TaiThucDaoTaoYeuCau: res?.data.TaiThucDaoTaoYeuCau,
+                TaiThucNCKHYeuCau: res?.data.TaiThucNCKHYeuCau,
+                TongThucTai: res?.data.TongThucTai,
+
+                GhiChu: res?.data.GhiChu,
+            })
+        }
+        setIsLoadingUpdate(false)
+    }
+
+
 
     useEffect(() => {
-        setEmail(user?.email)
-        setName(user?.name)
-        setPhone(user?.phone)
-        setAddress(user?.address)
-        setAvatar(user?.avatar)
-    }, [user])
+        if (rowSelected) {
+            fetchGetDetailsThongKeTai(rowSelected)
+        }
+        setIsLoadingUpdate(false)
+    }, [rowSelected])
+
 
     useEffect(() => {
-        if (isSuccess) {
+        if (!isModalOpen) {
+            form.setFieldsValue(stateThongKeTaiDetails)
+        } else {
+            form.setFieldsValue(inittial())
+        }
+    }, [form, stateThongKeTaiDetails, isModalOpen])
+
+
+
+
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+
+    };
+    const handleReset = (clearFilters) => {
+        clearFilters();
+
+    };
+
+    const getColumnSearchProps = (dataIndex) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div
+                style={{
+                    padding: 8,
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+            >
+                <InputComponent
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    style={{
+                        marginBottom: 8,
+                        display: 'block',
+                    }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{
+                            width: 90,
+                        }}
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        size="small"
+                        style={{
+                            width: 90,
+                        }}
+                    >
+                        Reset
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: (filtered) => (
+            <SearchOutlined
+                style={{
+                    color: filtered ? '#1890ff' : undefined,
+                }}
+            />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownOpenChange: (visible) => {
+            if (visible) {
+                setTimeout(() => searchInput.current?.select(), 100);
+            }
+        },
+
+    });
+
+
+    //Show dữ liệu
+
+    //const { data: thongketaiDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetThongKeTai, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", thongketaiDetails)
+    console.log("idquannhancongtac:", quannhanId)
+
+
+
+    const columns = [
+        {
+            title: 'STT',
+            dataIndex: 'stt',
+            render: (text, record, index) => index + 1,
+
+        },
+        {
+            title: 'Tải đào tạo yêu cầu',
+            dataIndex: 'TaiDaoTaoYeuCau',
+            key: 'TaiDaoTaoYeuCau',
+            value: 123
+        },
+        {
+            title: 'Tải NCKH yêu cầu',
+            dataIndex: 'TaiNCKHYeuCau',
+            key: 'TaiNCKHYeuCau',
+        },
+        {
+            title: 'Tổng tải yêu cầu',
+            dataIndex: 'TongTaiYeuCau',
+            key: 'TongTaiYeuCau',
+        },
+        {
+            title: 'Tải giảng dạy',
+            render: getTaiGiangDayQuanNhan()
+        },
+        {
+            title: 'Tải NCKH yêu cầu',
+            dataIndex: 'TaiNCKHYeuCau',
+            key: 'TaiNCKHYeuCau',
+        },
+        {
+            title: 'Tổng tải yêu cầu',
+            dataIndex: 'TongTaiYeuCau',
+            key: 'TongTaiYeuCau',
+        },
+        //   {
+        //     title: 'Đơn vị',
+        //     dataIndex: 'TaiThucDaoTaoYeuCau',
+        //     key: 'TaiThucDaoTaoYeuCau',
+        //   },
+        //   {
+        //     title: 'Kết thúc',
+        //     dataIndex: 'TaiThucNCKHYeuCau',
+        //     key: 'TaiThucNCKHYeuCau',
+        //   },
+        //   {
+        //     title: 'Đơn vị sinh hoạt học thuật',
+        //     dataIndex: 'TongThucTai',
+        //     key: 'TongThucTai',
+        //   },
+        //   {
+        //     title: 'Trạng thái',
+        //     dataIndex: 'TrangThai',
+        //     key: 'TrangThai',
+        //   },
+        //   {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        //   },
+
+
+    ];
+    useEffect(() => {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
             message.success()
-            handleGetDetailsUser(user?.id, user?.access_token)
-        } else if (isError) {
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
             message.error()
         }
-    }, [isSuccess, isError])
+    }, [isSuccessDelected])
 
-    const handleGetDetailsUser = async (id, token) => {
-        const res = await UserService.getDetailsUser(id, token)
-        dispatch(updateUser({ ...res?.data, access_token: token }))
-    }
 
-    const handleOnchangeEmail = (value) => {
-        setEmail(value)
-    }
-    const handleOnchangeName = (value) => {
-        setName(value)
-    }
-    const handleOnchangePhone = (value) => {
-        setPhone(value)
-    }
-    const handleOnchangeAddress = (value) => {
-        setAddress(value)
-    }
 
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
+
+    useEffect(() => {
+        if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
+            message.success()
+        } else if (isErrorDeletedMany) {
+            message.error()
         }
-        setAvatar(file.preview)
+    }, [isSuccessDelectedMany])
+
+    useEffect(() => {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
+            message.success()
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
+            message.error()
+        }
+    }, [isSuccessDelected])
+
+    const handleCloseDrawer = () => {
+        setIsOpenDrawer(false);
+        setStateThongKeTaiDetails({
+            TaiDaoTaoYeuCau: '',
+            TaiNCKHYeuCau: '',
+            TongTaiYeuCau: '',
+            TaiThucDaoTaoYeuCau: '',
+            TaiThucNCKHYeuCau: '',
+            TongThucTai: '',
+
+            GhiChu: '',
+        })
+        form.resetFields()
+    };
+
+    useEffect(() => {
+        if (isSuccessUpdated && dataUpdated?.status === 'OK') {
+            message.success()
+            handleCloseDrawer()
+        } else if (isErrorUpdated) {
+            message.error()
+        }
+    }, [isSuccessUpdated])
+
+    const handleCancelDelete = () => {
+        setIsModalOpenDelete(false)
     }
 
-    const handleUpdate = () => {
-        mutation.mutate({ id: user?.id, email, name, phone, address, avatar, access_token: user?.access_token })
 
+    const handleDeleteThongKeTai = () => {
+        mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
+            onSettled: () => {
+                thongketaiDetails.refetch()
+            }
+        })
     }
-    const [date, setDate] = useState(new Date());
-    
-    const optionDanToc = [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-        { value: 'option3', label: 'Option 3' },
-    ];
 
-    const handleChange = (value) => {
-        console.log(`selected value: ${value}`);
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        setStateThongKeTai({
+            TaiDaoTaoYeuCau: '',
+            TaiNCKHYeuCau: '',
+            TongTaiYeuCau: '',
+            TaiThucDaoTaoYeuCau: '',
+            TaiThucNCKHYeuCau: '',
+            TongThucTai: '',
+
+            GhiChu: '',
+        })
+        form.resetFields()
     };
 
 
+    const onFinish = () => {
+        const params = {
+            TaiDaoTaoYeuCau: stateThongKeTai.TaiDaoTaoYeuCau,
+            TaiNCKHYeuCau: stateThongKeTai.TaiNCKHYeuCau,
+            TongTaiYeuCau: stateThongKeTai.TongTaiYeuCau,
+            TaiThucDaoTaoYeuCau: stateThongKeTai.TaiThucDaoTaoYeuCau,
+            TaiThucNCKHYeuCau: stateThongKeTai.TaiThucNCKHYeuCau,
+            TongThucTai: stateThongKeTai.TongThucTai,
+
+            GhiChu: stateThongKeTai.GhiChu,
+        }
+        console.log("Finsh", stateThongKeTai)
+        mutation.mutate(params, {
+            onSettled: () => {
+                thongketaiDetails.refetch()
+            }
+        })
+    }
+
+
+
+    const handleOnchange = (e) => {
+        console.log("e: ", e.target.name, e.target.value)
+        setStateThongKeTai({
+            ...stateThongKeTai,
+            [e.target.name]: e.target.value
+        })
+    }
+
+
+    const handleOnchangeDetails = (e) => {
+        console.log('check', e.target.name, e.target.value)
+        setStateThongKeTaiDetails({
+            ...stateThongKeTaiDetails,
+            [e.target.name]: e.target.value
+        })
+    }
+
+
+    const onUpdateThongKeTai = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateThongKeTaiDetails }, {
+            onSettled: () => {
+                thongketaiDetails.refetch()
+            }
+        })
+    }
+
+
+
+
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
+    const dataTable = thongketaiDetails?.data?.length && thongketaiDetails?.data?.map((thongketaiDetails) => {
+        return {
+            ...thongketaiDetails,
+            key: thongketaiDetails._id,
+
+
+
+        }
+    })
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
 
     return (
         <div>
-            <div style={{ width: '910px', margin: '0 auto' }}>
-
-
-
-                <div style={{ margin: '0 auto', float: 'left', padding: '10px 70px 10px 10px', background: '#fff', borderRadius: "8px" }}>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="email">Họ và tên </WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="email" value={email} onChange={handleOnchangeEmail} />
-
-                    </WrapperInput>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="name">Đơn vị</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="name" value={name} onChange={handleOnchangeName} />
-
-                    </WrapperInput>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="phone">Giới tính</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="email" value={phone} onChange={handleOnchangePhone} />
-
-                    </WrapperInput>
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Ngày sinh</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Quê quán</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
+            <div>
+                <WrapperHeader>Tổng hợp tải</WrapperHeader>
+                <div style={{ marginTop: '10px' }}>
+                    <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
                 </div>
-
-                <div style={{ margin: '0 auto', float: 'left', padding: '10px 10px 10px 10px', background: '#fff', borderRadius: "8px" }}>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Chức vụ</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Chức vụ Đảng</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Học vị</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Học hàm</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
-
-                    <WrapperInput>
-                        <WrapperLabel style={{ width: '100px' }} htmlFor="address">Chức danh</WrapperLabel>
-                        <InputForm style={{ width: '250px' }} id="address" value={address} onChange={handleOnchangeAddress} />
-
-                    </WrapperInput>
-
-                </div>
-
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '200px 10px 10px 10px', }}>
-                    <h2>KẾT QUẢ ĐÀO TẠO VÀ NCKH</h2>
-                    <TongHopTai />
-                </div>
-
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-                    <h2>CHI TIẾT CÔNG TÁC ĐÀO TẠO VÀ NCKH</h2>
-                    <h3>TẢI ĐÀO TẠO</h3>
-                    <h4>Tải giảng dạy</h4>
-                    <TaiGiangDay />
-                </div>
-
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Tải hướng dẫn</h4>
-                    <TaiHuongDan />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Tải khảo thí</h4>
-                    <TaiKhaoThi />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Tải hội đồng</h4>
-                    <TaiHoiDong />
-                </div>
+                {isLoading ? ( // Hiển thị thông báo đang tải
+                    <div>Loading...</div>
+                ) : (
+                    // <Table dataSource={thongketaiDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingThongKeTai} data={dataTable} onRow={(record, rowSelected) => {
+                        return {
+                            onClick: event => {
+                                setRowSelected(record._id);
 
 
+                            }
 
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h3>TẢI NGHIÊN CỨU KHOA HỌC</h3>
-                    <h4>Bài báo khoa học</h4>
-                    <BaiBaoKH />
-                </div>
-
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Đề tài NCKH</h4>
-                    <DeTaiNCKH />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Biên soạn</h4>
-                    <BienSoan />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Hướng dẫn NCKH</h4>
-                    <HuongDanNCKH />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Giải thưởng NCKH</h4>
-                    <GiaiThuongNCKH />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Sáng chế</h4>
-                    <SangChe />
-                </div>
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '50px 10px 10px 10px', }}>
-
-                    <h4>Hoạt động khác</h4>
-                    <HoatDongKhac />
-                </div>
+                        };
+                    }} />
+                )}
 
             </div>
+            <ModalComponent forceRender title="Thêm mới thông kê tả" open={isModalOpen} onCancel={handleCancel} footer={null}>
+                <Loading isLoading={isLoading}>
+
+                    <Form
+                        name="basic"
+                        labelCol={{ span: 10 }}
+                        wrapperCol={{ span: 18 }}
+                        onFinish={onFinish}
+                        autoComplete="on"
+                        form={form}
+                    >
+
+                        <Form.Item
+                            label="Tải đào tạo yêu cầu"
+                            name="TaiDaoTaoYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateThongKeTai['TaiDaoTaoYeuCau']}
+                                onChange={handleOnchange}
+                                name="TaiDaoTaoYeuCau"
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Tải NCKH yêu cầu"
+                            name="TaiNCKHYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateThongKeTai['TaiNCKHYeuCau']}
+                                onChange={handleOnchange}
+                                name="TaiNCKHYeuCau"
+                            />
+                        </Form.Item>
+
+
+                        <Form.Item
+                            label="Tổng Tải yêu cầu"
+                            name="TongTaiYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateThongKeTai['TongTaiYeuCau']}
+                                onChange={handleOnchange}
+                                name="TongTaiYeuCau"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Tải đào tạo thực"
+                            name="TaiThucDaoTaoYeuCau"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            {/* <InputComponent
+                                value={stateThongKeTai['TaiThucDaoTaoYeuCau'] = getTaiGiangDayQuanNhan() + getTaiHuongDanQuanNhan() + getTaiHoiDongQuanNhan() + getTaiKhaoThiQuanNhan()}
+                            /> */}
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateThongKeTai['TaiThucDaoTaoYeuCau']}
+                                onChange={handleOnchange}
+                                name="TaiThucDaoTaoYeuCau"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Tải NCKH thực"
+                            name="TaiThucNCKHYeuCau"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateThongKeTai['TaiThucNCKHYeuCau']}
+                                onChange={handleOnchange}
+                                name="TaiThucNCKHYeuCau"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Đơn vị sinh hoạt học thuật"
+                            name="TongThucTai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateThongKeTai['TongThucTai']}
+                                onChange={handleOnchange}
+                                name="TongThucTai"
+                            />
+                        </Form.Item>
+
+                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
+                            <Button type="primary" htmlType="submit">
+                                Thêm
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Loading>
+            </ModalComponent>
+
+
+            <DrawerComponent title='Chi tiết thông kê tải' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
+
+                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
+                    <Form
+                        name="basic"
+                        labelCol={{ span: 5 }}
+                        wrapperCol={{ span: 22 }}
+                        onFinish={onUpdateThongKeTai}
+                        autoComplete="on"
+                        form={form}
+                    >
+                        <Form.Item
+                            label="Mã quyết định"
+                            name="TaiDaoTaoYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateThongKeTaiDetails['TaiDaoTaoYeuCau']} onChange={handleOnchangeDetails} name="TaiDaoTaoYeuCau" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Ngày quyết định"
+                            // name="TaiNCKHYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            {/* <InputComponent value={stateThongKeTaiDetails['TaiNCKHYeuCau']} onChange={handleOnchangeDetails} name="TaiNCKHYeuCau" /> */}
+
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Chức vụ"
+                            name="TongTaiYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateThongKeTaiDetails['TongTaiYeuCau']} onChange={handleOnchangeDetails} name="TongTaiYeuCau" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Đơn vị"
+                            name="TaiThucDaoTaoYeuCau"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateThongKeTaiDetails['TaiThucDaoTaoYeuCau']} onChange={handleOnchangeDetails} name="TaiThucDaoTaoYeuCau" />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Kết thúc"
+                        //  name="TaiThucNCKHYeuCau"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Đơn vị sinh hoạt học thuật"
+                            name="TongThucTai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateThongKeTaiDetails['TongThucTai']} onChange={handleOnchangeDetails} name="TongThucTai" />
+                        </Form.Item>
+
+
+
+                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
+                            <Button type="primary" htmlType="submit">
+                                Cập nhật
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Loading>
+            </DrawerComponent>
+
+            <ModalComponent title="Xóa thông kê tả" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteThongKeTai}>
+                <Loading isLoading={isLoadingDeleted}>
+                    <div>Bạn có chắc xóa thông kê tả này không?</div>
+                </Loading>
+            </ModalComponent>
 
 
         </div>
 
+    );
+};
 
 
 
-    )
-}
-
-export default TaiCaNhan
+export default TaiCaNhan;

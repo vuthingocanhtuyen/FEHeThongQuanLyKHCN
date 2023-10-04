@@ -56,6 +56,7 @@ import TabThanhNhanTaiSan from '../QuanLyQuanNhan/HoSoCanBo/TabThanNhanTaiSan';
 import ThongKeBaoCao from '../ChiHuyDieuHanh/ThongKeNhanLuc/ThongKeBaoCao';
 import ThongKeTai from '../ChiHuyDieuHanh/ThongKeTai/ThongKeTai';
 import HocVi from '../QuanLyDanhMuc/ToChucNhanSu/HocVi';
+import TaiCaNhan from '../ChiHuyDieuHanh/ThongKeTai/TaiCaNhan';
 
 
 
@@ -204,6 +205,12 @@ const AdminPage = () => {
         {
           label: 'Tải nghiên cứu',
           key: 'tainghiencuu',
+          icon: <AppstoreAddOutlined />,
+
+        },
+        {
+          label: 'Tổng hợp tải',
+          key: 'tonghoptai',
           icon: <AppstoreAddOutlined />,
 
         },
@@ -436,7 +443,10 @@ const AdminPage = () => {
         return (
           <TabNghienCuu />
         )
-
+      case 'tonghoptai':
+        return (
+          <TaiCaNhan />
+        )
 
       //Quanly đơn vị
 

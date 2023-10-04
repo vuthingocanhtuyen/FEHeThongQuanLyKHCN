@@ -32,12 +32,17 @@ const TaiHoiDong = ({ }) => {
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
+
+    const [stateCapHoiDong, setStateCapHoiDong] = useState({
+        CapHoiDong: 'Cao học',
+        LoaiHoiDong: 'Hội đồng chấm thi môn học Cao học', // replace defaultValue with your desired default value
+    });
+
     const inittial = () => ({
         CapHoiDong: '',
         LoaiHoiDong: '',
         VaiTro: '',
         ThoiDiem: moment(),
-
         Quy: '',
         Nam: '',
         KhoiLuongCongViec: '',
@@ -594,8 +599,53 @@ const TaiHoiDong = ({ }) => {
 
         }
     })
+    // loại hội đồng
+    const handleChangeSelectLoaiHoiDong = (child) => {
+        setStateCapHoiDong({
+            ...stateCapHoiDong,
+            LoaiHoiDong: child,
+        });
+    };
+
+    const handleChangeSelectCapHoiDong = (value) => {
+        const selectedCapHoiDong = value;
 
 
+        const filteredDataTable = dataTable.filter((item) => {
+            return item.CapHoiDong === selectedCapHoiDong;
+        });
+
+        const tenLoaiHoiDongOptions = filteredDataTable.map((option) => option.LoaiHoiDong);
+
+
+        setStateCapHoiDong({
+            ...stateCapHoiDong,
+            CapHoiDong: value,
+            // TenDanhMucLoaiHoiDong: '',
+            LoaiHoiDong: tenLoaiHoiDongOptions[0],
+            tenLoaiHoiDongOptions: tenLoaiHoiDongOptions,
+        });
+        console.log("Huyện:", tenLoaiHoiDongOptions);
+
+
+
+    };
+    // Hàm lọc danh sách options không trùng nhau
+    const filterOptions = (options) => {
+        const uniqueOptions = [];
+        const optionValues = new Set();
+
+        if (options) { // Add a check for undefined or null options
+            options.forEach((option) => {
+                if (!optionValues.has(option)) {
+                    uniqueOptions.push(option);
+                    optionValues.add(option);
+                }
+            });
+        }
+
+        return uniqueOptions;
+    };
 
 
 
@@ -664,22 +714,22 @@ const TaiHoiDong = ({ }) => {
 
     //loại hội đồng
 
-    const fetchAllLoaiHoiDong = async () => {
+    // const fetchAllLoaiHoiDong = async () => {
 
-        const res = await CapHoiDongService.getAllTypeByLoaiHoiDong()
-        return res
-    }
+    //     const res = await CapHoiDongService.getAllTypeByLoaiHoiDong()
+    //     return res
+    // }
 
-    const allLoaiHoiDong = useQuery(['all-loaihoidong'], fetchAllLoaiHoiDong)
-    console.log("loaihd: ", allLoaiHoiDong.data)
+    // const allLoaiHoiDong = useQuery(['all-loaihoidong'], fetchAllLoaiHoiDong)
+    // console.log("loaihd: ", allLoaiHoiDong.data)
 
-    const handleChangeSelect3 = (value) => {
-        setStateTaiHoiDong({
-            ...stateTaiHoiDong,
-            LoaiHoiDong: value
-        })
-        // console.log(stateQuanNhan)
-    }
+    // const handleChangeSelect3 = (value) => {
+    //     setStateTaiHoiDong({
+    //         ...stateTaiHoiDong,
+    //         LoaiHoiDong: value
+    //     })
+    //     // console.log(stateQuanNhan)
+    // }
 
 
     //vai trò hội đồng
@@ -756,12 +806,14 @@ const TaiHoiDong = ({ }) => {
                     >
                         <Form.Item
                             label="Cấp hội đồng"
-                            name="CapHoiDong"
+                            //  name="CapHoiDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <Select
                                 name="CapHoiDong"
-                                onChange={handleChangeSelect1}
+                                value={stateCapHoiDong.CapHoiDong}
+                                onChange={handleChangeSelectCapHoiDong}
+
                                 options={renderOptions(allCapHoiDong?.data?.data)}
                             />
 
@@ -769,16 +821,20 @@ const TaiHoiDong = ({ }) => {
 
                         <Form.Item
                             label="Loại hội đồng"
-                            name="LoaiHoiDong"
+                            //  name="LoaiHoiDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiHoiDong['LoaiHoiDong']} onChange={handleOnchange} name="LoaiHoiDong" /> */}
 
                             <Select
                                 name="LoaiHoiDong"
-                                onChange={handleChangeSelect3}
+                                value={stateCapHoiDong.LoaiHoiDong}
+                                onChange={handleChangeSelectLoaiHoiDong}
 
-                                options={renderOptions(allLoaiHoiDong?.data?.data)}
+                                options={filterOptions(stateCapHoiDong.tenLoaiHoiDongOptions).map((option) => ({
+                                    label: option,
+                                    value: option,
+                                }))}
                             />
 
                         </Form.Item>
@@ -914,11 +970,11 @@ const TaiHoiDong = ({ }) => {
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiHoiDongDetails['LoaiHoiDong']} onChange={handleOnchangeDetails} name="LoaiHoiDong" /> */}
-                            <Select
+                            {/* <Select
                                 name="LoaiHoiDong"
                                 onChange={handleChangeSelect3}
                                 options={renderOptions(allLoaiHoiDong?.data?.data)}
-                            />
+                            /> */}
                         </Form.Item>
 
                         <Form.Item

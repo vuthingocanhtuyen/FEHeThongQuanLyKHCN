@@ -1475,6 +1475,13 @@ const BaiBaoKH = ({ }) => {
                             <InputComponent value={stateBaiBaoKH.ThuocDeTai} onChange={handleOnchange} name="ThuocDeTai" />
                         </Form.Item>
                         <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateBaiBaoKH.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
+                        <Form.Item
                             label="Nhóm nghiên cứu"
                             name="NhomNghienCuu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
@@ -1729,6 +1736,13 @@ const BaiBaoKH = ({ }) => {
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateBaiBaoKHDetails.ThuocDeTai} onChange={handleOnchangeDetails} name="ThuocDeTai" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateBaiBaoKHDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
                         </Form.Item>
                         <Form.Item
                             label="Nhóm nghiên cứu"

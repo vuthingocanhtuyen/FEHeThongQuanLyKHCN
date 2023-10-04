@@ -693,8 +693,8 @@ const DeTaiNCKH = ({ }) => {
         },
         {
             title: 'Tải',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'Tai',
+            key: 'Tai',
         },
         {
             title: 'Trạng thái',
@@ -1567,7 +1567,13 @@ const DeTaiNCKH = ({ }) => {
                         >
                             <InputComponent value={stateDeTaiNCKH.MoTaKetThuc} onChange={handleOnchange} name="MoTaKetThuc" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateDeTaiNCKH.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
 
                         <Form.Item
                             label="Quản lý bởi đơn vị trong học viên"
@@ -1868,7 +1874,13 @@ const DeTaiNCKH = ({ }) => {
                         >
                             <InputComponent value={stateDeTaiNCKHDetails.MoTaKetThuc} onChange={handleOnchangeDetails} name="MoTaKetThuc" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateDeTaiNCKHDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
+                        </Form.Item>
 
                         <Form.Item
                             label="Quản lý bởi đơn vị trong học viên"

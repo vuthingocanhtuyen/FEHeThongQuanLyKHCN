@@ -578,8 +578,8 @@ const GiaiThuongNCKH = ({ }) => {
         },
         {
             title: 'Tải',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'Tai',
+            key: 'Tai',
         },
         {
             title: 'Trạng thái',
@@ -1233,7 +1233,13 @@ const GiaiThuongNCKH = ({ }) => {
                         >
                             <InputComponent value={stateGiaiThuongNCKH.Nam} onChange={handleOnchange} name="Nam" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateGiaiThuongNCKH.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
                         <Form.Item
                             label="File chứng minh"
                             name="FileCM"
@@ -1412,7 +1418,13 @@ const GiaiThuongNCKH = ({ }) => {
                         >
                             <InputComponent value={stateGiaiThuongNCKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateGiaiThuongNCKHDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
+                        </Form.Item>
 
 
                         <Form.Item

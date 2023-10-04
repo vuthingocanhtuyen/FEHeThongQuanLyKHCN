@@ -983,13 +983,19 @@ const TaiGiangDay = ({ }) => {
                     KetThuc: date,
                     Quy: quy,
                     Nam: nam,
-                    HocKy: hocky
+                    HocKy: hocky,
+                    Quy: value,
+                    Nam: value,
+                    HocKy: value,
                 }));
                 console.log("Quý:", stateTaiGiangDay);
             } else {
                 setStateTaiGiangDay((prevState) => ({
                     ...prevState,
-                    [name]: value
+                    [name]: value,
+                    Quy: value,
+                    Nam: value,
+                    HocKy: value,
                 }));
             }
         }
@@ -1136,6 +1142,7 @@ const TaiGiangDay = ({ }) => {
             ...taigiangdayDetails,
             key: taigiangdayDetails._id,
             TrangThai: getTrangThaiText(taigiangdayDetails.TrangThai)
+
         }
     })
     const dataTable2 = HTCVDetails?.data?.length && HTCVDetails?.data?.map((HTCVDetails) => {
@@ -1489,7 +1496,7 @@ const TaiGiangDay = ({ }) => {
                             label="Quý"
                             name="Quy"
                         >
-                            {xacDinhQuy(KetThuc)}
+                            <InputComponent value={Quy} />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
@@ -1497,7 +1504,7 @@ const TaiGiangDay = ({ }) => {
                         //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiGiangDay.Nam} onChange={handleOnchange} name="Nam" /> */}
-                            {xacDinhNam(stateTaiGiangDay.KetThuc)}
+                            <InputComponent value={Nam} />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
@@ -1505,7 +1512,7 @@ const TaiGiangDay = ({ }) => {
                         //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiGiangDay.HocKy} onChange={handleOnchange} name="HocKy" /> */}
-                            {xacDinhHocKy(stateTaiGiangDay.KetThuc)}
+                            <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="HT thi"
@@ -1768,9 +1775,9 @@ const TaiGiangDay = ({ }) => {
                         <Form.Item
                             label="Học kỳ"
                             name="HocKy"
-                      
+
                         >
-                           <InputComponent value={HocKy} />
+                            <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="HT thi"

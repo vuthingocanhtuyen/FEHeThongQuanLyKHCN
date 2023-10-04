@@ -572,8 +572,8 @@ const HoatDongKhac = ({ }) => {
 
         {
             title: 'Tải',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'Tai',
+            key: 'Tai',
         },
         {
             title: 'Trạng thái',
@@ -1272,7 +1272,13 @@ const HoatDongKhac = ({ }) => {
                         >
                             <InputComponent value={stateHoatDongKhac.Nam} onChange={handleOnchange} name="Nam" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHoatDongKhac.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
 
                         <Form.Item
                             label="File chứng minh"
@@ -1466,7 +1472,13 @@ const HoatDongKhac = ({ }) => {
                         >
                             <InputComponent value={stateHoatDongKhacDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHoatDongKhacDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
+                        </Form.Item>
                         <Form.Item
                             label="File chứng minh"
                             name="FileCM"
