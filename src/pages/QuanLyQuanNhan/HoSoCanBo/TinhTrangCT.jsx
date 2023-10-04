@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space } from 'antd';
+import { Form, Table, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
 import { getBase64 } from '../../../utils'
@@ -16,7 +16,7 @@ import ModalComponent from '../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const TinhTrangCT = ({ }) => {
+const TinhTrangCongTac = ({ }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -27,16 +27,17 @@ const TinhTrangCT = ({ }) => {
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
-
+    const [NgayQD, setNgayQD] = useState('');
+    const [NgayKT, setNgayKT] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         QuyetDinh: '',
-        NgayQuyetDinh: '',
+        NgayQuyetDinh: moment(),
         TrangThaiCongTac: '',
         DonVi: '',
-        KetThuc: '',
+        KetThuc: moment(),
         DonViSinhHoatHocThuat: '',
         TrangThai: '',
 
@@ -99,7 +100,42 @@ const TinhTrangCT = ({ }) => {
 
     )
 
+    // ngày quyết định
+    useEffect(() => {
+        setNgayQD(moment(stateTinhTrangCongTacDetails['NgayQuyetDinh']));
+        // setNgayQD(convertDateToString(stateTinhTrangCongTacDetails['NgayQuyetDinh']));
+    }, [form, stateTinhTrangCongTacDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayQD = (date) => {
+        setStateTinhTrangCongTacDetails({
+            ...stateTinhTrangCongTacDetails,
+            NgayQuyetDinh: date
+        })
+    }
+    const handleOnchangeNgayQD = (date) => {
+        setStateTinhTrangCongTac({
+            ...stateTinhTrangCongTac,
+            NgayQuyetDinh: date
+        })
+    }
+    // ngày kết thúc
+    useEffect(() => {
+        setNgayKT(moment(stateTinhTrangCongTacDetails['KetThuc']));
+        // setNgayQD(convertDateToString(stateTinhTrangCongTacDetails['NgayQuyetDinh']));
+    }, [form, stateTinhTrangCongTacDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayKT = (date) => {
+        setStateTinhTrangCongTacDetails({
+            ...stateTinhTrangCongTacDetails,
+            KetThuc: date
+        })
+    }
+    const handleOnchangeNgayKT = (date) => {
+        setStateTinhTrangCongTac({
+            ...stateTinhTrangCongTac,
+            KetThuc: date
+        })
+    }
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
     }
@@ -543,7 +579,8 @@ const TinhTrangCT = ({ }) => {
             ...tinhtrangcongtacDetails,
             key: tinhtrangcongtacDetails._id,
             TrangThai: getTrangThaiText(tinhtrangcongtacDetails.TrangThai),
-            NgayQuyetDinh: convertDateToString(tinhtrangcongtacDetails.NgayQuyetDinh)
+            NgayQuyetDinh: convertDateToString(tinhtrangcongtacDetails.NgayQuyetDinh),
+            KetThuc: convertDateToString(tinhtrangcongtacDetails.KetThuc)
         }
     })
     useEffect(() => {
@@ -625,15 +662,13 @@ const TinhTrangCT = ({ }) => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="NgayQuyetDinh"
+                            //  name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateTinhTrangCongTac['NgayQuyetDinh']}
-                                onChange={handleOnchange}
-                                name="NgayQuyetDinh"
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
+                                format="DD/MM/YYYY"
                             />
                         </Form.Item>
 
@@ -655,15 +690,13 @@ const TinhTrangCT = ({ }) => {
 
                         <Form.Item
                             label="Kết thúc"
-                            name="KetThuc"
+                        //  name="KetThuc"
                         //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateTinhTrangCongTac['KetThuc']}
-                                onChange={handleOnchange}
-                                name="KetThuc"
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayKT} name="KetThuc"
+                                format="DD/MM/YYYY"
                             />
                         </Form.Item>
 
@@ -699,10 +732,14 @@ const TinhTrangCT = ({ }) => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="NgayQuyetDinh"
+                            //  name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTinhTrangCongTacDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
+                            <DatePicker
+                                value={NgayQD}
+                                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
                         <Form.Item
@@ -717,10 +754,14 @@ const TinhTrangCT = ({ }) => {
 
                         <Form.Item
                             label="Kết thúc"
-                            name="KetThuc"
+                        //   name="KetThuc"
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTinhTrangCongTacDetails['KetThuc']} onChange={handleOnchangeDetails} name="KetThuc" />
+                            <DatePicker
+                                value={NgayKT}
+                                onChange={handleOnchangeDetailNgayKT} name="KetThuc"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
 
@@ -760,4 +801,4 @@ const TinhTrangCT = ({ }) => {
     );
 };
 
-export default TinhTrangCT;
+export default TinhTrangCongTac;

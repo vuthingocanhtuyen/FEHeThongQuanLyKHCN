@@ -8,25 +8,25 @@ import Loading from '../../../../components/LoadingComponent/Loading'
 import InputComponent from '../../../../components/InputComponent/InputComponent'
 import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useMutationHooks } from '../../../../hooks/useMutationHook'
-import * as BienSoanService from '../../../../services/BienSoanService';
-import * as LoaiTaiLieuService from '../../../../services/LoaiTaiLieuService';
-import * as NgonNguService from '../../../../services/NgonNguService';
+import * as SangCheService from '../../../../services/SangCheService';
+import * as LoaiDangKyService from '../../../../services/LoaiDangKyService';
 import * as VaiTroService from '../../../../services/VaiTroService';
+import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanService';
 import * as PriorityByUserService from '../../../../services/PriorityByUserService'
 import * as QuanNhanService from '../../../../services/QuanNhanService'
-import * as HTCVService from '../../../../services/HTCVBienSoanService';
+import * as HTCVService from '../../../../services/HTCVSangCheService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
-import moment from 'moment';
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
+import moment from 'moment';
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const BienSoan = ({ }) => {
+const SangChe = ({ quannhanId }) => {
     const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
     const [currentUserDonViCode, setCurrentUserDonViCode] = useState(null);
     const [htcvId, sethtcvId] = useState('')
-    const [biensoanId, setbiensoanId] = useState('')
+    const [sangcheId, setsangcheId] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -36,15 +36,15 @@ const BienSoan = ({ }) => {
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const [isModalOpenDelete2, setIsModalOpenDelete2] = useState(false)
-
+    const [NgayQD, setNgayQD] = useState('');
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
-    const [NgayQD, setNgayQD] = useState('');
+
 
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+    //   const quannhanId = user.QuanNhanId;
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
 
@@ -70,39 +70,37 @@ const BienSoan = ({ }) => {
     }, [user.QuanNhanId, user.access_token]);
     const inittial = () => ({
 
+        SangCheId: '',
 
-        BienSoanId: '',
-
-        Ten: '',
-        LoaiTaiLieu: '',
-        SoTrang: '',
-        MaXuatBan: '',
-        TenNhaXuatBan: '',
-        NgayXuatBan: moment(),
+        TenSangChe: '',
+        LoaiDangKy: '',
+        DonViCap: '',
+        NhomNghienCuu: '',
+        ThoiDiemDangKy: moment(),
         SoTacGia: '',
         CacTacGia: '',
         Quy: '',
         Nam: '',
-        NgonNguSach: '',
-        NhomNghienCuu: '',
-        Tai: '',
+
         FileCM: '',
-        CacHTCV: '',
+        Tai: '',
         TrangThai: '',
+        CacHTCV: '',
+
         GhiChu: '',
     })
     const inittialHTCV = () => ({
         HinhThucCV: '',
         QuanNhanId: '',
         HoTen: '',
+
         DonVi: '',
         VaiTro: '',
         SoGioQuyDoi: '',
-        Trang: '',
         GhiChu: '',
     })
-    const [stateBienSoan, setStateBienSoan] = useState(inittial())
-    const [stateBienSoanDetails, setStateBienSoanDetails] = useState(inittial())
+    const [stateSangChe, setStateSangChe] = useState(inittial())
+    const [stateSangCheDetails, setStateSangCheDetails] = useState(inittial())
     const [stateHTCVDetails, setStateHTCVDetails] = useState(inittialHTCV())
     const [stateHTCV, setStateHTCV] = useState(inittialHTCV())
     const [form] = Form.useForm();
@@ -110,12 +108,12 @@ const BienSoan = ({ }) => {
     const mutation = useMutationHooks(
 
         (data) => {
-            const { QuanNhanId = quannhanId, BienSoanId, Ten, LoaiTaiLieu, SoTrang, MaXuatBan, TenNhaXuatBan, NgayXuatBan, SoTacGia, CacTacGia, Quy, Nam, NgonNguSach, NhomNghienCuu, Tai, FileCM, TrangThai = 0, edituser, edittime, GhiChu } = data
-            const res = BienSoanService.createBienSoan({
-                BienSoanId, QuanNhanId, Ten, LoaiTaiLieu, SoTrang, MaXuatBan, TenNhaXuatBan, NgayXuatBan, SoTacGia, CacTacGia, Quy, Nam, NgonNguSach, NhomNghienCuu, Tai, FileCM, TrangThai, edituser, edittime, GhiChu
+            const { QuanNhanId = quannhanId, SangCheId, TenSangChe, LoaiDangKy, DonViCap, NhomNghienCuu, ThoiDiemDangKy, SoTacGia, CacTacGia, Quy, Nam, FileCM, Tai, TrangThai = 0, edituser, edittime, GhiChu } = data
+            const res = SangCheService.createSangChe({
+                SangCheId, QuanNhanId, TenSangChe, LoaiDangKy, DonViCap, NhomNghienCuu, ThoiDiemDangKy, SoTacGia, CacTacGia, Quy, Nam, FileCM, Tai, TrangThai, edituser, edittime, GhiChu
             }).then(res => {
                 try {
-                    setbiensoanId(res.data._id);
+                    setsangcheId(res.data._id);
                     return res;
                 } catch { };
             });
@@ -125,9 +123,9 @@ const BienSoan = ({ }) => {
 
         (data) => {
             try {
-                const { HinhThucCV, QuanNhanId, HoTen, DonVi, VaiTro, Trang, SoGioQuyDoi, GhiChu } = data
+                const { HinhThucCV, QuanNhanId, HoTen, DonVi, VaiTro, SoGioQuyDoi, GhiChu } = data
                 const res = HTCVService.createHTCV({
-                    HinhThucCV, QuanNhanId, HoTen, DonVi, VaiTro, Trang, SoGioQuyDoi, GhiChu
+                    HinhThucCV, QuanNhanId, HoTen, DonVi, VaiTro, SoGioQuyDoi, GhiChu
                 }).then(res => {
                     sethtcvId(res.data._id);
                     return res;
@@ -144,7 +142,7 @@ const BienSoan = ({ }) => {
             const { id,
                 token,
                 ...rests } = data
-            const res = BienSoanService.updateBienSoan(
+            const res = SangCheService.updateSangChe(
                 id,
                 token,
                 { ...rests })
@@ -158,7 +156,7 @@ const BienSoan = ({ }) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
-            const res = BienSoanService.updateBienSoan(id, token, updatedData);
+            const res = SangCheService.updateSangChe(id, token, updatedData);
             return res;
 
         },
@@ -166,20 +164,20 @@ const BienSoan = ({ }) => {
     )
 
     useEffect(() => {
-        setNgayQD(moment(stateBienSoanDetails['NgayXuatBan']));
-        // setNgayQD(convertDateToString(stateBienSoanDetails['NgayQuyetDinh']));
-    }, [form, stateBienSoanDetails, isOpenDrawer])
+        setNgayQD(moment(stateSangCheDetails['ThoiDiemDangKy']));
+        // setNgayQD(convertDateToString(stateSangCheDetails['NgayQuyetDinh']));
+    }, [form, stateSangCheDetails, isOpenDrawer])
 
     const handleOnchangeDetailNgayQD = (date) => {
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
-            NgayXuatBan: date
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
+            ThoiDiemDangKy: date
         })
     }
     const handleOnchangeNgayQD = (date) => {
-        setStateBienSoan({
-            ...stateBienSoan,
-            NgayXuatBan: date
+        setStateSangChe({
+            ...stateSangChe,
+            ThoiDiemDangKy: date
         })
     }
     const handleCancelPheDuyet = () => {
@@ -194,7 +192,7 @@ const BienSoan = ({ }) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
-            const res = BienSoanService.updateBienSoan(id, token, updatedData);
+            const res = SangCheService.updateSangChe(id, token, updatedData);
             return res;
 
         },
@@ -220,7 +218,7 @@ const BienSoan = ({ }) => {
             const { id,
                 token,
             } = data
-            const res = BienSoanService.deleteBienSoan(
+            const res = SangCheService.deleteSangChe(
                 id,
                 token)
             return res
@@ -242,7 +240,7 @@ const BienSoan = ({ }) => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = BienSoanService.deleteManyBienSoan(
+            const res = SangCheService.deleteManySangChe(
                 ids,
                 token)
             return res
@@ -250,54 +248,55 @@ const BienSoan = ({ }) => {
     )
 
 
-    const getAllBienSoans = async () => {
-        const res = await BienSoanService.getAllBienSoan()
+    const getAllSangChes = async () => {
+        const res = await SangCheService.getAllSangChe()
         return res
     }
 
     // show
 
 
-    const fetchGetBienSoan = async (context) => {
+    const fetchGetSangChe = async (context) => {
         const quannhanId = context?.queryKey && context?.queryKey[1]
 
         if (quannhanId) {
 
-            const res = await BienSoanService.getBienSoanByQuanNhanId(quannhanId)
+            const res = await SangCheService.getSangCheByQuanNhanId(quannhanId)
 
             if (res?.data) {
-                setStateBienSoanDetails({
-                    BienSoanId: res?.data.BienSoanId,
-                    Ten: res?.data.Ten,
-                    LoaiTaiLieu: res?.data.LoaiTaiLieu,
-                    SoTrang: res?.data.SoTrang,
-                    MaXuatBan: res?.data.MaXuatBan,
-                    TenNhaXuatBan: res?.data.TenNhaXuatBan,
-                    NgayXuatBan: res?.data.NgayXuatBan,
+                setStateSangCheDetails({
+
+                    SangCheId: res?.data.SangCheId,
+
+                    TenSangChe: res?.data.TenSangChe,
+                    LoaiDangKy: res?.data.LoaiDangKy,
+                    DonViCap: res?.data.DonViCap,
+                    NhomNghienCuu: res?.data.NhomNghienCuu,
+                    ThoiDiemDangKy: res?.data.ThoiDiemDangKy,
                     SoTacGia: res?.data.SoTacGia,
                     CacTacGia: res?.data.CacTacGia,
                     Quy: res?.data.Quy,
                     Nam: res?.data.Nam,
-                    NgonNguSach: res?.data.NgonNguSach,
-                    NhomNghienCuu: res?.data.NhomNghienCuu,
-                    Tai: res?.data.Tai,
+
                     FileCM: res?.data.FileCM,
-                    CacHTCV: res?.data.CacHTCV,
+                    Tai: res?.data.Tai,
                     TrangThai: res?.data.TrangThai,
-                    GhiChu: res?.data.GhiChu,
+                    CacHTCV: res?.data.CacHTCV,
+
+                    GhiChu: res?.data.code,
                 })
             }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateBienSoanDetails)
+            // console.log("chi tiết qtct:", setStateSangCheDetails)
             return res.data
         }
         setIsLoadingUpdate(false)
     }
     const fetchGetHTCV = async () => {
 
-        if (biensoanId) {
-            const res = await BienSoanService.getDetailsBienSoan(biensoanId)
+        if (sangcheId) {
+            const res = await SangCheService.getDetailsSangChe(sangcheId)
 
 
             // if (res?.data) {
@@ -314,7 +313,7 @@ const BienSoan = ({ }) => {
             // }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateBienSoanDetails)
+            // console.log("chi tiết qtct:", setStateSangCheDetails)
 
             return res.data.CacHTCV
         }
@@ -322,17 +321,17 @@ const BienSoan = ({ }) => {
     }
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateBienSoanDetails)
+            form.setFieldsValue(stateSangCheDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateBienSoanDetails, isModalOpen])
+    }, [form, stateSangCheDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true);
-            setbiensoanId(rowSelected);
-            fetchGetDetailsBienSoan(rowSelected);
+            setsangcheId(rowSelected);
+            fetchGetDetailsSangChe(rowSelected);
 
         }
     }, [rowSelected, isOpenDrawer])
@@ -345,7 +344,7 @@ const BienSoan = ({ }) => {
 
 
 
-    const handleDetailsBienSoan = () => {
+    const handleDetailsSangChe = () => {
         setIsOpenDrawer(true)
     }
     const handleDetailsHTCV = () => {
@@ -353,10 +352,10 @@ const BienSoan = ({ }) => {
     }
 
 
-    const handleDelteManyBienSoans = (ids) => {
+    const handleDelteManySangChes = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                biensoanDetails.refetch()
+                sangcheDetails.refetch()
             }
         })
     }
@@ -377,17 +376,17 @@ const BienSoan = ({ }) => {
 
 
 
-    const queryBienSoan = useQuery({ queryKey: ['biensoan'], queryFn: getAllBienSoans })
-    const biensoanDetails = useQuery(['hosoquannhanbiensoan', quannhanId], fetchGetBienSoan, { enabled: !!quannhanId })
-    const HTCVDetails = useQuery(['hinhthuccongviecbiensoan', biensoanId], fetchGetHTCV, { enabled: !!biensoanId })
-    const { isLoading: isLoadingBienSoan, data: quatrinhcongtacs } = queryBienSoan
+    const querySangChe = useQuery({ queryKey: ['sangche'], queryFn: getAllSangChes })
+    const sangcheDetails = useQuery(['hosoquannhansangche', quannhanId], fetchGetSangChe, { enabled: !!quannhanId })
+    const HTCVDetails = useQuery(['hinhthuccongviecsangche', sangcheId], fetchGetHTCV, { enabled: !!sangcheId })
+    const { isLoading: isLoadingSangChe, data: quatrinhcongtacs } = querySangChe
     const queryQuanNhan = useQuery({ queryKey: ['quannhans'], queryFn: getQuanNhanFromDonVi })
     const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsBienSoan} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsSangChe} />
                 <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
                 <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
             </div>
@@ -408,29 +407,31 @@ const BienSoan = ({ }) => {
             queryQuanNhan.refetch(); // Gọi queryQuanNhan khi isModalOpen2 thay đổi và isModalOpen2 = true
         }
     }, [isModalOpen2, queryQuanNhan.refetch]);
-    const fetchGetDetailsBienSoan = async (rowSelected) => {
+    const fetchGetDetailsSangChe = async (rowSelected) => {
         console.log("detail row");
-        const res = await BienSoanService.getDetailsBienSoan(rowSelected)
+        const res = await SangCheService.getDetailsSangChe(rowSelected)
         if (res?.data) {
-            setStateBienSoanDetails({
-                BienSoanId: res?.data.BienSoanId,
-                Ten: res?.data.Ten,
-                LoaiTaiLieu: res?.data.LoaiTaiLieu,
-                SoTrang: res?.data.SoTrang,
-                MaXuatBan: res?.data.MaXuatBan,
-                TenNhaXuatBan: res?.data.TenNhaXuatBan,
-                NgayXuatBan: res?.data.NgayXuatBan,
+            setStateSangCheDetails({
+
+                QuanNhanId: res?.data.QuanNhanId,
+                SangCheId: res?.data.SangCheId,
+
+                TenSangChe: res?.data.TenSangChe,
+                LoaiDangKy: res?.data.LoaiDangKy,
+                DonViCap: res?.data.DonViCap,
+                NhomNghienCuu: res?.data.NhomNghienCuu,
+                ThoiDiemDangKy: res?.data.ThoiDiemDangKy,
                 SoTacGia: res?.data.SoTacGia,
                 CacTacGia: res?.data.CacTacGia,
                 Quy: res?.data.Quy,
                 Nam: res?.data.Nam,
-                NgonNguSach: res?.data.NgonNguSach,
-                NhomNghienCuu: res?.data.NhomNghienCuu,
-                Tai: res?.data.Tai,
+
                 FileCM: res?.data.FileCM,
-                CacHTCV: res?.data.CacHTCV,
+                Tai: res?.data.Tai,
                 TrangThai: res?.data.TrangThai,
-                GhiChu: res?.data.GhiChu,
+                CacHTCV: res?.data.CacHTCV,
+
+                GhiChu: res?.data.code,
             })
         }
 
@@ -446,7 +447,7 @@ const BienSoan = ({ }) => {
                 HinhThucCV: res?.data.HinhThucCV,
                 QuanNhanId: res?.data.QuanNhanId,
                 HoTen: res?.data.HoTen,
-                Trang: res?.data.Trang,
+
                 DonVi: res?.data.DonVi,
                 VaiTro: res?.data.VaiTro,
                 SoGioQuyDoi: res?.data.SoGioQuyDoi,
@@ -463,7 +464,7 @@ const BienSoan = ({ }) => {
 
     // useEffect(() => {
     //     if (rowSelected) {
-    //         fetchGetDetailsBienSoan(rowSelected)
+    //         fetchGetDetailsSangChe(rowSelected)
     //     }
     //     setIsLoadingUpdate(false)
     // }, [rowSelected])
@@ -471,11 +472,11 @@ const BienSoan = ({ }) => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateBienSoanDetails)
+            form.setFieldsValue(stateSangCheDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateBienSoanDetails, isModalOpen])
+    }, [form, stateSangCheDetails, isModalOpen])
 
 
 
@@ -562,48 +563,27 @@ const BienSoan = ({ }) => {
 
         },
         {
-            title: 'Nội dung đề tài',
-            dataIndex: 'Ten',
-            key: 'Ten',
-            ...getColumnSearchProps('Ten')
+            title: 'Nội dung sở hữu trí tuệ',
+            dataIndex: 'TenSangChe',
+            key: 'TenSangChe',
+            ...getColumnSearchProps('TenSangChe')
+        },
+
+        {
+            title: 'Khối lượng công việc',
+            dataIndex: 'SoTiet',
+            key: 'SoTiet',
         },
         {
             title: 'Tác giả',
             dataIndex: 'CacTacGia',
             key: 'CacTacGia',
         },
-
-        {
-            title: 'Loai',
-            dataIndex: 'LoaiDeTai',
-            key: 'LoaiDeTai',
-        },
-        {
-            title: 'Vai trò',
-            dataIndex: 'CacThanhVien',
-            key: 'CacThanhVien',
-        },
-        {
-            title: 'Số tác giả',
-            dataIndex: 'SoTacGia',
-            key: 'SoTacGia',
-        },
-        {
-            title: 'Giờ chuẩn',
-            dataIndex: 'SoTiet',
-            key: 'SoTiet',
-        },
-        {
-            title: 'Tải',
-            dataIndex: 'Tai',
-            key: 'Tai',
-        },
         {
             title: 'Trạng thái',
             dataIndex: 'TrangThai',
             key: 'TrangThai',
         },
-
 
         {
             title: 'Chức năng',
@@ -633,11 +613,10 @@ const BienSoan = ({ }) => {
         //     key: 'DonVi',
         // },
         {
-            title: 'Vai Trò',
+            title: 'Vai trò',
             dataIndex: 'VaiTro',
             key: 'VaiTro',
         },
-
         // {
         //     title: 'Trạng thái',
         //     dataIndex: 'TrangThai',
@@ -726,27 +705,24 @@ const BienSoan = ({ }) => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateBienSoanDetails({
+        setStateSangCheDetails({
+            SangCheId: '',
 
-
-            BienSoanId: '',
-
-            Ten: '',
-            LoaiTaiLieu: '',
-            SoTrang: '',
-            MaXuatBan: '',
-            TenNhaXuatBan: '',
-            NgayXuatBan: '',
+            TenSangChe: '',
+            LoaiDangKy: '',
+            DonViCap: '',
+            NhomNghienCuu: '',
+            ThoiDiemDangKy: '',
             SoTacGia: '',
             CacTacGia: '',
             Quy: '',
             Nam: '',
-            NgonNguSach: '',
-            NhomNghienCuu: '',
-            Tai: '',
+
             FileCM: '',
+            Tai: '',
+            //  TrangThai: '', 
             CacHTCV: '',
-            //TrangThai: '',
+
             GhiChu: '',
         })
         form.resetFields()
@@ -757,7 +733,7 @@ const BienSoan = ({ }) => {
             HinhThucCV: '',
             QuanNhanId: '',
             HoTen: '',
-            Trang: '',
+
             DonVi: '',
             VaiTro: '',
             SoGioQuyDoi: '',
@@ -790,10 +766,10 @@ const BienSoan = ({ }) => {
     }
 
 
-    const handleDeleteBienSoan = () => {
+    const handleDeleteSangChe = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                biensoanDetails.refetch()
+                sangcheDetails.refetch()
             }
         })
     }
@@ -805,30 +781,27 @@ const BienSoan = ({ }) => {
         })
     }
     const handleCancel = () => {
-        biensoanDetails.refetch();
-        setbiensoanId(null);
+        sangcheDetails.refetch();
+        setsangcheId(null);
         setIsModalOpen(false);
-        setStateBienSoan({
+        setStateSangChe({
+            SangCheId: '',
 
-
-            BienSoanId: '',
-
-            Ten: '',
-            LoaiTaiLieu: '',
-            SoTrang: '',
-            MaXuatBan: '',
-            TenNhaXuatBan: '',
-            NgayXuatBan: '',
+            TenSangChe: '',
+            LoaiDangKy: '',
+            DonViCap: '',
+            NhomNghienCuu: '',
+            ThoiDiemDangKy: '',
             SoTacGia: '',
             CacTacGia: '',
             Quy: '',
             Nam: '',
-            NgonNguSach: '',
-            NhomNghienCuu: '',
-            Tai: '',
+
             FileCM: '',
+            Tai: '',
+            //  TrangThai: '', 
             CacHTCV: '',
-            // TrangThai: '',
+
             GhiChu: '',
 
         })
@@ -841,7 +814,7 @@ const BienSoan = ({ }) => {
             HinhThucCV: '',
             QuanNhanId: '',
             HoTen: '',
-            Trang: '',
+
             DonVi: '',
             VaiTro: '',
             SoGioQuyDoi: '',
@@ -852,29 +825,30 @@ const BienSoan = ({ }) => {
 
     const onFinish = () => {
         const params = {
-            BienSoanId: stateBienSoan.BienSoanId,
-            Ten: stateBienSoan.Ten,
-            LoaiTaiLieu: stateBienSoan.LoaiTaiLieu,
-            SoTrang: stateBienSoan.SoTrang,
-            MaXuatBan: stateBienSoan.MaXuatBan,
-            TenNhaXuatBan: stateBienSoan.TenNhaXuatBan,
-            NgayXuatBan: stateBienSoan.NgayXuatBan,
-            SoTacGia: stateBienSoan.SoTacGia,
-            CacTacGia: stateBienSoan.CacTacGia,
-            Quy: stateBienSoan.Quy,
-            Nam: stateBienSoan.Nam,
-            NgonNguSach: stateBienSoan.NgonNguSach,
-            NhomNghienCuu: stateBienSoan.NhomNghienCuu,
-            Tai: stateBienSoan.Tai,
-            FileCM: stateBienSoan.FileCM,
-            CacHTCV: stateBienSoan.CacHTCV,
 
-            GhiChu: stateBienSoan.GhiChu,
+            SangCheId: stateSangChe.SangCheId,
+
+            TenSangChe: stateSangChe.TenSangChe,
+            LoaiDangKy: stateSangChe.LoaiDangKy,
+            DonViCap: stateSangChe.DonViCap,
+            NhomNghienCuu: stateSangChe.NhomNghienCuu,
+            ThoiDiemDangKy: stateSangChe.ThoiDiemDangKy,
+            SoTacGia: stateSangChe.SoTacGia,
+            CacTacGia: stateSangChe.CacTacGia,
+            Quy: stateSangChe.Quy,
+            Nam: stateSangChe.Nam,
+
+            FileCM: stateSangChe.FileCM,
+            Tai: stateSangChe.Tai,
+            //  TrangThai: '', 
+            CacHTCV: stateSangChe.CacHTCV,
+
+            GhiChu: stateSangChe.GhiChu,
         }
-        console.log("Finsh", stateBienSoan)
+        console.log("Finsh", stateSangChe)
         mutation.mutate(params, {
             onSettled: () => {
-                // biensoanDetails.refetch()
+                // sangcheDetails.refetch()
             }
         })
     }
@@ -882,8 +856,8 @@ const BienSoan = ({ }) => {
     const handleChangeCheckTHCSDT = (e) => {
         const checkedValue = e.target.checked ? 1 : 0;
         console.log("e: ", e.target.name, e.target.value)
-        setStateBienSoan({
-            ...stateBienSoan,
+        setStateSangChe({
+            ...stateSangChe,
             THCSDT: checkedValue,
             [e.target.name]: e.target.value
         });
@@ -894,7 +868,7 @@ const BienSoan = ({ }) => {
             HinhThucCV: stateHTCV.HinhThucCV,
             HoTen: stateHTCV.HoTen,
             QuanNhanId: stateHTCV.QuanNhanId,
-            Trang: stateHTCV.Trang,
+
             DonVi: stateHTCV.DonVi,
             VaiTro: stateHTCV.VaiTro,
             SoGioQuyDoi: stateHTCV.SoGioQuyDoi,
@@ -916,13 +890,13 @@ const BienSoan = ({ }) => {
         };
 
         try {
-            const result = await BienSoanService.updateHTCVLists(biensoanId, data, user?.access_token);
+            const result = await SangCheService.updateHTCVLists(sangcheId, data, user?.access_token);
 
             if (result.status === 'OK') {
                 message.success(result.message);
                 HTCVDetails.refetch();
                 // handleCancel();
-                //nho them biensoanDetails.refetch()
+                //nho them sangcheDetails.refetch()
             } else {
                 message.error(result.message);
             }
@@ -945,8 +919,8 @@ const BienSoan = ({ }) => {
 
     const handleOnchange = (e) => {
         console.log("e: ", e.target.name, e.target.value)
-        setStateBienSoan({
-            ...stateBienSoan,
+        setStateSangChe({
+            ...stateSangChe,
             [e.target.name]: e.target.value
         })
     }
@@ -960,8 +934,8 @@ const BienSoan = ({ }) => {
 
     const handleOnchangeDetails = (e) => {
 
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
             [e.target.name]: e.target.value
         })
 
@@ -978,26 +952,26 @@ const BienSoan = ({ }) => {
     }
 
 
-    const onUpdateBienSoan = () => {
+    const onUpdateSangChe = () => {
         console.log("bat dau update");
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateBienSoanDetails }, {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateSangCheDetails }, {
             onSettled: () => {
-                biensoanDetails.refetch()
+                sangcheDetails.refetch()
             }
         })
     }
     const onUpdateNgoaiNguTrangThai = () => {
-        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateBienSoanDetails }, {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateSangCheDetails }, {
             onSettled: () => {
-                biensoanDetails.refetch()
+                sangcheDetails.refetch()
             }
         })
     }
 
     const onUpdateNgoaiNguNhapLai = () => {
-        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateBienSoanDetails }, {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateSangCheDetails }, {
             onSettled: () => {
-                biensoanDetails.refetch()
+                sangcheDetails.refetch()
             }
         })
     }
@@ -1036,11 +1010,11 @@ const BienSoan = ({ }) => {
 
 
 
-    const dataTable = biensoanDetails?.data?.length && biensoanDetails?.data?.map((biensoanDetails) => {
+    const dataTable = sangcheDetails?.data?.length && sangcheDetails?.data?.map((sangcheDetails) => {
         return {
-            ...biensoanDetails,
-            key: biensoanDetails._id,
-            TrangThai: getTrangThaiText(biensoanDetails.TrangThai)
+            ...sangcheDetails,
+            key: sangcheDetails._id,
+            TrangThai: getTrangThaiText(sangcheDetails.TrangThai)
         }
     })
     const dataTable2 = HTCVDetails?.data?.length && HTCVDetails?.data?.map((HTCVDetails) => {
@@ -1078,15 +1052,27 @@ const BienSoan = ({ }) => {
     }, [isSuccess])
 
 
+    const fetchAllHinhThucHuongDan = async () => {
+        const res = await HinhThucHuongdanService.getAllType()
+        return res
+    }
 
+    const allHinhThucHuongdan = useQuery({ queryKey: ['all-hinhthuchuongdan'], queryFn: fetchAllHinhThucHuongDan })
+    const handleChangeSelect1 = (value) => {
+        setStateSangChe({
+            ...stateSangChe,
+            HinhThucHuongDan: value
+        })
+        // console.log(stateQuanNhan)
+    }
 
     const handleOnchangeFileCM = async ({ fileList }) => {
         const file = fileList[0]
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setStateBienSoan({
-            ...stateBienSoan,
+        setStateSangChe({
+            ...stateSangChe,
             FileCM: file.preview
         })
     }
@@ -1097,27 +1083,49 @@ const BienSoan = ({ }) => {
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
             FileCM: file.preview
         })
     }
 
     const handleChangeCheckTHCSDTDeTail = (e) => {
         const checkedValue = e.target.checked ? 1 : 0;
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
             THCSDT: checkedValue,
         });
     };
+    // loại đăng ký
+    const fetchAllLoaiDangKy = async () => {
+        const res = await LoaiDangKyService.getAllType()
+        return res
+    }
 
+    const allLoaiDangKy = useQuery({ queryKey: ['all-loaidangky'], queryFn: fetchAllLoaiDangKy })
+    const handleChangeSelectLoaiDangKy = (value) => {
+        setStateSangChe({
+            ...stateSangChe,
+            LoaiDangKySach: value
+        })
+
+    }
+
+
+    const handleChangeSelectLoaiDangKyDetails = (value) => {
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
+            LoaiDangKySach: value
+        })
+
+    }
     // vai trò
     const fetchAllVaiTro = async () => {
         const res = await VaiTroService.getAllType()
         return res
     }
 
-    const allVaiTro = useQuery({ queryKey: ['all-vaitrobs'], queryFn: fetchAllVaiTro })
+    const allVaiTro = useQuery({ queryKey: ['all-vaitrosc'], queryFn: fetchAllVaiTro })
     const handleChangeSelectVaiTro = (value) => {
         setStateHTCV({
             ...stateHTCV,
@@ -1134,66 +1142,18 @@ const BienSoan = ({ }) => {
         })
 
     }
-    //ngôn ngữ
-    const fetchAllNgonNgu = async () => {
-        const res = await NgonNguService.getAllType()
-        return res
-    }
-
-    const allNgonNgu = useQuery({ queryKey: ['all-ngonngu'], queryFn: fetchAllNgonNgu })
-    const handleChangeSelectNgonNgu = (value) => {
-        setStateBienSoan({
-            ...stateBienSoan,
-            NgonNguSach: value
-        })
-
-    }
-
-
-    const handleChangeSelectNgonNguDetails = (value) => {
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
-            NgonNguSach: value
-        })
-
-    }
-    // loại tài liệu
-    const fetchAllLoaiTaiLieu = async () => {
-        const res = await LoaiTaiLieuService.getAllType()
-        return res
-    }
-
-    const allLoaiTaiLieu = useQuery({ queryKey: ['all-loaitailieu'], queryFn: fetchAllLoaiTaiLieu })
-    const handleChangeSelectLoaiTaiLieu = (value) => {
-        setStateBienSoan({
-            ...stateBienSoan,
-            LoaiTaiLieu: value
-        })
-
-    }
-
-
-    const handleChangeSelectLoaiTaiLieuDetails = (value) => {
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
-            LoaiTaiLieu: value
-        })
-
-    }
-
-
     return (
         <div>
             <div>
-                <WrapperHeader>Biên soạn</WrapperHeader>
+                <WrapperHeader>Sáng chế</WrapperHeader>
                 <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
                 </div>
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (
-                    // <Table dataSource={biensoanDetails} columns={columns} />
-                    <TableComponent columns={columns} isLoading={isLoadingBienSoan} data={dataTable} onRow={(record, rowSelected) => {
+                    // <Table dataSource={sangcheDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingSangChe} data={dataTable} onRow={(record, rowSelected) => {
                         return {
                             onClick: event => {
                                 setRowSelected(record._id);
@@ -1206,7 +1166,7 @@ const BienSoan = ({ }) => {
                 )}
 
             </div>
-            <ModalComponent forceRender title="Thêm chi tiết biên soạn" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
+            <ModalComponent forceRender title="Thêm chi tiết sáng chế" open={isModalOpen} onCancel={handleCancel} footer={null} width="80%">
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -1220,113 +1180,78 @@ const BienSoan = ({ }) => {
 
 
                         <Form.Item
-                            label="Tên"
-                            name="Ten"
+                            label="Tên sáng chế"
+                            name="TenSangChe"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.Ten} onChange={handleOnchange} name="Ten" />
+                            <InputComponent value={stateSangChe.TenSangChe} onChange={handleOnchange} name="TenSangChe" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại tài liệu"
-                            name="LoaiTaiLieu"
+                            label="Loại đăng ký"
+                            name="LoaiDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateBienSoan.LoaiTaiLieu} onChange={handleOnchange} name="LoaiTaiLieu" /> */}
-                            <Select
-                                name="LoaiTaiLieu"
+                            {/* <InputComponent value={stateSangChe.LoaiDangKy} onChange={handleOnchange} name="LoaiDangKy" /> */}
+                            <Select name="LoaiDangKy"
 
-                                onChange={handleChangeSelectLoaiTaiLieu}
-                                options={renderOptions(allLoaiTaiLieu?.data?.data)}
+                                onChange={handleChangeSelectLoaiDangKy}
+                                options={renderOptions(allLoaiDangKy?.data?.data)}
                             />
-
                         </Form.Item>
                         <Form.Item
-                            label="Số trang"
-                            name="SoTrang"
+                            label="Đơn vị cấp"
+                            name="DonViCap"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.SoTrang} onChange={handleOnchange} name="SoTrang" />
+                            <InputComponent value={stateSangChe.DonViCap} onChange={handleOnchange} name="DonViCap" />
                         </Form.Item>
                         <Form.Item
-                            label="Mã xuất bản"
-                            name="MaXuatBan"
+                            label="Thời điểm đăng ký"
+                            // name="ThoiDiemDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.MaXuatBan} onChange={handleOnchange} name="MaXuatBan" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Tên nhà xuất bản"
-                            name="TenNhaXuatBan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoan.TenNhaXuatBan} onChange={handleOnchange} name="TenNhaXuatBan" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Ngày xuất bản"
-                            // name="NgayXuatBan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent value={stateBienSoan.NgayXuatBan} onChange={handleOnchange} name="NgayXuatBan" /> */}
                             <DatePicker
                                 //  value={NgayQD}
-                                onChange={handleOnchangeNgayQD} name="NgayXuatBan"
+                                onChange={handleOnchangeNgayQD} name="ThoiDiemDangKy"
                                 format="DD/MM/YYYY"
                             />
-
+                        </Form.Item>
+                        <Form.Item
+                            label="Nhóm nghiên cứu"
+                            name="NhomNghienCuu"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangChe.NhomNghienCuu} onChange={handleOnchange} name="NhomNghienCuu" />
                         </Form.Item>
                         <Form.Item
                             label="Số tác giả"
                             name="SoTacGia"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.SoTacGia} onChange={handleOnchange} name="SoTacGia" />
+                            <InputComponent value={stateSangChe.SoTacGia} onChange={handleOnchange} name="SoTacGia" />
                         </Form.Item>
                         <Form.Item
                             label="Các tác giả"
                             name="CacTacGia"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.CacTacGia} onChange={handleOnchange} name="CacTacGia" />
+                            <InputComponent value={stateSangChe.CacTacGia} onChange={handleOnchange} name="CacTacGia" />
                         </Form.Item>
                         <Form.Item
                             label="Quý"
                             name="Quy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.Quy} onChange={handleOnchange} name="Quy" />
+                            <InputComponent value={stateSangChe.Quy} onChange={handleOnchange} name="Quy" />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
                             name="Nam"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoan.Nam} onChange={handleOnchange} name="Nam" />
+                            <InputComponent value={stateSangChe.Nam} onChange={handleOnchange} name="Nam" />
                         </Form.Item>
-                        <Form.Item
-                            label="Ngôn ngữ sách"
-                            name="NgonNguSach"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent value={stateBienSoan.NgonNguSach} onChange={handleOnchange} name="NgonNguSach" /> */}
-                            <Select
-                                name="NgonNguSach"
-
-                                onChange={handleChangeSelectNgonNgu}
-                                options={renderOptions(allNgonNgu?.data?.data)}
-                            />
-
-                        </Form.Item>
-                        <Form.Item
-                            label="Nhóm nghiên cứu"
-                            name="NhomNghienCuu"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoan.NhomNghienCuu} onChange={handleOnchange} name="NhomNghienCuu" />
-                        </Form.Item>
-
-
-
 
 
                         <Form.Item
@@ -1335,8 +1260,8 @@ const BienSoan = ({ }) => {
                         >
                             <WrapperUploadFile onChange={handleOnchangeFileCM} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateBienSoan?.FileCM && (
-                                    <img src={stateBienSoan?.FileCM} style={{
+                                {stateSangChe?.FileCM && (
+                                    <img src={stateSangChe?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -1351,7 +1276,7 @@ const BienSoan = ({ }) => {
                                 Thêm HTCV
                             </Button>
                         </Form.Item>
-                        <TableComponent columns={columns3} isLoading={isLoadingBienSoan} data={dataTable2} onRow={(record, rowSelected) => {
+                        <TableComponent columns={columns3} isLoading={isLoadingSangChe} data={dataTable2} onRow={(record, rowSelected) => {
                             return {
                                 onClick: event => {
                                     setRowSelected(record._id);
@@ -1379,23 +1304,22 @@ const BienSoan = ({ }) => {
                         autoComplete="on"
                         form={form}
                     >
-                        <Form.Item label="Tên giáo viên" name="HoTen">
+                        <Form.Item label="Name" name="HoTen">
                             {selectedName}
 
                         </Form.Item>
+
                         <Form.Item
                             label="Vai trò"
                             name="VaiTro"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateHTCV.VaiTro} onChange={handleOnchange2} name="VaiTro" /> */}
-                            <Select
-                                name="VaiTro"
+                            <Select name="VaiTro"
 
                                 onChange={handleChangeSelectVaiTro}
                                 options={renderOptions(allVaiTro?.data?.data)}
                             />
-
                         </Form.Item>
                         <Form.Item
                             label="Số giờ"
@@ -1404,18 +1328,10 @@ const BienSoan = ({ }) => {
                         >
                             <InputComponent value={stateHTCV.SoGioQuyDoi} onChange={handleOnchange2} name="SoGioQuyDoi" />
                         </Form.Item>
-                        <Form.Item
-                            label="Số trang"
-                            name="Trang"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateHTCV.Trang} onChange={handleOnchange2} name="Trang" />
-                        </Form.Item>
 
 
 
-
-                        <TableComponent columns={columns2} isLoading={isLoadingBienSoan} data={dataTable3} onRow={(record, rowSelected) => {
+                        <TableComponent columns={columns2} isLoading={isLoadingSangChe} data={dataTable3} onRow={(record, rowSelected) => {
                             return {
                                 onClick: event => {
                                     // setRowSelected(record._id);
@@ -1435,113 +1351,58 @@ const BienSoan = ({ }) => {
                 </Loading>
             </ModalComponent>
 
-            <DrawerComponent title='Cập nhật chi tiết biên soạn' isOpen={isOpenDrawer} onClose={() => { setIsOpenDrawer(false); setbiensoanId(null) }} width="70%">
+            <DrawerComponent title='Cập nhật chi tiết sáng chế' isOpen={isOpenDrawer} onClose={() => { setIsOpenDrawer(false); setsangcheId(null) }} width="70%">
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
 
                     <Form
                         name="basic"
                         labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        // onFinish={onUpdateBienSoan}
+                        // onFinish={onUpdateSangChe}
                         autoComplete="on"
                         form={form}
                     >
 
 
 
+
                         <Form.Item
-                            label="Tên"
-                            name="Ten"
+                            label="Tên sáng chế"
+                            name="TenSangChe"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoanDetails.Ten} onChange={handleOnchangeDetails} name="Ten" />
+                            <InputComponent value={stateSangCheDetails.TenSangChe} onChange={handleOnchangeDetails} name="TenSangChe" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Loại tài liệu"
-                            name="LoaiTaiLieu"
+                            label="Loại đăng ký"
+                            name="LoaiDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateBienSoanDetails.LoaiTaiLieu} onChange={handleOnchangeDetails} name="LoaiTaiLieu" /> */}
-                            <Select
-                                name="LoaiTaiLieu"
+                            {/* <InputComponent value={stateSangCheDetails.LoaiDangKy} onChange={handleOnchangeDetails} name="LoaiDangKy" /> */}
+                            <Select name="LoaiDangKy"
 
-                                onChange={handleChangeSelectLoaiTaiLieuDetails}
-                                options={renderOptions(allLoaiTaiLieu?.data?.data)}
+                                onChange={handleChangeSelectLoaiDangKyDetails}
+                                options={renderOptions(allLoaiDangKy?.data?.data)}
                             />
+
                         </Form.Item>
                         <Form.Item
-                            label="Số trang"
-                            name="SoTrang"
+                            label="Đơn vị cấp"
+                            name="DonViCap"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoanDetails.SoTrang} onChange={handleOnchangeDetails} name="SoTrang" />
+                            <InputComponent value={stateSangCheDetails.DonViCap} onChange={handleOnchangeDetails} name="DonViCap" />
                         </Form.Item>
                         <Form.Item
-                            label="Mã xuất bản"
-                            name="MaXuatBan"
+                            label="Thời điểm đăng ký"
+                            // name="ThoiDiemDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoanDetails.MaXuatBan} onChange={handleOnchangeDetails} name="MaXuatBan" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Tên nhà xuất bản"
-                            name="TenNhaXuatBan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoanDetails.TenNhaXuatBan} onChange={handleOnchangeDetails} name="TenNhaXuatBan" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Ngày xuất bản"
-                            // name="NgayXuatBan"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent value={stateBienSoanDetails.NgayXuatBan} onChange={handleOnchangeDetails} name="NgayXuatBan" /> */}
                             <DatePicker
                                 value={NgayQD}
-                                onChange={handleOnchangeDetailNgayQD} name="NgayXuatBan"
+                                onChange={handleOnchangeDetailNgayQD} name="ThoiDiemDangKy"
                                 format="DD/MM/YYYY"
-                            />
-                        </Form.Item>
-                        <Form.Item
-                            label="Số tác giả"
-                            name="SoTacGia"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoanDetails.SoTacGia} onChange={handleOnchangeDetails} name="SoTacGia" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Các tác giả"
-                            name="CacTacGia"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoanDetails.CacTacGia} onChange={handleOnchangeDetails} name="CacTacGia" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoanDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateBienSoanDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Ngôn ngữ sách"
-                            name="NgonNguSach"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent value={stateBienSoanDetails.NgonNguSach} onChange={handleOnchangeDetails} name="NgonNguSach" /> */}
-                            <Select
-                                name="NgonNguSach"
-
-                                onChange={handleChangeSelectNgonNguDetails}
-                                options={renderOptions(allNgonNgu?.data?.data)}
                             />
                         </Form.Item>
                         <Form.Item
@@ -1549,10 +1410,36 @@ const BienSoan = ({ }) => {
                             name="NhomNghienCuu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateBienSoanDetails.NhomNghienCuu} onChange={handleOnchangeDetails} name="NhomNghienCuu" />
+                            <InputComponent value={stateSangCheDetails.NhomNghienCuu} onChange={handleOnchangeDetails} name="NhomNghienCuu" />
                         </Form.Item>
-
-
+                        <Form.Item
+                            label="Số tác giả"
+                            name="SoTacGia"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangCheDetails.SoTacGia} onChange={handleOnchangeDetails} name="SoTacGia" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Các tác giả"
+                            name="CacTacGia"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangCheDetails.CacTacGia} onChange={handleOnchangeDetails} name="CacTacGia" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Quý"
+                            name="Quy"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangCheDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
+                        </Form.Item>
+                        <Form.Item
+                            label="Năm"
+                            name="Nam"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateSangCheDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                        </Form.Item>
 
 
 
@@ -1563,8 +1450,8 @@ const BienSoan = ({ }) => {
                         >
                             <WrapperUploadFile onChange={handleOnchangeFileCMDetails} maxCount={1}>
                                 <Button style={{ background: '#6699CC' }} >File chứng minh</Button>
-                                {stateBienSoanDetails?.FileCM && (
-                                    <img src={stateBienSoanDetails?.FileCM} style={{
+                                {stateSangCheDetails?.FileCM && (
+                                    <img src={stateSangCheDetails?.FileCM} style={{
                                         height: '60px',
                                         width: '60px',
                                         borderRadius: '50%',
@@ -1575,7 +1462,7 @@ const BienSoan = ({ }) => {
                             </WrapperUploadFile>
                         </Form.Item>
 
-                        <TableComponent columns={columns3} isLoading={isLoadingBienSoan} data={dataTable2} onRow={(record, rowSelected) => {
+                        <TableComponent columns={columns3} isLoading={isLoadingSangChe} data={dataTable2} onRow={(record, rowSelected) => {
                             return {
                                 onClick: event => {
                                     setRowSelected2(record._id);
@@ -1585,7 +1472,7 @@ const BienSoan = ({ }) => {
                         }} />
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit" onClick={onUpdateBienSoan}>
+                            <Button type="primary" htmlType="submit" onClick={onUpdateSangChe}>
                                 Cập nhật
                             </Button>
                         </Form.Item>
@@ -1603,6 +1490,8 @@ const BienSoan = ({ }) => {
                         form={form}
                     >
 
+
+
                         <Form.Item
                             label="Họ và tên"
                             name="HoTen"
@@ -1619,23 +1508,14 @@ const BienSoan = ({ }) => {
                         >
                             {false && <InputComponent value={stateHTCVDetails.VaiTro} />}
                             {/* <InputComponent value={stateHTCVDetails.VaiTro} onChange={handleOnchangeDetails2} name="VaiTro" /> */}
-                            <Select
-                                name="VaiTro"
+                            <Select name="VaiTro"
 
                                 onChange={handleChangeSelectVaiTroDetails}
                                 options={renderOptions(allVaiTro?.data?.data)}
                             />
                         </Form.Item>
                         <Form.Item
-                            label="Trang"
-                            name="Trang"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {false && <InputComponent value={stateHTCVDetails.Trang} />}
-                            <InputComponent value={stateHTCVDetails.Trang} onChange={handleOnchangeDetails2} name="Trang" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Số giờ quy đổi"
+                            label="Số giờ "
                             name="SoGioQuyDoi"
                         // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
@@ -1652,9 +1532,9 @@ const BienSoan = ({ }) => {
                     </Form>
                 </Loading>
             </DrawerComponent>
-            <ModalComponent title="Xóa biên soạn" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteBienSoan}>
+            <ModalComponent title="Xóa sáng chế" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteSangChe}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa biên soạn này không?</div>
+                    <div>Bạn có chắc xóa sáng chế này không?</div>
                 </Loading>
             </ModalComponent>
             <ModalComponent title="Xóa công việc này" open={isModalOpenDelete2} onCancel={handleCancelDelete2} onOk={handleDeleteHTCV}>
@@ -1662,15 +1542,15 @@ const BienSoan = ({ }) => {
                     <div>Bạn có chắc xóa hình thức công việc này không?</div>
                 </Loading>
             </ModalComponent>
-            <ModalComponent title="Phê quyệt biên soạn" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+            <ModalComponent title="Phê quyệt sáng chế" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
                 <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc phê duyệt biên soạn này không?</div>
+                    <div>Bạn có chắc phê duyệt sáng chế này không?</div>
                 </Loading>
             </ModalComponent>
 
-            <ModalComponent title="Yêu cầu nhập lại thông tin biên soạn" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+            <ModalComponent title="Yêu cầu nhập lại thông tin sáng chế" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
                 <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc yêu cầu nhập lại  biên soạn này không?</div>
+                    <div>Bạn có chắc yêu cầu nhập lại  sáng chế này không?</div>
                 </Loading>
             </ModalComponent>
 
@@ -1680,4 +1560,4 @@ const BienSoan = ({ }) => {
     );
 };
 
-export default BienSoan;
+export default SangChe;

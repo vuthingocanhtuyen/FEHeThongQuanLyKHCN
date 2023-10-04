@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space, Checkbox, Breadcrumb } from 'antd';
+import { Form, Select, Button, Space, Checkbox, Breadcrumb, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
 import { renderOptions } from '../../../utils'
@@ -24,13 +24,14 @@ const QuaTrinhHocVi = () => {
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-
+    const [NgayQD, setNgayQD] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         QuyetDinh: '',
-        NgayQuyetDinh: '',
+        NgayQuyetDinh: moment(),
+
         HocVi: '',
         CaoNhat: '',
         GhiChu: '',
@@ -103,7 +104,23 @@ const QuaTrinhHocVi = () => {
         },
     )
 
+    useEffect(() => {
+        setNgayQD(moment(stateQuaTrinhHocViDetails['NgayQuyetDinh']));
+        // setNgayQD(convertDateToString(stateQuaTrinhHocViDetails['NgayQuyetDinh']));
+    }, [form, stateQuaTrinhHocViDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayQD = (date) => {
+        setStateQuaTrinhHocViDetails({
+            ...stateQuaTrinhHocViDetails,
+            NgayQuyetDinh: date
+        })
+    }
+    const handleOnchangeNgayQD = (date) => {
+        setStateQuaTrinhHocVi({
+            ...stateQuaTrinhHocVi,
+            NgayQuyetDinh: date
+        })
+    }
     const getAllQuaTrinhHocVis = async () => {
         const res = await QuaTrinhHocViService.getAllQuaTrinhHocVi()
         return res
@@ -616,15 +633,13 @@ const QuaTrinhHocVi = () => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="NgayQuyetDinh"
+                            // name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateQuaTrinhHocVi['NgayQuyetDinh']}
-                                onChange={handleChangeCheckCaoNhat}
-                                name="NgayQuyetDinh"
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
+                                format="DD/MM/YYYY"
                             />
                         </Form.Item>
 
@@ -706,10 +721,14 @@ const QuaTrinhHocVi = () => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="NgayQuyetDinh"
+                            //   name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQuaTrinhHocViDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
+                            <DatePicker
+                                value={NgayQD}
+                                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
                         <Form.Item

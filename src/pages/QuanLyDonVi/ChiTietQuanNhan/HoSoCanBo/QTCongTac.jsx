@@ -1,22 +1,22 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Table, Button, Space, DatePicker } from 'antd';
+import { Form, Table, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
-import * as message from '../../../components/Message/Message'
-import { getBase64 } from '../../../utils'
-import Loading from '../../../components/LoadingComponent/Loading'
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as QuaTrinhCongTacService from '../../../services/QuaTrinhCongTacService';
+import * as message from '../../../../components/Message/Message'
+import { getBase64 } from '../../../../utils'
+import Loading from '../../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../../hooks/useMutationHook'
+import * as QuaTrinhCongTacService from '../../../../services/QuaTrinhCongTacService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
 
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import TableComponent from '../../../components/TableComponent/TableComponent';
+import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTCongTac = () => {
+const QTCongTac = ({ quannhanId}) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
@@ -25,17 +25,16 @@ const QTCongTac = () => {
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
   const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
   const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
-  const [NgayQD, setNgayQD] = useState('');
-  const [NgayKT, setNgayKT] = useState('');
+
   const user = useSelector((state) => state?.user)
   const searchInput = useRef(null);
-  const quannhanId = user.QuanNhanId;
+  
   const inittial = () => ({
     SoQuyetDinh: '',
-    NgayQuyetDinh: moment(),
+    NgayQuyetDinh: '',
     ChucVu: '',
     DonVi: '',
-    KetThuc: moment(),
+    KetThuc: '',
     DonViSinhHoatHocThuat: '',
     TrangThai: '',
     GhiChu: '',
@@ -143,8 +142,7 @@ const QTCongTac = () => {
 
 
   const fetchGetQuaTrinhCongTac = async (context) => {
-    const quannhanId = context?.queryKey && context?.queryKey[1]
-    console.log("idquannhancongtacfe:", quannhanId)
+   
     if (quannhanId) {
 
       const res = await QuaTrinhCongTacService.getQuaTrinhCongTacByQuanNhanId(quannhanId)
@@ -182,42 +180,7 @@ const QTCongTac = () => {
       fetchGetDetailsQuaTrinhCongTac(rowSelected)
     }
   }, [rowSelected, isOpenDrawer])
-  // ngày quyết định
-  useEffect(() => {
-    setNgayQD(moment(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
-    // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
-  }, [form, stateQuaTrinhCongTacDetails, isOpenDrawer])
 
-  const handleOnchangeDetailNgayQD = (date) => {
-    setStateQuaTrinhCongTacDetails({
-      ...stateQuaTrinhCongTacDetails,
-      NgayQuyetDinh: date
-    })
-  }
-  const handleOnchangeNgayQD = (date) => {
-    setStateQuaTrinhCongTac({
-      ...stateQuaTrinhCongTac,
-      NgayQuyetDinh: date
-    })
-  }
-  // ngày kết thúc
-  useEffect(() => {
-    setNgayKT(moment(stateQuaTrinhCongTacDetails['KetThuc']));
-    // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
-  }, [form, stateQuaTrinhCongTacDetails, isOpenDrawer])
-
-  const handleOnchangeDetailNgayKT = (date) => {
-    setStateQuaTrinhCongTacDetails({
-      ...stateQuaTrinhCongTacDetails,
-      KetThuc: date
-    })
-  }
-  const handleOnchangeNgayKT = (date) => {
-    setStateQuaTrinhCongTac({
-      ...stateQuaTrinhCongTac,
-      KetThuc: date
-    })
-  }
   const handleDetailsQuaTrinhCongTac = () => {
     setIsOpenDrawer(true)
   }
@@ -669,20 +632,15 @@ const QTCongTac = () => {
 
             <Form.Item
               label="Ngày quyết định"
-              //  name="NgayQuyetDinh"
+              name="NgayQuyetDinh"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              {/* <InputComponent
+              <InputComponent
                 style={{ width: '100%' }}
 
                 value={stateQuaTrinhCongTac['NgayQuyetDinh']}
                 onChange={handleOnchange}
                 name="NgayQuyetDinh"
-              /> */}
-              <DatePicker
-                //  value={NgayQD}
-                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
-                format="DD/MM/YYYY"
               />
             </Form.Item>
 
@@ -716,13 +674,15 @@ const QTCongTac = () => {
 
             <Form.Item
               label="Kết thúc"
-            //  name="KetThuc"
+              name="KetThuc"
             //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <DatePicker
-                //  value={NgayQD}
-                onChange={handleOnchangeNgayKT} name="KetThuc"
-                format="DD/MM/YYYY"
+              <InputComponent
+                style={{ width: '100%' }}
+
+                value={stateQuaTrinhCongTac['KetThuc']}
+                onChange={handleOnchange}
+                name="KetThuc"
               />
             </Form.Item>
 
@@ -771,15 +731,10 @@ const QTCongTac = () => {
 
             <Form.Item
               label="Ngày quyết định"
-              // name="NgayQuyetDinh"
+              name="NgayQuyetDinh"
               rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              {/* <InputComponent value={stateQuaTrinhCongTacDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" /> */}
-              <DatePicker
-                value={NgayQD}
-                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
-                format="DD/MM/YYYY"
-              />
+              <InputComponent value={stateQuaTrinhCongTacDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
             </Form.Item>
 
             <Form.Item
@@ -800,14 +755,10 @@ const QTCongTac = () => {
 
             <Form.Item
               label="Kết thúc"
-            //  name="KetThuc"
+              name="KetThuc"
             // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
             >
-              <DatePicker
-                value={NgayKT}
-                onChange={handleOnchangeDetailNgayKT} name="KetThuc"
-                format="DD/MM/YYYY"
-              />
+              <InputComponent value={stateQuaTrinhCongTacDetails['KetThuc']} onChange={handleOnchangeDetails} name="KetThuc" />
             </Form.Item>
 
             <Form.Item

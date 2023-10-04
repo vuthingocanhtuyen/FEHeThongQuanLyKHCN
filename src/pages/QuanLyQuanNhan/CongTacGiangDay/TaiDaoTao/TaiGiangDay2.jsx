@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions, getBase64 } from '../../../../utils'
@@ -41,7 +41,7 @@ const TaiGiangDay = ({ }) => {
 
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
-
+    const [KetThuc, setKetThuc] = useState('');
 
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
@@ -81,7 +81,7 @@ const TaiGiangDay = ({ }) => {
         SiSo: '',
         HTDT: '',
         LoaiHinhDT: '',
-        KetThuc: '',
+        KetThuc: moment(),
         Quy: '',
         Nam: '',
         HocKy: '',
@@ -154,6 +154,18 @@ const TaiGiangDay = ({ }) => {
         },
 
     )
+    useEffect(() => {
+        setKetThuc(moment(stateTaiGiangDayDetails['KetThuc']));
+        // setKetThuc(convertDateToString(stateTaiGiangDayDetails['NgayQuyetDinh']));
+    }, [form, stateTaiGiangDayDetails, isOpenDrawer])
+
+    const handleOnchangeDetailKetThuc = (date) => {
+        setStateTaiGiangDayDetails({
+            ...stateTaiGiangDayDetails,
+            KetThuc: date
+        })
+
+    }
 
     const mutationUpdateTrangThai = useMutationHooks(
         (data) => {
@@ -634,11 +646,11 @@ const TaiGiangDay = ({ }) => {
             dataIndex: 'SoTietCV',
             key: 'SoTietCV',
         },
-        {
-            title: 'Đơn vị',
-            dataIndex: 'DonVi',
-            key: 'DonVi',
-        },
+        // {
+        //     title: 'Đơn vị',
+        //     dataIndex: 'DonVi',
+        //     key: 'DonVi',
+        // },
         {
             title: 'Số giờ QĐ',
             dataIndex: 'SoGioQuyDoi',
@@ -954,32 +966,67 @@ const TaiGiangDay = ({ }) => {
         onFinish();
         setIsModalOpen2(true);
     }
+    const handleOnchange = (e, date) => {
+        if (e.target) {
+            const { name, value } = e.target;
 
-    const handleOnchange = (e) => {
-        console.log("e: ", e.target.name, e.target.value)
-
-        const { name, value } = e.target;
-
-        if (name === "KetThuc") {
-            const quy = xacDinhQuy(value);
-            const nam = xacDinhNam(value);
-            const hocky = xacDinhHocKy(value)
-            // Cập nhật giá trị của ô Quy
-            setStateTaiGiangDay((prevState) => ({
-                ...prevState,
-                Quy: quy,
-                Nam: nam,
-                HocKy: hocky
-            }));
-            console.log("Quý:", stateTaiGiangDay)
+            if (name === "KetThuc") {
+                const quy = xacDinhQuy(value);
+                const nam = xacDinhNam(value);
+                const hocky = xacDinhHocKy(value);
+                setStateTaiGiangDay((prevState) => ({
+                    ...prevState,
+                    KetThuc: date,
+                    Quy: quy,
+                    Nam: nam,
+                    HocKy: hocky
+                }));
+                console.log("Quý:", stateTaiGiangDay);
+            } else {
+                setStateTaiGiangDay((prevState) => ({
+                    ...prevState,
+                    [name]: value
+                }));
+            }
         }
+    };
 
-        // Cập nhật giá trị của ô KetThuc
-        setStateTaiGiangDay((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
-    }
+
+    // const handleOnchangeKetThuc = (date) => {
+    //     setStateTaiGiangDay({
+    //         ...stateTaiGiangDay,
+    //         KetThuc: date
+    //     })
+
+    // }
+
+    // const handleOnchange = (e) => {
+    //     console.log("e: ", e.target.name, e.target.value)
+
+    //     const { name, value } = e.target;
+
+    //     if (name === "KetThuc") {
+    //         const quy = xacDinhQuy(value);
+    //         const nam = xacDinhNam(value);
+    //         const hocky = xacDinhHocKy(value)
+    //         // Cập nhật giá trị của ô Quy
+    //         setStateTaiGiangDay((prevState) => ({
+    //             ...prevState,
+    //             Quy: quy,
+    //             Nam: nam,
+    //             HocKy: hocky
+    //         }));
+    //         console.log("Quý:", stateTaiGiangDay)
+    //     }
+
+    //     // Cập nhật giá trị của ô KetThuc
+    //     setStateTaiGiangDay((prevState) => ({
+    //         ...prevState,
+    //         [name]: value,
+    //     }));
+    // }
+
+
     const handleOnchange2 = (e) => {
         console.log("e: ", e.target.name, e.target.value)
         setStateHTCV({
@@ -1418,7 +1465,7 @@ const TaiGiangDay = ({ }) => {
                             {/* <InputComponent value={stateTaiGiangDay.LoaiHinhDT} onChange={handleOnchange} name="LoaiHinhDT" /> */}
                             <Select
                                 name="LoaiHinhDT"
-                                //value={stateTaiHuongDan['HinhThucHuongDan']}
+
 
                                 onChange={handleChangeSelectLHDaoTao}
                                 options={renderOptions(allLoaiHinhDaoTao?.data?.data)}
@@ -1426,25 +1473,19 @@ const TaiGiangDay = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Kết thúc"
-                            name="KetThuc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDay.KetThuc} onChange={handleOnchange} name="KetThuc" />
+                            <DatePicker
+                                onChange={handleOnchange} name="KetThuc"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
-                        {/* <Form.Item label="Tên giáo viên" name="HoTen">
-                            {selectedName} 
-                            const ketQua = xacDinhQuyNamHocKy(ngayNhap);
-
-console.log(ketQua);
-                            */}
 
                         <Form.Item
                             label="Quý"
                             name="Quy"
-                        //      rules={[{ required: true, message: 'Nhập ngày kết thúc chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.Quy} onChange={handleOnchange} name="Quy" /> */}
-                            {xacDinhQuy(stateTaiGiangDay.KetThuc)}
+                            {xacDinhQuy(KetThuc)}
                         </Form.Item>
                         <Form.Item
                             label="Năm"
@@ -1697,10 +1738,15 @@ console.log(ketQua);
                         </Form.Item>
                         <Form.Item
                             label="Kết thúc"
-                            name="KetThuc"
+                            //  name="KetThuc"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiGiangDayDetails.KetThuc} onChange={handleOnchangeDetails} name="KetThuc" />
+                            {/* <InputComponent value={stateTaiGiangDayDetails.KetThuc} onChange={handleOnchangeDetails} name="KetThuc" /> */}
+                            <DatePicker
+                                value={KetThuc}
+                                onChange={handleOnchangeDetailKetThuc} name="KetThuc"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Quý"
@@ -1708,7 +1754,7 @@ console.log(ketQua);
                         //      rules={[{ required: true, message: 'Nhập ngày kết thúc chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiGiangDay.Quy} onChange={handleOnchange} name="Quy" /> */}
-                            {xacDinhQuy(stateTaiGiangDayDetails.KetThuc)}
+                            {xacDinhQuy(KetThuc)}
                         </Form.Item>
                         <Form.Item
                             label="Năm"

@@ -19,7 +19,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const HuongDanNCKH = ({ }) => {
+const HuongDanNCKH = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -33,7 +33,7 @@ const HuongDanNCKH = ({ }) => {
     const [NgayThu, setNgayThu] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+    //   const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         Ten: '',
         LoaiDeTai: '',

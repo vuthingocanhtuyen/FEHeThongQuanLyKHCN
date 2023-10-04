@@ -12,7 +12,7 @@ import * as HinhThucHuongdanService from '../../../../services/HinhThucHuongDanS
 import { WrapperHeader, WrapperUploadFile } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
+import moment from 'moment';
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -24,7 +24,7 @@ const TaiHuongDan = ({ }) => {
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-
+    const [NgayBD, setNgayBD] = useState('');
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
@@ -36,7 +36,7 @@ const TaiHuongDan = ({ }) => {
         HocVien: '',
         Lop: '',
         DeTai: '',
-        NgayBatDau: '',
+        NgayBatDau: moment(),
         Quy: '',
         Nam: '',
         SoCBHuongDan: '',
@@ -114,7 +114,23 @@ const TaiHuongDan = ({ }) => {
 
     )
 
+    useEffect(() => {
+        setNgayBD(moment(stateTaiHuongDanDetails['NgayBatDau']));
+        // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
+    }, [form, stateTaiHuongDanDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayBD = (date) => {
+        setStateTaiHuongDanDetails({
+            ...stateTaiHuongDanDetails,
+            NgayBatDau: date
+        })
+    }
+    const handleOnchangeNgayBD = (date) => {
+        setStateTaiHuongDan({
+            ...stateTaiHuongDan,
+            NgayBatDau: date
+        })
+    }
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
     }
@@ -754,11 +770,16 @@ const TaiHuongDan = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày bắt đầu"
-                            name="NgayBatDau"
+                            //  name="NgayBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
+                            {/* <InputComponent value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" /> */}
                             {/* <DatePicker value={stateTaiHuongDan.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" /> */}
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayBD} name="NgayBatDau"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Quý"
@@ -883,10 +904,15 @@ const TaiHuongDan = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày bắt đầu"
-                            name="NgayBatDau"
+                            //  name="NgayBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiHuongDanDetails.NgayBatDau} onChange={handleOnchangeDetails} name="NgayBatDau" />
+                            {/* <InputComponent value={stateTaiHuongDanDetails.NgayBatDau} onChange={handleOnchangeDetails} name="NgayBatDau" /> */}
+                            <DatePicker
+                                value={NgayBD}
+                                onChange={handleOnchangeDetailNgayBD} name="NgayBatDau"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Quý"

@@ -1,61 +1,72 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space, DatePicker } from 'antd';
+import { Form, Table, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
-import * as message from '../../../components/Message/Message'
-import { renderOptions } from '../../../utils'
-import Loading from '../../../components/LoadingComponent/Loading'
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as QTCTDangService from '../../../services/QTCTDangService';
-import * as DanhMucChucVuDangService from '../../../services/DanhMucChucVuDangService';
+import * as message from '../../../../components/Message/Message'
+import { getBase64 } from '../../../../utils'
+import Loading from '../../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../../hooks/useMutationHook'
+import * as NgoaiNguService from '../../../../services/NgoaiNguService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import TableComponent from '../../../components/TableComponent/TableComponent';
-import moment from 'moment';
-const QTDang = ({ }) => {
+import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../../components/TableComponent/TableComponent';
+const NgoaiNgu = ({ quannhanId}) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
-    const [NgayQD, setNgayQD] = useState('');
-    const [NgayKT, setNgayKT] = useState('');
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+    
+    const quyen = user.isAdmin;
+    console.log(quyen);
     const inittial = () => ({
-        QuyetDinh: '',
-        NgayQuyetDinh: moment(),
-        ChucVu: '',
-        DonVi: '',
-        KetThuc: moment(),
+        NgonNgu: '',
+        LoaiBang: '',
+        NamNhan: '',
+        CapDo: '',
+        TuongDuong: '',
+        HinhThucBang: '',
         TrangThai: '',
         GhiChu: '',
     })
-    const [stateQTCTDang, setStateQTCTDang] = useState(inittial())
-    const [stateQTCTDangDetails, setStateQTCTDangDetails] = useState(inittial())
+    const [stateNgoaiNgu, setStateNgoaiNgu] = useState(inittial())
+    const [stateNgoaiNguDetails, setStateNgoaiNguDetails] = useState(inittial())
 
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { QuanNhanId = quannhanId, code = 123
-                , QuyetDinh,
-                NgayQuyetDinh, ChucVu, DonVi, KetThuc,
+            const { QuanNhanId = quannhanId,
+                code = 123,
+                NgonNgu,
+                LoaiBang,
+                NamNhan,
+                CapDo,
+                TuongDuong,
+                HinhThucBang,
                 TrangThai = 0,
                 GhiChu } = data
-            const res = QTCTDangService.createQTCTDang({
-                QuanNhanId, code, QuyetDinh,
-                NgayQuyetDinh, ChucVu, DonVi, KetThuc,
+            const res = NgoaiNguService.createNgoaiNgu({
+                QuanNhanId,
+                code,
+                NgonNgu,
+                LoaiBang,
+                NamNhan,
+                CapDo,
+                TuongDuong,
+                HinhThucBang,
                 TrangThai,
                 GhiChu
             })
@@ -71,7 +82,7 @@ const QTDang = ({ }) => {
             const { id,
                 token,
                 ...rests } = data
-            const res = QTCTDangService.updateQTCTDang(
+            const res = NgoaiNguService.updateNgoaiNgu(
                 id,
                 token,
                 { ...rests })
@@ -84,62 +95,19 @@ const QTDang = ({ }) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 1 }; // Update the TrangThai attribute to 1
-            const res = QTCTDangService.updateQTCTDang(id, token, updatedData);
+            const res = NgoaiNguService.updateNgoaiNgu(id, token, updatedData);
             return res;
 
         },
 
     )
 
-    // ngày quyết định
-    useEffect(() => {
-        setNgayQD(moment(stateQTCTDangDetails['NgayQuyetDinh']));
-        // setNgayQD(convertDateToString(stateQTCTDangDetails['NgayQuyetDinh']));
-    }, [form, stateQTCTDangDetails, isOpenDrawer])
-
-    const handleOnchangeDetailNgayQD = (date) => {
-        setStateQTCTDangDetails({
-            ...stateQTCTDangDetails,
-            NgayQuyetDinh: date
-        })
-    }
-    const handleOnchangeNgayQD = (date) => {
-        setStateQTCTDang({
-            ...stateQTCTDang,
-            NgayQuyetDinh: date
-        })
-    }
-    // ngày kết thúc
-    useEffect(() => {
-        setNgayKT(moment(stateQTCTDangDetails['KetThuc']));
-        // setNgayQD(convertDateToString(stateQTCTDangDetails['NgayQuyetDinh']));
-    }, [form, stateQTCTDangDetails, isOpenDrawer])
-
-    const handleOnchangeDetailNgayKT = (date) => {
-        setStateQTCTDangDetails({
-            ...stateQTCTDangDetails,
-            KetThuc: date
-        })
-    }
-    const handleOnchangeNgayKT = (date) => {
-        setStateQTCTDang({
-            ...stateQTCTDang,
-            KetThuc: date
-        })
-    }
-    const handleCancelPheDuyet = () => {
-        setIsModalOpenPheDuyet(false)
-    }
-    const handleCancelNhapLai = () => {
-        setIsModalOpenNhapLai(false)
-    }
-
     const mutationUpdateNhapLai = useMutationHooks(
         (data) => {
             console.log("data update:", data);
             const { id, token, ...rests } = data;
             const updatedData = { ...rests, TrangThai: 2 }; // Update the TrangThai attribute to 1
-            const res = QTCTDangService.updateQTCTDang(id, token, updatedData);
+            const res = NgoaiNguService.updateNgoaiNgu(id, token, updatedData);
             return res;
 
         },
@@ -151,7 +119,7 @@ const QTDang = ({ }) => {
             const { id,
                 token,
             } = data
-            const res = QTCTDangService.deleteQTCTDang(
+            const res = NgoaiNguService.deleteNgoaiNgu(
                 id,
                 token)
             return res
@@ -162,7 +130,7 @@ const QTDang = ({ }) => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = QTCTDangService.deleteManyQTCTDang(
+            const res = NgoaiNguService.deleteManyNgoaiNgu(
                 ids,
                 token)
             return res
@@ -170,63 +138,63 @@ const QTDang = ({ }) => {
     )
 
 
-    const getAllQTCTDangs = async () => {
-        const res = await QTCTDangService.getAllQTCTDang()
+    const getAllNgoaiNgus = async () => {
+        const res = await NgoaiNguService.getAllNgoaiNgu()
         return res
     }
 
     // show
 
 
-    const fetchGetQTCTDang = async (context) => {
-        const quannhanId = context?.queryKey && context?.queryKey[1]
-        console.log("idquannhancongtacfe:", quannhanId)
+    const fetchGetNgoaiNgu = async (context) => {
+        
         if (quannhanId) {
 
-            const res = await QTCTDangService.getQTCTDangByQuanNhanId(quannhanId)
+            const res = await NgoaiNguService.getNgoaiNguByQuanNhanId(quannhanId)
             console.log("qtct res: ", res)
             if (res?.data) {
-                setStateQTCTDangDetails({
-                    QuyetDinh: res?.data.QuyetDinh,
-                    NgayQuyetDinh: res?.data.NgayQuyetDinh,
-                    ChucVu: res?.data.ChucVu,
-                    DonVi: res?.data.DonVi,
-                    KetThuc: res?.data.KetThuc,
+                setStateNgoaiNguDetails({
+                    NgonNgu: res?.data.NgonNgu,
+                    LoaiBang: res?.data.LoaiBang,
+                    NamNhan: res?.data.NamNhan,
+                    CapDo: res?.data.CapDo,
+                    TuongDuong: res?.data.TuongDuong,
+                    HinhThucBang: res?.data.HinhThucBang,
                     TrangThai: res?.data.TrangThai,
                     GhiChu: res?.data.GhiChu,
                 })
             }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateQTCTDangDetails)
+            // console.log("chi tiết qtct:", setStateNgoaiNguDetails)
             return res.data
         }
         setIsLoadingUpdate(false)
     }
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateQTCTDangDetails)
+            form.setFieldsValue(stateNgoaiNguDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateQTCTDangDetails, isModalOpen])
+    }, [form, stateNgoaiNguDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsQTCTDang(rowSelected)
+            fetchGetDetailsNgoaiNgu(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsQTCTDang = () => {
+    const handleDetailsNgoaiNgu = () => {
         setIsOpenDrawer(true)
     }
 
 
-    const handleDelteManyQTCTDangs = (ids) => {
+    const handleDelteManyNgoaiNgus = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                quatrinhDangDetails.refetch()
+                qtngonnguDetails.refetch()
             }
         })
     }
@@ -234,39 +202,50 @@ const QTDang = ({ }) => {
 
     const { data, isLoading, isSuccess, isError } = mutation
     const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
+    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
+    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
     const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
-    const { data: dataUpdatedTT, isLoading: isLoadingUpdatedTT, isSuccess: isSuccessUpdatedTT, isError: isErrorUpdatedTT } = mutationUpdateTrangThai
-    const { data: dataUpdatedNhapLai, isLoading: isLoadingUpdatedNhapLai, isSuccess: isSuccessUpdatedNhapLai, isError: isErrorUpdatedNhapLai } = mutationUpdateNhapLai
 
+    const queryNgoaiNgu = useQuery({ queryKey: ['ngoaingus'], queryFn: getAllNgoaiNgus })
+    const qtngonnguDetails = useQuery(['hosoquannhanngoaingu', quannhanId], fetchGetNgoaiNgu, { enabled: !!quannhanId })
 
-    const queryQTCTDang = useQuery({ queryKey: ['ctdangs'], queryFn: getAllQTCTDangs })
-    const quatrinhDangDetails = useQuery(['hosoquannhandang', quannhanId], fetchGetQTCTDang, { enabled: !!quannhanId })
-    console.log("qt công tác:", quatrinhDangDetails.data, queryQTCTDang.data)
-    const { isLoading: isLoadingQTCTDang, data: ctdangs } = queryQTCTDang
+    const { isLoading: isLoadingNgoaiNgu, data: ngoaingus } = queryNgoaiNgu
     const renderAction = () => {
+        let additionalActions = null;
+
+        if (quyen === "admin") {
+            additionalActions = (
+                <>
+                    <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                    <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
+                </>
+            );
+        }
+
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQTCTDang} />
-                <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
-                <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsNgoaiNgu} />
+                {additionalActions}
             </div>
         )
     }
 
+
     const onChange = () => { }
 
-    const fetchGetDetailsQTCTDang = async (rowSelected) => {
-        const res = await QTCTDangService.getDetailsQTCTDang(rowSelected)
+    const fetchGetDetailsNgoaiNgu = async (rowSelected) => {
+        const res = await NgoaiNguService.getDetailsNgoaiNgu(rowSelected)
         if (res?.data) {
-            setStateQTCTDangDetails({
-                QuyetDinh: res?.data.QuyetDinh,
-                NgayQuyetDinh: res?.data.NgayQuyetDinh,
-                ChucVu: res?.data.ChucVu,
-                DonVi: res?.data.DonVi,
-                KetThuc: res?.data.KetThuc,
+            setStateNgoaiNguDetails({
+                NgonNgu: res?.data.NgonNgu,
+                LoaiBang: res?.data.LoaiBang,
+                NamNhan: res?.data.NamNhan,
+                CapDo: res?.data.CapDo,
+                TuongDuong: res?.data.TuongDuong,
+                HinhThucBang: res?.data.HinhThucBang,
                 TrangThai: res?.data.TrangThai,
                 GhiChu: res?.data.GhiChu,
             })
@@ -278,7 +257,7 @@ const QTDang = ({ }) => {
 
     useEffect(() => {
         if (rowSelected) {
-            fetchGetDetailsQTCTDang(rowSelected)
+            fetchGetDetailsNgoaiNgu(rowSelected)
         }
         setIsLoadingUpdate(false)
     }, [rowSelected])
@@ -286,11 +265,11 @@ const QTDang = ({ }) => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateQTCTDangDetails)
+            form.setFieldsValue(stateNgoaiNguDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateQTCTDangDetails, isModalOpen])
+    }, [form, stateNgoaiNguDetails, isModalOpen])
 
 
 
@@ -368,8 +347,8 @@ const QTDang = ({ }) => {
 
     //Show dữ liệu
 
-    //const { data: quatrinhDangDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQTCTDang, { enabled: !!quannhanId })
-    //console.log("qtrinhcongtac:", quatrinhDangDetails)
+    //const { data: qtngonnguDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetNgoaiNgu, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", qtngonnguDetails)
     console.log("idquannhancongtac:", quannhanId)
 
 
@@ -381,32 +360,37 @@ const QTDang = ({ }) => {
             render: (text, record, index) => index + 1,
 
         },
-        {
-            title: 'Số quyết định',
-            dataIndex: 'QuyetDinh',
-            key: 'QuyetDinh',
-        },
-        {
-            title: 'Ngày quyết định',
-            dataIndex: 'NgayQuyetDinh',
-            key: 'NgayQuyetDinh',
-        },
-        {
-            title: 'Chức vụ',
-            dataIndex: 'ChucVu',
-            key: 'ChucVu',
-        },
-        {
-            title: 'Đơn vị',
-            dataIndex: 'DonVi',
-            key: 'DonVi',
-        },
-        {
-            title: 'Kết thúc',
-            dataIndex: 'KetThuc',
-            key: 'KetThuc',
-        },
 
+        {
+            title: 'Ngôn ngữ',
+            dataIndex: 'NgonNgu',
+            key: 'NgonNgu',
+        },
+        {
+            title: 'Loại bằng',
+            dataIndex: 'LoaiBang',
+            key: 'LoaiBang',
+        },
+        {
+            title: 'Năm nhận',
+            dataIndex: 'NamNhan',
+            key: 'NamNhan',
+        },
+        {
+            title: 'Cấp độ',
+            dataIndex: 'CapDo',
+            key: 'CapDo',
+        },
+        {
+            title: 'Tương đương',
+            dataIndex: 'TuongDuong',
+            key: 'TuongDuong',
+        },
+        {
+            title: 'Hình thức bằng',
+            dataIndex: 'HinhThucBang',
+            key: 'HinhThucBang',
+        },
         {
             title: 'Trạng thái',
             dataIndex: 'TrangThai',
@@ -435,191 +419,6 @@ const QTDang = ({ }) => {
     }, [isSuccessDelected])
 
     useEffect(() => {
-        if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
-            message.success()
-        } else if (isErrorDeletedMany) {
-            message.error()
-        }
-    }, [isSuccessDelectedMany])
-
-    useEffect(() => {
-        if (isSuccessDelected && dataDeleted?.status === 'OK') {
-            message.success()
-            handleCancelDelete()
-        } else if (isErrorDeleted) {
-            message.error()
-        }
-    }, [isSuccessDelected])
-
-    const handleCloseDrawer = () => {
-        setIsOpenDrawer(false);
-        setStateQTCTDangDetails({
-            QuyetDinh: '',
-            NgayQuyetDinh: '',
-            ChucVu: '',
-            DonVi: '',
-            KetThuc: '',
-            TrangThai: '',
-            GhiChu: '',
-        })
-        form.resetFields()
-    };
-
-    useEffect(() => {
-        if (isSuccessUpdated && dataUpdated?.status === 'OK') {
-            message.success()
-            handleCloseDrawer()
-        } else if (isErrorUpdated) {
-            message.error()
-        }
-    }, [isSuccessUpdated])
-
-    const handleCancelDelete = () => {
-        setIsModalOpenDelete(false)
-    }
-
-
-    const handleDeleteQTCTDang = () => {
-        mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
-            onSettled: () => {
-                quatrinhDangDetails.refetch()
-            }
-        })
-    }
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
-        setStateQTCTDang({
-            QuyetDinh: '',
-            NgayQuyetDinh: '',
-            ChucVu: '',
-            DonVi: '',
-            KetThuc: '',
-            TrangThai: '',
-            GhiChu: '',
-        })
-        form.resetFields()
-    };
-
-
-    const onFinish = () => {
-        const params = {
-            QuyetDinh: stateQTCTDang.QuyetDinh,
-            NgayQuyetDinh: stateQTCTDang.NgayQuyetDinh,
-            ChucVu: stateQTCTDang.ChucVu,
-            DonVi: stateQTCTDang.DonVi,
-            KetThuc: stateQTCTDang.KetThuc,
-            //   TrangThai: stateQTCTDang.TrangThai,
-            GhiChu: stateQTCTDang.GhiChu,
-        }
-        console.log("Finsh", stateQTCTDang)
-        mutation.mutate(params, {
-            onSettled: () => {
-                quatrinhDangDetails.refetch()
-            }
-        })
-    }
-
-
-
-    const handleOnchange = (e) => {
-        console.log("e: ", e.target.name, e.target.value)
-        setStateQTCTDang({
-            ...stateQTCTDang,
-            [e.target.name]: e.target.value
-        })
-    }
-
-
-    const handleOnchangeDetails = (e) => {
-        console.log('check', e.target.name, e.target.value)
-        setStateQTCTDangDetails({
-            ...stateQTCTDangDetails,
-            [e.target.name]: e.target.value
-        })
-    }
-
-
-    const onUpdateQTCTDang = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQTCTDangDetails }, {
-            onSettled: () => {
-                quatrinhDangDetails.refetch()
-            }
-        })
-    }
-    const onUpdateNgoaiNguTrangThai = () => {
-        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateQTCTDangDetails }, {
-            onSettled: () => {
-                quatrinhDangDetails.refetch()
-            }
-        })
-    }
-
-    const onUpdateNgoaiNguNhapLai = () => {
-        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateQTCTDangDetails }, {
-            onSettled: () => {
-                quatrinhDangDetails.refetch()
-            }
-
-        })
-    }
-    function convertDateToString(date) {
-        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
-        return moment(date).format('DD/MM/YYYY');
-    }
-    function getTrangThaiText(statusValue) {
-        switch (statusValue) {
-            case 0:
-                return 'Đang chờ phê duyệt';
-            case 1:
-                return 'Đã phê duyệt';
-            case 2:
-                return 'Đã từ chối - Nhập lại';
-            default:
-                return 'Trạng thái không hợp lệ';
-        }
-    }
-
-    const dataTable = quatrinhDangDetails?.data?.length && quatrinhDangDetails?.data?.map((quatrinhDangDetails) => {
-        return {
-            ...quatrinhDangDetails,
-            key: quatrinhDangDetails._id,
-            TrangThai: getTrangThaiText(quatrinhDangDetails.TrangThai),
-            NgayQuyetDinh: convertDateToString(quatrinhDangDetails.NgayQuyetDinh)
-        }
-    })
-    useEffect(() => {
-        if (isSuccess && data?.status === 'OK') {
-            message.success()
-            handleCancel()
-        } else if (isError) {
-            message.error()
-        }
-    }, [isSuccess])
-
-
-    const fetchAllCVDang = async () => {
-        const res = await DanhMucChucVuDangService.getAllType()
-        return res
-    }
-
-    const allCVDang = useQuery({ queryKey: ['all-cvdang'], queryFn: fetchAllCVDang })
-    const handleChangeSelect1 = (value) => {
-        setStateQTCTDang({
-            ...stateQTCTDang,
-            ChucVu: value
-        })
-        // console.log(stateQuanNhan)
-    }
-
-    const handleChangeSelectDetails = (value) => {
-        setStateQTCTDangDetails({
-            ...stateQTCTDangDetails,
-            ChucVu: value
-        })
-        // console.log(stateQuanNhan)
-    }
-    useEffect(() => {
         if (isSuccessUpdatedNhapLai && dataUpdatedNhapLai?.status === 'OK') {
             message.success()
             handleCancelNhapLai()
@@ -639,18 +438,190 @@ const QTDang = ({ }) => {
     }, [isSuccessUpdatedTT])
 
 
+
+    useEffect(() => {
+        if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
+            message.success()
+        } else if (isErrorDeletedMany) {
+            message.error()
+        }
+    }, [isSuccessDelectedMany])
+
+    useEffect(() => {
+        if (isSuccessDelected && dataDeleted?.status === 'OK') {
+            message.success()
+            handleCancelDelete()
+        } else if (isErrorDeleted) {
+            message.error()
+        }
+    }, [isSuccessDelected])
+
+    const handleCloseDrawer = () => {
+        setIsOpenDrawer(false);
+        setStateNgoaiNguDetails({
+            NgonNgu: '',
+            LoaiBang: '',
+            NamNhan: '',
+            CapDo: '',
+            TuongDuong: '',
+            HinhThucBang: '',
+            //   TrangThai: '',
+            GhiChu: '',
+        })
+        form.resetFields()
+    };
+
+    useEffect(() => {
+        if (isSuccessUpdated && dataUpdated?.status === 'OK') {
+            message.success()
+            handleCloseDrawer()
+        } else if (isErrorUpdated) {
+            message.error()
+        }
+    }, [isSuccessUpdated])
+
+    const handleCancelDelete = () => {
+        setIsModalOpenDelete(false)
+    }
+    const handleCancelPheDuyet = () => {
+        setIsModalOpenPheDuyet(false)
+    }
+    const handleCancelNhapLai = () => {
+        setIsModalOpenNhapLai(false)
+    }
+
+    const handleDeleteNgoaiNgu = () => {
+        mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
+            onSettled: () => {
+                qtngonnguDetails.refetch()
+            }
+        })
+    }
+
+
+
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+        setStateNgoaiNgu({
+            NgonNgu: '',
+            LoaiBang: '',
+            NamNhan: '',
+            CapDo: '',
+            TuongDuong: '',
+            HinhThucBang: '',
+            //   TrangThai: '',
+            GhiChu: '',
+        })
+        form.resetFields()
+    };
+
+
+    const onFinish = () => {
+        const params = {
+
+            NgonNgu: stateNgoaiNgu.NgonNgu,
+            LoaiBang: stateNgoaiNgu.LoaiBang,
+            NamNhan: stateNgoaiNgu.NamNhan,
+            CapDo: stateNgoaiNgu.CapDo,
+            TuongDuong: stateNgoaiNgu.TuongDuong,
+            HinhThucBang: stateNgoaiNgu.HinhThucBang,
+            //     TrangThai: stateNgoaiNgu.TrangThai,
+            GhiChu: stateNgoaiNgu.GhiChu,
+        }
+        console.log("Finsh", stateNgoaiNgu)
+        mutation.mutate(params, {
+            onSettled: () => {
+                qtngonnguDetails.refetch()
+            }
+        })
+    }
+
+
+
+    const handleOnchange = (e) => {
+        console.log("e: ", e.target.name, e.target.value)
+        setStateNgoaiNgu({
+            ...stateNgoaiNgu,
+            [e.target.name]: e.target.value
+        })
+    }
+
+
+    const handleOnchangeDetails = (e) => {
+        console.log('check', e.target.name, e.target.value)
+        setStateNgoaiNguDetails({
+            ...stateNgoaiNguDetails,
+            [e.target.name]: e.target.value
+        })
+    }
+
+
+    const onUpdateNgoaiNgu = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
+            onSettled: () => {
+                qtngonnguDetails.refetch()
+            }
+        })
+    }
+
+    const onUpdateNgoaiNguTrangThai = () => {
+        mutationUpdateTrangThai.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
+            onSettled: () => {
+                qtngonnguDetails.refetch()
+            }
+        })
+    }
+
+    const onUpdateNgoaiNguNhapLai = () => {
+        mutationUpdateNhapLai.mutate({ id: rowSelected, token: user?.access_token, ...stateNgoaiNguDetails }, {
+            onSettled: () => {
+                qtngonnguDetails.refetch()
+            }
+        })
+    }
+
+    function getTrangThaiText(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return 'Đang chờ phê duyệt';
+            case 1:
+                return 'Đã phê duyệt';
+            case 2:
+                return 'Đã từ chối - Nhập lại';
+            default:
+                return 'Trạng thái không hợp lệ';
+        }
+    }
+
+    const dataTable = qtngonnguDetails?.data?.length && qtngonnguDetails?.data?.map((qtngonnguDetails) => {
+        return {
+            ...qtngonnguDetails,
+            key: qtngonnguDetails._id,
+            TrangThai: getTrangThaiText(qtngonnguDetails.TrangThai)
+        }
+    })
+    useEffect(() => {
+        if (isSuccess && data?.status === 'OK') {
+            message.success()
+            handleCancel()
+        } else if (isError) {
+            message.error()
+        }
+    }, [isSuccess])
+
     return (
         <div>
             <div>
-                <WrapperHeader>Quá trình sinh hoạt Đảng</WrapperHeader>
+                <WrapperHeader>Ngôn ngữ</WrapperHeader>
                 <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
                 </div>
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (
-                    // <Table dataSource={quatrinhDangDetails} columns={columns} />
-                    <TableComponent columns={columns} isLoading={isLoadingQTCTDang} data={dataTable} onRow={(record, rowSelected) => {
+                    // <Table dataSource={qtngonnguDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingNgoaiNgu} data={dataTable} onRow={(record, rowSelected) => {
                         return {
                             onClick: event => {
                                 setRowSelected(record._id);
@@ -663,7 +634,7 @@ const QTDang = ({ }) => {
                 )}
 
             </div>
-            <ModalComponent forceRender title="Thêm mới quá trình sinh hoạt Đảng" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm mới ngôn ngữ" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -676,80 +647,88 @@ const QTDang = ({ }) => {
                     >
 
                         <Form.Item
-                            label="Mã quyết định"
-                            name="QuyetDinh"
+                            label="Ngôn ngữ"
+                            name="NgonNgu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateQTCTDang['QuyetDinh']}
+                                value={stateNgoaiNgu['NgonNgu']}
                                 onChange={handleOnchange}
-                                name="QuyetDinh"
+                                name="NgonNgu"
                             />
                         </Form.Item>
 
                         <Form.Item
-                            label="Ngày quyết định"
-                            //     name="NgayQuyetDinh"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <DatePicker
-                                //  value={NgayQD}
-                                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
-                                format="DD/MM/YYYY"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Chức vụ"
-                            name="ChucVu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateQTCTDang['ChucVu']}
-                                onChange={handleOnchange}
-                                name="ChucVu"
-                            /> */}
-                            <Select
-                                name="ChucVu"
-                                //value={stateTaiHuongDan['HinhThucHuongDan']}
-
-                                onChange={handleChangeSelect1}
-                                options={renderOptions(allCVDang?.data?.data)}
-                            />
-
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Đơn vị"
-                            name="DonVi"
+                            label="Loại bằng"
+                            name="LoaiBang"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateQTCTDang['DonVi']}
+                                value={stateNgoaiNgu['LoaiBang']}
                                 onChange={handleOnchange}
-                                name="DonVi"
+                                name="LoaiBang"
                             />
                         </Form.Item>
 
                         <Form.Item
-                            label="Kết thúc"
-                        //     name="KetThuc"
-                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                            label="Năm nhận"
+                            name="NamNhan"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                //  value={NgayQD}
-                                onChange={handleOnchangeNgayKT} name="KetThuc"
-                                format="DD/MM/YYYY"
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['NamNhan']}
+                                onChange={handleOnchange}
+                                name="NamNhan"
                             />
                         </Form.Item>
 
+                        <Form.Item
+                            label="Cấp độ"
+                            name="CapDo"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateNgoaiNgu['CapDo']}
+                                onChange={handleOnchange}
+                                name="CapDo"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Tương Đương"
+                            name="TuongDuong"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['TuongDuong']}
+                                onChange={handleOnchange}
+                                name="TuongDuong"
+                            />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Hình thức bằng"
+                            name="HinhThucBang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateNgoaiNgu['HinhThucBang']}
+                                onChange={handleOnchange}
+                                name="HinhThucBang"
+                            />
+                        </Form.Item>
 
                         <Form.Item
                             label="Ghi chú"
@@ -759,7 +738,7 @@ const QTDang = ({ }) => {
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateQTCTDang['GhiChu']}
+                                value={stateNgoaiNgu['GhiChu']}
                                 onChange={handleOnchange}
                                 name="GhiChu"
                             />
@@ -774,81 +753,66 @@ const QTDang = ({ }) => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Chi tiết quá trình sinh hoạt Đảng' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
+            <DrawerComponent title='Chi tiết ngôn ngữ' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
                         labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateQTCTDang}
+                        onFinish={onUpdateNgoaiNgu}
                         autoComplete="on"
                         form={form}
                     >
                         <Form.Item
-                            label="Mã quyết định"
-                            name="QuyetDinh"
+                            label="Ngôn ngữ"
+                            name="NgonNgu"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQTCTDangDetails['QuyetDinh']} onChange={handleOnchangeDetails} name="QuyetDinh" />
+                            <InputComponent value={stateNgoaiNguDetails['NgonNgu']} onChange={handleOnchangeDetails} name="NgonNgu" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Ngày quyết định"
-                            // name="NgayQuyetDinh"
+                            label="Loại bằng"
+                            name="LoaiBang"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                value={NgayQD}
-                                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
-                                format="DD/MM/YYYY"
-                            />
+                            <InputComponent value={stateNgoaiNguDetails['LoaiBang']} onChange={handleOnchangeDetails} name="LoaiBang" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Chức vụ"
-                            name="ChucVu"
+                            label="Năm nhận"
+                            name="NamNhan"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateQTCTDangDetails['ChucVu']} onChange={handleOnchangeDetails} name="ChucVu" /> */}
-                            <Select
-                                name="ChucVu"
-                                //value={stateTaiHuongDan['HinhThucHuongDan']}
-
-                                onChange={handleChangeSelectDetails}
-                                options={renderOptions(allCVDang?.data?.data)}
-                            />
-
+                            <InputComponent value={stateNgoaiNguDetails['NamNhan']} onChange={handleOnchangeDetails} name="NamNhan" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Đơn vị"
-                            name="DonVi"
+                            label="Cấp độ"
+                            name="CapDo"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQTCTDangDetails['DonVi']} onChange={handleOnchangeDetails} name="DonVi" />
+                            <InputComponent value={stateNgoaiNguDetails['CapDo']} onChange={handleOnchangeDetails} name="CapDo" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Kết thúc"
-                        //   name="KetThuc"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                            label="Tương đương"
+                            name="TuongDuong"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                value={NgayKT}
-                                onChange={handleOnchangeDetailNgayKT} name="KetThuc"
-                                format="DD/MM/YYYY"
-                            />
+                            <InputComponent value={stateNgoaiNguDetails['TuongDuong']} onChange={handleOnchangeDetails} name="TuongDuong" />
                         </Form.Item>
-
 
                         <Form.Item
-                            label="Ghi chú"
-                            name="GhiChu"
-                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                            label="Hình thức bằng"
+                            name="HinhThucBang"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQTCTDangDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
+                            <InputComponent value={stateNgoaiNguDetails['HinhThucBang']} onChange={handleOnchangeDetails} name="HinhThucBang" />
                         </Form.Item>
+
+
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -859,21 +823,22 @@ const QTDang = ({ }) => {
                 </Loading>
             </DrawerComponent>
 
-            <ModalComponent title="Xóa quá trình sinh hoạt Đảng" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQTCTDang}>
+            <ModalComponent title="Xóa ngôn ngữ" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteNgoaiNgu}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa quá trình sinh hoạt Đảng này không?</div>
+                    <div>Bạn có chắc xóa ngôn ngữ này không?</div>
                 </Loading>
             </ModalComponent>
 
-            <ModalComponent title="Phê quyệtquá trình sinh hoạt Đảng" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
+
+            <ModalComponent title="Phê quyệt ngôn ngữ" open={isModalOpenPheDuyet} onCancel={handleCancelPheDuyet} onOk={onUpdateNgoaiNguTrangThai}>
                 <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc phê duyệt quá trình sinh hoạt Đảng này không?</div>
+                    <div>Bạn có chắc phê duyệt ngôn ngữ này không?</div>
                 </Loading>
             </ModalComponent>
 
-            <ModalComponent title="Yêu cầu nhập lại thông tin quá trình sinh hoạt Đảng" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
-                <Loading isLoading={isLoadingUpdatedTT}>
-                    <div>Bạn có chắc yêu cầu nhập lại  quá trình sinh hoạt Đảng này không?</div>
+            <ModalComponent title="Yêu cầu nhập lại thông tin ngôn ngữ" open={isModalOpenNhapLai} onCancel={handleCancelNhapLai} onOk={onUpdateNgoaiNguNhapLai}>
+                <Loading isLoading={isLoadingUpdatedNhapLai}>
+                    <div>Bạn có chắc yêu cầu nhập lại  ngôn ngữ này không?</div>
                 </Loading>
             </ModalComponent>
 
@@ -882,4 +847,4 @@ const QTDang = ({ }) => {
     );
 };
 
-export default QTDang;
+export default NgoaiNgu;

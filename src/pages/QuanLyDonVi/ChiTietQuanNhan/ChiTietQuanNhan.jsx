@@ -5,11 +5,10 @@ import LyLich from './LyLich';
 import QuaTrinh from './QuaTrinh';
 import CTDaoTao from './CTDaoTao';
 import CongTacNCKH from './CongTacNCKH';
-import ThanNhan from '../../QuanLyQuanNhan/HoSoCanBo/ThanNhan';
-import TaiSan from '../../QuanLyQuanNhan/HoSoCanBo/TaiSan';
+
 
 import { useNavigate, useParams } from 'react-router-dom'
-import NgoaiNgu from '../../QuanLyQuanNhan/HoSoCanBo/NgoaiNgu';
+
 
 const { TabPane } = Tabs;
 
@@ -20,6 +19,10 @@ function ChiTietQuanNhan() {
         <>
 
             <Tabs defaultActiveKey="1">
+                <TabPane >
+
+
+                </TabPane>
                 <TabPane tab="Lý lịch" key="1">
 
                     <LyLich idQuanNhan={id} />

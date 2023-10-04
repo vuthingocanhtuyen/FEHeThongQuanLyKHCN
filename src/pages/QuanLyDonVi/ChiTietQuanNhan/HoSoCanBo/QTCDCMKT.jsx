@@ -1,55 +1,62 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space, DatePicker } from 'antd';
+import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
-import * as message from '../../../components/Message/Message'
-
-import { renderOptions } from '../../../utils'
-import Loading from '../../../components/LoadingComponent/Loading'
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as QuaTrinhQuanHamService from '../../../services/QTQuanHamService';
-import * as DanhMucCapBacService from '../../../services/DanhMucCapBacService';
+import * as message from '../../../../components/Message/Message'
+import { renderOptions } from '../../../../utils'
+import Loading from '../../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../../hooks/useMutationHook'
+import * as QTCDCMKTService from '../../../../services/QTCDCMKTService';
+import * as DanhMucCDCMKTService from '../../../../services/DanhMucCDCMKTService';
 import { WrapperHeader } from './style'
+import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import TableComponent from '../../../components/TableComponent/TableComponent';
+import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTQuanHam = () => {
+const QTCDCMKT = ({ quannhanId}) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-    const [NgayQD, setNgayQD] = useState('');
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+   
     const inittial = () => ({
         QuyetDinh: '',
-        NgayQuyetDinh: moment(),
-
-        QuanHam: '',
+        NgayQuyetDinh: '',
+        CDCMKT: '',
+        CaoNhat: '',
         GhiChu: '',
     })
-    const [stateQuaTrinhQuanHam, setStateQuaTrinhQuanHam] = useState(inittial())
-    const [stateQuaTrinhQuanHamDetails, setStateQuaTrinhQuanHamDetails] = useState(inittial())
+    const [stateQTCDCMKT, setStateQTCDCMKT] = useState(inittial())
+    const [stateQTCDCMKTDetails, setStateQTCDCMKTDetails] = useState(inittial())
 
 
     const [form] = Form.useForm();
 
     const mutation = useMutationHooks(
         (data) => {
-            const { QuanNhanId = quannhanId, code = 123
-                , QuyetDinh,
-                NgayQuyetDinh, QuanHam,
+            const { QuanNhanId = quannhanId,
+                code = 123,
+                QuyetDinh,
+                NgayQuyetDinh,
+                CDCMKT, CaoNhat,
+
                 GhiChu } = data
-            const res = QuaTrinhQuanHamService.createQuaTrinhQuanHam({
-                QuanNhanId, code, QuyetDinh,
-                NgayQuyetDinh, QuanHam,
+            const res = QTCDCMKTService.createQTCDCMKT({
+                QuanNhanId,
+                code,
+                QuyetDinh,
+                NgayQuyetDinh,
+                CDCMKT, CaoNhat,
+
                 GhiChu
             })
             console.log("data create qtct:", res.data)
@@ -64,7 +71,7 @@ const QTQuanHam = () => {
             const { id,
                 token,
                 ...rests } = data
-            const res = QuaTrinhQuanHamService.updateQuaTrinhQuanHam(
+            const res = QTCDCMKTService.updateQTCDCMKT(
                 id,
                 token,
                 { ...rests })
@@ -78,7 +85,7 @@ const QTQuanHam = () => {
             const { id,
                 token,
             } = data
-            const res = QuaTrinhQuanHamService.deleteQuaTrinhQuanHam(
+            const res = QTCDCMKTService.deleteQTCDCMKT(
                 id,
                 token)
             return res
@@ -89,85 +96,68 @@ const QTQuanHam = () => {
         (data) => {
             const { token, ...ids
             } = data
-            const res = QuaTrinhQuanHamService.deleteManyQuaTrinhQuanHam(
+            const res = QTCDCMKTService.deleteManyQTCDCMKT(
                 ids,
                 token)
             return res
         },
     )
-    useEffect(() => {
-        setNgayQD(moment(stateQuaTrinhQuanHamDetails['NgayQuyetDinh']));
-        // setNgayQD(convertDateToString(stateQuaTrinhQuanHamDetails['NgayQuyetDinh']));
-    }, [form, stateQuaTrinhQuanHamDetails, isOpenDrawer])
-
-    const handleOnchangeDetailNgayQD = (date) => {
-        setStateQuaTrinhQuanHamDetails({
-            ...stateQuaTrinhQuanHamDetails,
-            NgayQuyetDinh: date
-        })
-    }
-    const handleOnchangeNgayQD = (date) => {
-        setStateQuaTrinhQuanHam({
-            ...stateQuaTrinhQuanHam,
-            NgayQuyetDinh: date
-        })
-    }
 
 
-    const getAllQuaTrinhQuanHams = async () => {
-        const res = await QuaTrinhQuanHamService.getAllQuaTrinhQuanHam()
+    const getAllQTCDCMKTs = async () => {
+        const res = await QTCDCMKTService.getAllQTCDCMKT()
         return res
     }
 
     // show
 
 
-    const fetchGetQuaTrinhQuanHam = async (context) => {
-        const quannhanId = context?.queryKey && context?.queryKey[1]
-        console.log("idquannhancongtacfe:", quannhanId)
+    const fetchGetQTCDCMKT = async (context) => {
+       
         if (quannhanId) {
 
-            const res = await QuaTrinhQuanHamService.getQuaTrinhQuanHamByQuanNhanId(quannhanId)
+            const res = await QTCDCMKTService.getQTCDCMKTByQuanNhanId(quannhanId)
             console.log("qtct res: ", res)
             if (res?.data) {
-                setStateQuaTrinhQuanHamDetails({
+                setStateQTCDCMKTDetails({
                     QuyetDinh: res?.data.QuyetDinh,
                     NgayQuyetDinh: res?.data.NgayQuyetDinh,
-                    QuanHam: res?.data.QuanHam,
+                    CDCMKT: res?.data.CDCMKT,
+                    CaoNhat: res?.data.CaoNhat,
                     GhiChu: res?.data.GhiChu,
                 })
             }
             // setIsLoadingUpdate(false)
             // console.log("qn:", res.data)
-            // console.log("chi tiết qtct:", setStateQuaTrinhQuanHamDetails)
+            // console.log("chi tiết qtct:", setStateQTCDCMKTDetails)
             return res.data
         }
         setIsLoadingUpdate(false)
     }
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateQuaTrinhQuanHamDetails)
+            form.setFieldsValue(stateQTCDCMKTDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateQuaTrinhQuanHamDetails, isModalOpen])
+    }, [form, stateQTCDCMKTDetails, isModalOpen])
 
     useEffect(() => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true)
-            fetchGetDetailsQuaTrinhQuanHam(rowSelected)
+            fetchGetDetailsQTCDCMKT(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
 
-    const handleDetailsQuaTrinhQuanHam = () => {
+    const handleDetailsQTCDCMKT = () => {
         setIsOpenDrawer(true)
     }
 
 
-    const handleDelteManyQuaTrinhQuanHams = (ids) => {
+    const handleDelteManyQTCDCMKTs = (ids) => {
         mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
             onSettled: () => {
-                quatrinhquanhamDetails.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
@@ -179,28 +169,29 @@ const QTQuanHam = () => {
     const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
 
 
-    const queryQuaTrinhQuanHam = useQuery({ queryKey: ['quanhams'], queryFn: getAllQuaTrinhQuanHams })
-    const quatrinhquanhamDetails = useQuery(['hosoquannhanquanham', quannhanId], fetchGetQuaTrinhQuanHam, { enabled: !!quannhanId })
-    console.log("qt công tác:", quatrinhquanhamDetails.data, queryQuaTrinhQuanHam.data)
-    const { isLoading: isLoadingQuaTrinhQuanHam, data: quanhams } = queryQuaTrinhQuanHam
+    const queryQTCDCMKT = useQuery({ queryKey: ['qtcdcmkts'], queryFn: getAllQTCDCMKTs })
+    const qtcdcmktDetails = useQuery(['hosoquannhanqtcdcmkt', quannhanId], fetchGetQTCDCMKT, { enabled: !!quannhanId })
+
+    const { isLoading: isLoadingQTCDCMKT, data: qtcdcmkts } = queryQTCDCMKT
     const renderAction = () => {
         return (
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQuaTrinhQuanHam} />
+                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsQTCDCMKT} />
             </div>
         )
     }
 
     const onChange = () => { }
 
-    const fetchGetDetailsQuaTrinhQuanHam = async (rowSelected) => {
-        const res = await QuaTrinhQuanHamService.getDetailsQuaTrinhQuanHam(rowSelected)
+    const fetchGetDetailsQTCDCMKT = async (rowSelected) => {
+        const res = await QTCDCMKTService.getDetailsQTCDCMKT(rowSelected)
         if (res?.data) {
-            setStateQuaTrinhQuanHamDetails({
+            setStateQTCDCMKTDetails({
                 QuyetDinh: res?.data.QuyetDinh,
                 NgayQuyetDinh: res?.data.NgayQuyetDinh,
-                QuanHam: res?.data.QuanHam,
+                CDCMKT: res?.data.CDCMKT,
+                CaoNhat: res?.data.CaoNhat,
                 GhiChu: res?.data.GhiChu,
             })
         }
@@ -211,7 +202,7 @@ const QTQuanHam = () => {
 
     useEffect(() => {
         if (rowSelected) {
-            fetchGetDetailsQuaTrinhQuanHam(rowSelected)
+            fetchGetDetailsQTCDCMKT(rowSelected)
         }
         setIsLoadingUpdate(false)
     }, [rowSelected])
@@ -219,11 +210,11 @@ const QTQuanHam = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            form.setFieldsValue(stateQuaTrinhQuanHamDetails)
+            form.setFieldsValue(stateQTCDCMKTDetails)
         } else {
             form.setFieldsValue(inittial())
         }
-    }, [form, stateQuaTrinhQuanHamDetails, isModalOpen])
+    }, [form, stateQTCDCMKTDetails, isModalOpen])
 
 
 
@@ -301,12 +292,48 @@ const QTQuanHam = () => {
 
     //Show dữ liệu
 
-    //const { data: quatrinhquanhamDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQuaTrinhQuanHam, { enabled: !!quannhanId })
-    //console.log("qtrinhcongtac:", quatrinhquanhamDetails)
-    console.log("idquannhancongtac:", quannhanId)
+    //const { data: qtcdcmktDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQTCDCMKT, { enabled: !!quannhanId })
+    //console.log("qtrinhcongtac:", qtcdcmktDetails)
+    
 
 
+    const CheckboxAction = () => {
+        return (
+            <div>
+                <CheckboxComponent style={{ width: '25px' }} checked={stateQTCDCMKTDetails.CaoNhat === '1'} onChange={handleChangeCheckCaoNhat}
+                />
+            </div>
+        );
+    }
 
+    function getCaoNhatCheckBox(statusValue) {
+        switch (statusValue) {
+            case 0:
+                return (
+                    <div>
+                        <CheckboxComponent style={{ width: '25px' }} />
+                    </div>
+                );
+
+            case 1:
+                return (
+                    <div>
+                        <CheckboxComponent style={{ width: '25px' }}
+                            checked={true}
+                            onChange={handleChangeCheckCaoNhat}
+                        />
+
+                    </div>
+                );
+
+            default:
+                return (
+                    <div>
+                        <CheckboxComponent style={{ width: '25px' }} />
+                    </div>
+                );
+        }
+    }
     const columns = [
         {
             title: 'STT',
@@ -314,8 +341,9 @@ const QTQuanHam = () => {
             render: (text, record, index) => index + 1,
 
         },
+
         {
-            title: 'Số quyết định',
+            title: 'Quyết định',
             dataIndex: 'QuyetDinh',
             key: 'QuyetDinh',
         },
@@ -325,9 +353,14 @@ const QTQuanHam = () => {
             key: 'NgayQuyetDinh',
         },
         {
-            title: 'Quân hàm',
-            dataIndex: 'QuanHam',
-            key: 'QuanHam',
+            title: 'CDCMKT',
+            dataIndex: 'CDCMKT',
+            key: 'CDCMKT',
+        },
+        {
+            title: 'Cao nhất',
+            dataIndex: 'CaoNhat',
+            render: (text, record) => getCaoNhatCheckBox(record.CaoNhat)
         },
 
         {
@@ -371,10 +404,11 @@ const QTQuanHam = () => {
 
     const handleCloseDrawer = () => {
         setIsOpenDrawer(false);
-        setStateQuaTrinhQuanHamDetails({
+        setStateQTCDCMKTDetails({
             QuyetDinh: '',
             NgayQuyetDinh: '',
-            QuanHam: '',
+            CDCMKT: '',
+            CaoNhat: '',
             GhiChu: '',
         })
         form.resetFields()
@@ -394,20 +428,21 @@ const QTQuanHam = () => {
     }
 
 
-    const handleDeleteQuaTrinhQuanHam = () => {
+    const handleDeleteQTCDCMKT = () => {
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                quatrinhquanhamDetails.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
 
     const handleCancel = () => {
         setIsModalOpen(false);
-        setStateQuaTrinhQuanHam({
+        setStateQTCDCMKT({
             QuyetDinh: '',
             NgayQuyetDinh: '',
-            QuanHam: '',
+            CDCMKT: '',
+            CaoNhat: '',
             GhiChu: '',
         })
         form.resetFields()
@@ -416,15 +451,16 @@ const QTQuanHam = () => {
 
     const onFinish = () => {
         const params = {
-            QuyetDinh: stateQuaTrinhQuanHam.QuyetDinh,
-            NgayQuyetDinh: stateQuaTrinhQuanHam.NgayQuyetDinh,
-            QuanHam: stateQuaTrinhQuanHam.QuanHam,
-            GhiChu: stateQuaTrinhQuanHam.GhiChu,
+            QuyetDinh: stateQTCDCMKT.QuyetDinh,
+            NgayQuyetDinh: stateQTCDCMKT.NgayQuyetDinh,
+            CDCMKT: stateQTCDCMKT.CDCMKT,
+            CaoNhat: stateQTCDCMKT.CaoNhat,
+            GhiChu: stateQTCDCMKT.GhiChu,
         }
-        console.log("Finsh", stateQuaTrinhQuanHam)
+        console.log("Finsh", stateQTCDCMKT)
         mutation.mutate(params, {
             onSettled: () => {
-                quatrinhquanhamDetails.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
@@ -433,8 +469,8 @@ const QTQuanHam = () => {
 
     const handleOnchange = (e) => {
         console.log("e: ", e.target.name, e.target.value)
-        setStateQuaTrinhQuanHam({
-            ...stateQuaTrinhQuanHam,
+        setStateQTCDCMKT({
+            ...stateQTCDCMKT,
             [e.target.name]: e.target.value
         })
     }
@@ -442,17 +478,17 @@ const QTQuanHam = () => {
 
     const handleOnchangeDetails = (e) => {
         console.log('check', e.target.name, e.target.value)
-        setStateQuaTrinhQuanHamDetails({
-            ...stateQuaTrinhQuanHamDetails,
+        setStateQTCDCMKTDetails({
+            ...stateQTCDCMKTDetails,
             [e.target.name]: e.target.value
         })
     }
 
 
-    const onUpdateQuaTrinhQuanHam = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQuaTrinhQuanHamDetails }, {
+    const onUpdateQTCDCMKT = () => {
+        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateQTCDCMKTDetails }, {
             onSettled: () => {
-                quatrinhquanhamDetails.refetch()
+                qtcdcmktDetails.refetch()
             }
         })
     }
@@ -460,11 +496,11 @@ const QTQuanHam = () => {
         // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
         return moment(date).format('DD/MM/YYYY');
     }
-    const dataTable = quatrinhquanhamDetails?.data?.length && quatrinhquanhamDetails?.data?.map((quatrinhquanhamDetails) => {
+    const dataTable = qtcdcmktDetails?.data?.length && qtcdcmktDetails?.data?.map((qtcdcmktDetails) => {
         return {
-            ...quatrinhquanhamDetails,
-            key: quatrinhquanhamDetails._id,
-            NgayQuyetDinh: convertDateToString(quatrinhquanhamDetails.NgayQuyetDinh)
+            ...qtcdcmktDetails,
+            key: qtcdcmktDetails._id,
+            NgayQuyetDinh: convertDateToString(qtcdcmktDetails.NgayQuyetDinh)
         }
     })
     useEffect(() => {
@@ -477,43 +513,57 @@ const QTQuanHam = () => {
     }, [isSuccess])
 
 
-
-    const fetchAllCapBac = async () => {
-        const res = await DanhMucCapBacService.getAllType()
+    const fetchAllCDCMKT = async () => {
+        const res = await DanhMucCDCMKTService.getAllType()
         return res
     }
 
-    const allCapBac = useQuery({ queryKey: ['all-capbac'], queryFn: fetchAllCapBac })
+    const allCDCMKT = useQuery({ queryKey: ['all-cdcmkt'], queryFn: fetchAllCDCMKT })
     const handleChangeSelect1 = (value) => {
-        setStateQuaTrinhQuanHam({
-            ...stateQuaTrinhQuanHam,
-            QuanHam: value
+        setStateQTCDCMKT({
+            ...stateQTCDCMKT,
+            CDCMKT: value
         })
         // console.log(stateQuanNhan)
     }
     const handleChangeSelectDetails = (value) => {
-        setStateQuaTrinhQuanHamDetails({
-            ...stateQuaTrinhQuanHamDetails,
-            QuanHam: value
+        setStateQTCDCMKTDetails({
+            ...stateQTCDCMKTDetails,
+            CDCMKT: value
         })
         // console.log(stateQuanNhan)
     }
+    const handleChangeCheckCaoNhat = (e) => {
+        const checkedValue = e.target.checked ? 1 : 0;
+        console.log("e: ", e.target.name, e.target.value)
+        setStateQTCDCMKT({
+            ...stateQTCDCMKT,
+            CaoNhat: checkedValue,
+            [e.target.name]: e.target.value
+        });
+    };
 
 
-
+    const handleChangeCheckCaoNhatDetail = (e) => {
+        const checkedValue = e.target.checked ? 1 : 0;
+        setStateQTCDCMKTDetails({
+            ...stateQTCDCMKTDetails,
+            CaoNhat: checkedValue,
+        });
+    };
 
     return (
         <div>
             <div>
-                <WrapperHeader>Quá trình quân hàm</WrapperHeader>
+                <WrapperHeader>Chức danh chuyên môn kỹ thuật</WrapperHeader>
                 <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
                 </div>
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (
-                    // <Table dataSource={quatrinhquanhamDetails} columns={columns} />
-                    <TableComponent columns={columns} isLoading={isLoadingQuaTrinhQuanHam} data={dataTable} onRow={(record, rowSelected) => {
+                    // <Table dataSource={qtcdcmktDetails} columns={columns} />
+                    <TableComponent columns={columns} isLoading={isLoadingQTCDCMKT} data={dataTable} onRow={(record, rowSelected) => {
                         return {
                             onClick: event => {
                                 setRowSelected(record._id);
@@ -526,7 +576,7 @@ const QTQuanHam = () => {
                 )}
 
             </div>
-            <ModalComponent forceRender title="Thêm mới quá trình quân hàm" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm mới CDCMKT" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -539,56 +589,75 @@ const QTQuanHam = () => {
                     >
 
                         <Form.Item
-                            label="Mã quyết định"
+                            label="Quyết định"
                             name="QuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateQuaTrinhQuanHam['QuyetDinh']}
-                                onChange={handleOnchange}
+                                value={stateQTCDCMKT['QuyetDinh']}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="QuyetDinh"
                             />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngày quyết định"
-                            // name="NgayQuyetDinh"
+                            name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                //  value={NgayQD}
-                                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
-                                format="DD/MM/YYYY"
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKT['NgayQuyetDinh']}
+                                onChange={handleChangeCheckCaoNhat}
+                                name="NgayQuyetDinh"
                             />
                         </Form.Item>
 
                         <Form.Item
-                            label="Quân hàm"
-                            name="QuanHam"
+                            label="CDCMKT"
+                            name="CDCMKT"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateQuaTrinhQuanHam['QuanHam']}
+                                value={stateQTCDCMKT['CDCMKT']}
                                 onChange={handleOnchange}
-                                name="QuanHam"
+                                name="CDCMKT"
                             /> */}
-
                             <Select
-                                name="QuanHam"
+                                name="CDCMKT"
                                 //value={stateTaiHuongDan['HinhThucHuongDan']}
 
                                 onChange={handleChangeSelect1}
-                                options={renderOptions(allCapBac?.data?.data)}
+                                options={renderOptions(allCDCMKT?.data?.data)}
                             />
-
-
                         </Form.Item>
 
 
+                        <Form.Item
+                            label="Cao nhất"
+                            name="CaoNhat"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            {/* <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKT['CaoNhat']}
+                                onChange={handleOnchange}
+                                name="CaoNhat"
+                            /> */}
+                            <CheckboxComponent
+                                style={{ width: '25px' }}
+                                value={stateQTCDCMKT['CaoNhat']}
+                                checked={stateQTCDCMKT['CaoNhat'] === 1}
+                                onChange={handleChangeCheckCaoNhat}
+
+                            />
+                        </Form.Item>
                         <Form.Item
                             label="Ghi chú"
                             name="GhiChu"
@@ -597,8 +666,8 @@ const QTQuanHam = () => {
                             <InputComponent
                                 style={{ width: '100%' }}
 
-                                value={stateQuaTrinhQuanHam['GhiChu']}
-                                onChange={handleOnchange}
+                                value={stateQTCDCMKT['GhiChu']}
+                                onChange={handleChangeCheckCaoNhat}
                                 name="GhiChu"
                             />
                         </Form.Item>
@@ -612,14 +681,14 @@ const QTQuanHam = () => {
             </ModalComponent>
 
 
-            <DrawerComponent title='Chi tiết quá trình quân hàm' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
+            <DrawerComponent title='Chi tiết chức danh chuyên môn kỹ thuật' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
 
                 <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
                     <Form
                         name="basic"
                         labelCol={{ span: 5 }}
                         wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateQuaTrinhQuanHam}
+                        onFinish={onUpdateQTCDCMKT}
                         autoComplete="on"
                         form={form}
                     >
@@ -628,43 +697,60 @@ const QTQuanHam = () => {
                             name="QuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQuaTrinhQuanHamDetails['QuyetDinh']} onChange={handleOnchangeDetails} name="QuyetDinh" />
+                            <InputComponent value={stateQTCDCMKTDetails['QuyetDinh']} onChange={handleOnchangeDetails} name="QuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
                             label="Ngày quyết định"
-                            // name="NgayQuyetDinh"
+                            name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                value={NgayQD}
-                                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
-                                format="DD/MM/YYYY"
-                            />
+                            <InputComponent value={stateQTCDCMKTDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
                         </Form.Item>
 
                         <Form.Item
-                            label="Quân hàm"
-                            name="QuanHam"
+                            label="CDCMKT"
+                            name="CDCMKT"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateQuaTrinhQuanHamDetails['QuanHam']} onChange={handleOnchangeDetails} name="QuanHam" /> */}
-
+                            {/* <InputComponent value={stateQTCDCMKTDetails['CDCMKT']} onChange={handleOnchangeDetails} name="CDCMKT" /> */}
                             <Select
-                                name="QuanHam"
+                                name="CDCMKT"
                                 //value={stateTaiHuongDan['HinhThucHuongDan']}
-                                // value={stateQuaTrinhQuanHamDetails.QuanHam}
+
                                 onChange={handleChangeSelectDetails}
-                                options={renderOptions(allCapBac?.data?.data)}
+                                options={renderOptions(allCDCMKT?.data?.data)}
+                            />
+
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Cao nhất"
+                            name="CaoNhat"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            {/* <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQTCDCMKTDetails['CaoNhat']}
+                                onChange={handleOnchangeDetails}
+                                name="CaoNhat"
+                            /> */}
+                            <CheckboxComponent
+                                style={{ width: '25px' }}
+                                value={stateQTCDCMKTDetails['CaoNhat']}
+                                checked={stateQTCDCMKTDetails['CaoNhat'] === 1}
+                                onChange={handleChangeCheckCaoNhatDetail}
                             />
                         </Form.Item>
+
 
                         <Form.Item
                             label="Ghi chú"
                             name="GhiChu"
-                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQuaTrinhQuanHamDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
+                            <InputComponent value={stateQTCDCMKTDetails['GhiChu']} onChange={handleOnchangeDetails} name="GhiChu" />
                         </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
@@ -676,9 +762,9 @@ const QTQuanHam = () => {
                 </Loading>
             </DrawerComponent>
 
-            <ModalComponent title="Xóa quá trình quân hàm" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQuaTrinhQuanHam}>
+            <ModalComponent title="Xóa quá trình CDCMKT" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteQTCDCMKT}>
                 <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa quá trình quân hàm này không?</div>
+                    <div>Bạn có chắc xóa qquá trình CDCMKT này không?</div>
                 </Loading>
             </ModalComponent>
 
@@ -687,4 +773,4 @@ const QTQuanHam = () => {
     );
 };
 
-export default QTQuanHam;
+export default QTCDCMKT;

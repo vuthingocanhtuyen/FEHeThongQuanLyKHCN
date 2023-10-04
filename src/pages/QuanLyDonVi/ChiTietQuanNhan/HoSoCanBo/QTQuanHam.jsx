@@ -1,37 +1,36 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space, DatePicker } from 'antd';
+import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
-import * as message from '../../../components/Message/Message'
+import * as message from '../../../../components/Message/Message'
 
-import { renderOptions } from '../../../utils'
-import Loading from '../../../components/LoadingComponent/Loading'
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as QuaTrinhQuanHamService from '../../../services/QTQuanHamService';
-import * as DanhMucCapBacService from '../../../services/DanhMucCapBacService';
+import { renderOptions } from '../../../../utils'
+import Loading from '../../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../../hooks/useMutationHook'
+import * as QuaTrinhQuanHamService from '../../../../services/QTQuanHamService';
+import * as DanhMucCapBacService from '../../../../services/DanhMucCapBacService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import TableComponent from '../../../components/TableComponent/TableComponent';
+import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTQuanHam = () => {
+const QTQuanHam = ({ quannhanId}) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-    const [NgayQD, setNgayQD] = useState('');
+
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+    
     const inittial = () => ({
         QuyetDinh: '',
-        NgayQuyetDinh: moment(),
-
+        NgayQuyetDinh: '',
         QuanHam: '',
         GhiChu: '',
     })
@@ -95,23 +94,6 @@ const QTQuanHam = () => {
             return res
         },
     )
-    useEffect(() => {
-        setNgayQD(moment(stateQuaTrinhQuanHamDetails['NgayQuyetDinh']));
-        // setNgayQD(convertDateToString(stateQuaTrinhQuanHamDetails['NgayQuyetDinh']));
-    }, [form, stateQuaTrinhQuanHamDetails, isOpenDrawer])
-
-    const handleOnchangeDetailNgayQD = (date) => {
-        setStateQuaTrinhQuanHamDetails({
-            ...stateQuaTrinhQuanHamDetails,
-            NgayQuyetDinh: date
-        })
-    }
-    const handleOnchangeNgayQD = (date) => {
-        setStateQuaTrinhQuanHam({
-            ...stateQuaTrinhQuanHam,
-            NgayQuyetDinh: date
-        })
-    }
 
 
     const getAllQuaTrinhQuanHams = async () => {
@@ -123,8 +105,7 @@ const QTQuanHam = () => {
 
 
     const fetchGetQuaTrinhQuanHam = async (context) => {
-        const quannhanId = context?.queryKey && context?.queryKey[1]
-        console.log("idquannhancongtacfe:", quannhanId)
+        
         if (quannhanId) {
 
             const res = await QuaTrinhQuanHamService.getQuaTrinhQuanHamByQuanNhanId(quannhanId)
@@ -554,13 +535,15 @@ const QTQuanHam = () => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            // name="NgayQuyetDinh"
+                            name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                //  value={NgayQD}
-                                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
-                                format="DD/MM/YYYY"
+                            <InputComponent
+                                style={{ width: '100%' }}
+
+                                value={stateQuaTrinhQuanHam['NgayQuyetDinh']}
+                                onChange={handleOnchange}
+                                name="NgayQuyetDinh"
                             />
                         </Form.Item>
 
@@ -633,14 +616,10 @@ const QTQuanHam = () => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            // name="NgayQuyetDinh"
+                            name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <DatePicker
-                                value={NgayQD}
-                                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
-                                format="DD/MM/YYYY"
-                            />
+                            <InputComponent value={stateQuaTrinhQuanHamDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
                         </Form.Item>
 
                         <Form.Item

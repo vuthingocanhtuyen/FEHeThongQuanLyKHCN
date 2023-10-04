@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions, getBase64 } from '../../../../utils'
@@ -38,7 +38,9 @@ const HopDong = ({ }) => {
 
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
-
+    const [NgayDKKT, setNgayDKKT] = useState('');
+    const [NgayBD, setNgayBD] = useState('');
+    const [NgayThu, setNgayThu] = useState('');
 
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
@@ -74,12 +76,12 @@ const HopDong = ({ }) => {
         BenA: '',
         DonViChuTri: '',
         GiaTriHopDong: '',
-        ThoiDiemKetThuc: '',
-        ThoiDiemBatDau: '',
+        ThoiDiemKetThuc: moment(),
+        ThoiDiemBatDau: moment(),
         NguoiChuTri: '',
         SoThanhVien: '',
         CacThanhVien: '',
-        NgayThanhLy: '',
+        NgayThanhLy: moment(),
         Tai: '',
         FileCM: '',
         TrangThai: '',
@@ -159,6 +161,62 @@ const HopDong = ({ }) => {
         },
 
     )
+    // ngày dự kiến kết thúc
+    useEffect(() => {
+        setNgayDKKT(moment(stateHopDongDetails['ThoiDiemKetThuc']));
+        // setNgayQD(convertDateToString(stateHopDongDetails['NgayQuyetDinh']));
+    }, [form, stateHopDongDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayDKKT = (date) => {
+        setStateHopDongDetails({
+            ...stateHopDongDetails,
+            ThoiDiemKetThuc: date
+        })
+    }
+    const handleOnchangeNgayDKKT = (date) => {
+        setStateHopDong({
+            ...stateHopDong,
+            ThoiDiemKetThuc: date
+        })
+    }
+    // ngày bắt đầu
+    useEffect(() => {
+        setNgayBD(moment(stateHopDongDetails['ThoiDiemBatDau']));
+        // setNgayQD(convertDateToString(stateHopDongDetails['NgayQuyetDinh']));
+    }, [form, stateHopDongDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayBD = (date) => {
+        setStateHopDongDetails({
+            ...stateHopDongDetails,
+            ThoiDiemBatDau: date
+        })
+    }
+    const handleOnchangeNgayBD = (date) => {
+        setStateHopDong({
+            ...stateHopDong,
+            ThoiDiemBatDau: date
+        })
+    }
+
+
+    // ngày nghiệm thu
+    useEffect(() => {
+        setNgayThu(moment(stateHopDongDetails['NgayThanhLy']));
+        // setNgayQD(convertDateToString(stateHopDongDetails['NgayQuyetDinh']));
+    }, [form, stateHopDongDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayThu = (date) => {
+        setStateHopDongDetails({
+            ...stateHopDongDetails,
+            NgayThanhLy: date
+        })
+    }
+    const handleOnchangeNgayThu = (date) => {
+        setStateHopDong({
+            ...stateHopDong,
+            NgayThanhLy: date
+        })
+    }
 
 
     const handleCancelPheDuyet = () => {
@@ -600,11 +658,11 @@ const HopDong = ({ }) => {
             key: 'HoTen',
         },
 
-        {
-            title: 'Đơn vị',
-            dataIndex: 'DonVi',
-            key: 'DonVi',
-        },
+        // {
+        //     title: 'Đơn vị',
+        //     dataIndex: 'DonVi',
+        //     key: 'DonVi',
+        // },
         {
             title: 'Vai trò',
             dataIndex: 'VaiTro',
@@ -1205,17 +1263,25 @@ const HopDong = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm bắt đầu"
-                            name="ThoiDiemBatDau"
+                            //  name="ThoiDiemBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHopDong.ThoiDiemBatDau} onChange={handleOnchange} name="ThoiDiemBatDau" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayBD} name="ThoiDiemBatDau"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm kết thúc"
-                            name="ThoiDiemKetThuc"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //    name="ThoiDiemKetThuc"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHopDong.ThoiDiemKetThuc} onChange={handleOnchange} name="ThoiDiemKetThuc" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayDKKT} name="ThoiDiemKetThuc"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Người chủ trì"
@@ -1233,10 +1299,14 @@ const HopDong = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày thanh lý"
-                            name="NgayThanhLy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //  name="NgayThanhLy"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateHopDong.NgayThanhLy} onChange={handleOnchange} name="NgayThanhLy" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayThu} name="NgayThanhLy"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
                         <Form.Item
@@ -1382,17 +1452,25 @@ const HopDong = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm bắt đầu"
-                            name="ThoiDiemBatDau"
+                            //  name="ThoiDiemBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={convertDateToString(stateHopDongDetails.ThoiDiemBatDau)} onChange={handleOnchangeDetails} name="ThoiDiemBatDau" />
+                            <DatePicker
+                                value={NgayBD}
+                                onChange={handleOnchangeDetailNgayBD} name="ThoiDiemBatDau"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm kết thúc"
-                            name="ThoiDiemKetThuc"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // name="ThoiDiemKetThuc"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={convertDateToString(stateHopDongDetails.ThoiDiemKetThuc)} onChange={handleOnchangeDetails} name="ThoiDiemKetThuc" />
+                            <DatePicker
+                                value={NgayDKKT}
+                                onChange={handleOnchangeDetailNgayDKKT} name="ThoiDiemKetThuc"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Người chủ trì"
@@ -1410,10 +1488,14 @@ const HopDong = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày thanh lý"
-                            name="NgayThanhLy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // name="NgayThanhLy"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={convertDateToString(stateHopDongDetails.NgayThanhLy)} onChange={handleOnchangeDetails} name="NgayThanhLy" />
+                            <DatePicker
+                                value={NgayThu}
+                                onChange={handleOnchangeDetailNgayThu} name="NgayThanhLy"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
 

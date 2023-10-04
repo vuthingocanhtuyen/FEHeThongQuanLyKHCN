@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions, getBase64 } from '../../../../utils'
@@ -17,7 +17,7 @@ import * as HTCVService from '../../../../services/HTCVGiaiThuongService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
+import moment from 'moment';
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -36,6 +36,7 @@ const GiaiThuongNCKH = ({ }) => {
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const [isModalOpenDelete2, setIsModalOpenDelete2] = useState(false)
 
+    const [NgayQD, setNgayQD] = useState('');
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
@@ -72,7 +73,7 @@ const GiaiThuongNCKH = ({ }) => {
         LoaiGiaiThuong: '',
         TenGiaiThuong: '',
         TenCongTrinh: '',
-        NgayGiaiThuong: '',
+        NgayGiaiThuong: moment(),
         SoTacGia: '',
         CacTacGia: '',
         Quy: '',
@@ -157,7 +158,23 @@ const GiaiThuongNCKH = ({ }) => {
 
     )
 
+    useEffect(() => {
+        setNgayQD(moment(stateGiaiThuongNCKHDetails['NgayGiaiThuong']));
+        // setNgayQD(convertDateToString(stateGiaiThuongNCKHDetails['NgayQuyetDinh']));
+    }, [form, stateGiaiThuongNCKHDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayQD = (date) => {
+        setStateGiaiThuongNCKHDetails({
+            ...stateGiaiThuongNCKHDetails,
+            NgayGiaiThuong: date
+        })
+    }
+    const handleOnchangeNgayQD = (date) => {
+        setStateGiaiThuongNCKH({
+            ...stateGiaiThuongNCKH,
+            NgayGiaiThuong: date
+        })
+    }
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
     }
@@ -592,11 +609,11 @@ const GiaiThuongNCKH = ({ }) => {
             key: 'HoTen',
         },
 
-        {
-            title: 'Đơn vị',
-            dataIndex: 'DonVi',
-            key: 'DonVi',
-        },
+        // {
+        //     title: 'Đơn vị',
+        //     dataIndex: 'DonVi',
+        //     key: 'DonVi',
+        // },
         {
             title: 'Vai trò',
             dataIndex: 'VaiTro',
@@ -1179,10 +1196,14 @@ const GiaiThuongNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày giải thưởng"
-                            name="NgayGiaiThuong"
+                            // name="NgayGiaiThuong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKH.NgayGiaiThuong} onChange={handleOnchange} name="NgayGiaiThuong" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayQD} name="NgayGiaiThuong"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số tác giả"
@@ -1354,10 +1375,14 @@ const GiaiThuongNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày giải thưởng"
-                            name="NgayGiaiThuong"
+                            //  name="NgayGiaiThuong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateGiaiThuongNCKHDetails.NgayGiaiThuong} onChange={handleOnchangeDetails} name="NgayGiaiThuong" />
+                            <DatePicker
+                                value={NgayQD}
+                                onChange={handleOnchangeDetailNgayQD} name="NgayGiaiThuong"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số tác giả"

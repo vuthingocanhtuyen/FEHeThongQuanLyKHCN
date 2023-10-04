@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions, getBase64 } from '../../../../utils'
@@ -19,14 +19,10 @@ import * as LoaiDeTaiService from '../../../../services/LoaiDeTaiService';
 import * as PhanLoaiKetQuaNCKHService from '../../../../services/PhanLoaiKetQuaNCKHService'
 import * as VaiTroService from '../../../../services/VaiTroService'
 import * as HinhThucDeTaiService from '../../../../services/HinhThucDeTaiService';
-
-
-
-
+import moment from 'moment';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -47,8 +43,11 @@ const DeTaiNCKH = ({ }) => {
 
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
-
-
+    const [NgayDKKT, setNgayDKKT] = useState('');
+    const [NgayBD, setNgayBD] = useState('');
+    const [NgayGH1, setNgayGH1] = useState('');
+    const [NgayGH2, setNgayGH2] = useState('');
+    const [NgayThu, setNgayThu] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -88,15 +87,15 @@ const DeTaiNCKH = ({ }) => {
         KinhPhi: '',
         CNDeTai: '',
         DonViChuTri: '',
-        ThoiGianDuKienKT: '',
-        ThoiGianBatDau: '',
-        GiaHanLan1: '',
-        GiaHanLan2: '',
+        ThoiGianDuKienKT: moment(),
+        ThoiGianBatDau: moment(),
+        GiaHanLan1: moment(),
+        GiaHanLan2: moment(),
         SoThanhVien: '',
         CacThanhVien: '',
         HinhThucDeTai: '',
         ThuocCTDuAn: '',
-        NgayNghiemThu: '',
+        NgayNghiemThu: moment(),
         MoTaKetThuc: '',
         QLDVHV: '',
         FileCM: '',
@@ -179,8 +178,95 @@ const DeTaiNCKH = ({ }) => {
         },
 
     )
+    // ngày dự kiến kết thúc
+    useEffect(() => {
+        setNgayDKKT(moment(stateDeTaiNCKHDetails['ThoiGianDuKienKT']));
+        // setNgayQD(convertDateToString(stateDeTaiNCKHDetails['NgayQuyetDinh']));
+    }, [form, stateDeTaiNCKHDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayDKKT = (date) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            ThoiGianDuKienKT: date
+        })
+    }
+    const handleOnchangeNgayDKKT = (date) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            ThoiGianDuKienKT: date
+        })
+    }
+    // ngày bắt đầu
+    useEffect(() => {
+        setNgayBD(moment(stateDeTaiNCKHDetails['ThoiGianBatDau ']));
+        // setNgayQD(convertDateToString(stateDeTaiNCKHDetails['NgayQuyetDinh']));
+    }, [form, stateDeTaiNCKHDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayBD = (date) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            ThoiGianBatDau: date
+        })
+    }
+    const handleOnchangeNgayBD = (date) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            ThoiGianBatDau: date
+        })
+    }
+    // gia hạn 1
+    useEffect(() => {
+        setNgayGH1(moment(stateDeTaiNCKHDetails[' GiaHanLan1']));
+    }, [form, stateDeTaiNCKHDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayGH1 = (date) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            GiaHanLan1: date
+        })
+    }
+    const handleOnchangeNgayGH1 = (date) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            GiaHanLan1: date
+        })
+    }
+    // gia hạn 2
+    useEffect(() => {
+        setNgayGH2(moment(stateDeTaiNCKHDetails[' GiaHanLan2']));
+        // setNgayQD(convertDateToString(stateDeTaiNCKHDetails['NgayQuyetDinh']));
+    }, [form, stateDeTaiNCKHDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayGH2 = (date) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            GiaHanLan2: date
+        })
+    }
+    const handleOnchangeNgayGH2 = (date) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            GiaHanLan2: date
+        })
+    }
+    // ngày nghiệm thu
+    useEffect(() => {
+        setNgayThu(moment(stateDeTaiNCKHDetails[' NgayNghiemThu']));
+        // setNgayQD(convertDateToString(stateDeTaiNCKHDetails['NgayQuyetDinh']));
+    }, [form, stateDeTaiNCKHDetails, isOpenDrawer])
+
+    const handleOnchangeDetailNgayThu = (date) => {
+        setStateDeTaiNCKHDetails({
+            ...stateDeTaiNCKHDetails,
+            NgayNghiemThu: date
+        })
+    }
+    const handleOnchangeNgayThu = (date) => {
+        setStateDeTaiNCKH({
+            ...stateDeTaiNCKH,
+            NgayNghiemThu: date
+        })
+    }
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
     }
@@ -639,11 +725,11 @@ const DeTaiNCKH = ({ }) => {
         },
 
 
-        {
-            title: 'Đơn vị',
-            dataIndex: 'DonVi',
-            key: 'DonVi',
-        },
+        // {
+        //     title: 'Đơn vị',
+        //     dataIndex: 'DonVi',
+        //     key: 'DonVi',
+        // },
         {
             title: 'Điểm',
             dataIndex: 'SoGioQuyDoi',
@@ -1357,31 +1443,47 @@ const DeTaiNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="TĐ bắt đầu"
-                            name="ThoiGianBatDau"
+                            //  name="ThoiGianBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.ThoiGianBatDau} onChange={handleOnchange} name="ThoiGianBatDau" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayBD} name="ThoiGianBatDau"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="TĐ dự kiến kết thúc"
-                            name="ThoiGianDuKienKT"
+                            //  name="ThoiGianDuKienKT"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.ThoiGianDuKienKT} onChange={handleOnchange} name="ThoiGianDuKienKT" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayDKKT} name="ThoiGianDuKienKT"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Gia hạn lần 1"
-                            name="GiaHanLan1"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //   name="GiaHanLan1"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.GiaHanLan1} onChange={handleOnchange} name="GiaHanLan1" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayGH1} name="GiaHanLan1"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Gia hạn lần 2"
-                            name="GiaHanLan2"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //  name="GiaHanLan2"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.GiaHanLan2} onChange={handleOnchange} name="GiaHanLan2" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayGH2} name="GiaHanLan2"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số thành  viên"
@@ -1448,15 +1550,20 @@ const DeTaiNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày nghiệm thu"
-                            name="NgayNghiemThu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // name="NgayNghiemThu"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKH.NgayNghiemThu} onChange={handleOnchange} name="NgayNghiemThu" />
+                            {/* <InputComponent value={stateDeTaiNCKH.NgayNghiemThu} onChange={handleOnchange} name="NgayNghiemThu" /> */}
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayThu} name="NgayNghiemThu"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Mô tả kết thúc"
                             name="MoTaKetThuc"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateDeTaiNCKH.MoTaKetThuc} onChange={handleOnchange} name="MoTaKetThuc" />
                         </Form.Item>
@@ -1638,31 +1745,47 @@ const DeTaiNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="TĐ bắt đầu"
-                            name="ThoiGianBatDau"
+                            // name="ThoiGianBatDau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.ThoiGianBatDau} onChange={handleOnchangeDetails} name="ThoiGianBatDau" />
+                            <DatePicker
+                                value={NgayBD}
+                                onChange={handleOnchangeDetailNgayBD} name="ThoiGianBatDau"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="TĐ dự kiến kết thúc"
-                            name="ThoiGianDuKienKT"
+                            // name="ThoiGianDuKienKT"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.ThoiGianDuKienKT} onChange={handleOnchangeDetails} name="ThoiGianDuKienKT" />
+                            <DatePicker
+                                value={NgayDKKT}
+                                onChange={handleOnchangeDetailNgayDKKT} name="ThoiGianDuKienKT"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Gia hạn lần 1"
-                            name="GiaHanLan1"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // name="GiaHanLan1"
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.GiaHanLan1} onChange={handleOnchangeDetails} name="GiaHanLan1" />
+                            <DatePicker
+                                value={NgayGH1}
+                                onChange={handleOnchangeDetailNgayGH1} name="GiaHanLan1"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Gia hạn lần 2"
-                            name="GiaHanLan2"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //  name="GiaHanLan2"
+                        //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.GiaHanLan2} onChange={handleOnchangeDetails} name="GiaHanLan2" />
+                            <DatePicker
+                                value={NgayGH2}
+                                onChange={handleOnchangeDetailNgayGH2} name="GiaHanLan2"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Số thành  viên"
@@ -1728,15 +1851,20 @@ const DeTaiNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Ngày nghiệm thu"
-                            name="NgayNghiemThu"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        // name="NgayNghiemThu"
+                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateDeTaiNCKHDetails.NgayNghiemThu} onChange={handleOnchangeDetails} name="NgayNghiemThu" />
+                            <DatePicker
+                                value={NgayThu}
+                                onChange={handleOnchangeDetailNgayThu} name="NgayNghiemThu"
+                                format="DD/MM/YYYY"
+                            />
+                            {/* <InputComponent value={stateDeTaiNCKHDetails.NgayNghiemThu} onChange={handleOnchangeDetails} name="NgayNghiemThu" /> */}
                         </Form.Item>
                         <Form.Item
-                            label="ô tả kết thúc"
+                            label="Mô tả kết thúc"
                             name="MoTaKetThuc"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateDeTaiNCKHDetails.MoTaKetThuc} onChange={handleOnchangeDetails} name="MoTaKetThuc" />
                         </Form.Item>

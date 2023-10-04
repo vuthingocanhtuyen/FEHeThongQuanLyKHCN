@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions, getBase64 } from '../../../../utils'
@@ -18,7 +18,7 @@ import * as HTCVService from '../../../../services/HTCVSangCheService';
 import { WrapperHeader, WrapperUploadFile } from '../style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
+import moment from 'moment';
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -36,7 +36,7 @@ const SangChe = ({ }) => {
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const [isModalOpenDelete2, setIsModalOpenDelete2] = useState(false)
-
+    const [NgayQD, setNgayQD] = useState('');
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
@@ -76,7 +76,7 @@ const SangChe = ({ }) => {
         LoaiDangKy: '',
         DonViCap: '',
         NhomNghienCuu: '',
-        ThoiDiemDangKy: '',
+        ThoiDiemDangKy: moment(),
         SoTacGia: '',
         CacTacGia: '',
         Quy: '',
@@ -163,7 +163,23 @@ const SangChe = ({ }) => {
 
     )
 
+    useEffect(() => {
+        setNgayQD(moment(stateSangCheDetails['ThoiDiemDangKy']));
+        // setNgayQD(convertDateToString(stateSangCheDetails['NgayQuyetDinh']));
+    }, [form, stateSangCheDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayQD = (date) => {
+        setStateSangCheDetails({
+            ...stateSangCheDetails,
+            ThoiDiemDangKy: date
+        })
+    }
+    const handleOnchangeNgayQD = (date) => {
+        setStateSangChe({
+            ...stateSangChe,
+            ThoiDiemDangKy: date
+        })
+    }
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
     }
@@ -591,11 +607,11 @@ const SangChe = ({ }) => {
             key: 'HoTen',
         },
 
-        {
-            title: 'Đơn vị',
-            dataIndex: 'DonVi',
-            key: 'DonVi',
-        },
+        // {
+        //     title: 'Đơn vị',
+        //     dataIndex: 'DonVi',
+        //     key: 'DonVi',
+        // },
         {
             title: 'Vai trò',
             dataIndex: 'VaiTro',
@@ -1192,10 +1208,14 @@ const SangChe = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm đăng ký"
-                            name="ThoiDiemDangKy"
+                            // name="ThoiDiemDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateSangChe.ThoiDiemDangKy} onChange={handleOnchange} name="ThoiDiemDangKy" />
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayQD} name="ThoiDiemDangKy"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Nhóm nghiên cứu"
@@ -1376,10 +1396,14 @@ const SangChe = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Thời điểm đăng ký"
-                            name="ThoiDiemDangKy"
+                            // name="ThoiDiemDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateSangCheDetails.ThoiDiemDangKy} onChange={handleOnchangeDetails} name="ThoiDiemDangKy" />
+                            <DatePicker
+                                value={NgayQD}
+                                onChange={handleOnchangeDetailNgayQD} name="ThoiDiemDangKy"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
                         <Form.Item
                             label="Nhóm nghiên cứu"

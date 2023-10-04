@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../../components/Message/Message'
 import { renderOptions, getBase64 } from '../../../../utils'
@@ -12,7 +12,7 @@ import * as HinhThucKhaoThiService from '../../../../services/HinhThucKhaoThiSer
 import { WrapperHeader, WrapperUploadFile } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
-
+import moment from 'moment';
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
@@ -26,10 +26,11 @@ const TaiKhaoThi = ({ }) => {
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
     const user = useSelector((state) => state?.user)
+    const [NgayQD, setNgayQD] = useState('');
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
     const inittial = () => ({
-        ThoiDiem: '',
+        ThoiDiem: moment(),
         Quy: '',
         Nam: '',
         HocKy: '',
@@ -108,7 +109,23 @@ const TaiKhaoThi = ({ }) => {
         },
 
     )
+    useEffect(() => {
+        setNgayQD(moment(stateTaiKhaoThiDetails['ThoiDiem']));
+        // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
+    }, [form, stateTaiKhaoThiDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayQD = (date) => {
+        setStateTaiKhaoThiDetails({
+            ...stateTaiKhaoThiDetails,
+            ThoiDiem: date
+        })
+    }
+    const handleOnchangeNgayQD = (date) => {
+        setStateTaiKhaoThi({
+            ...stateTaiKhaoThi,
+            ThoiDiem: date
+        })
+    }
 
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
@@ -708,12 +725,16 @@ const TaiKhaoThi = ({ }) => {
                     >
                         <Form.Item
                             label="Thời điểm"
-                            name="ThoiDiem"
+                            // name="ThoiDiem"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThi['ThoiDiem']} onChange={handleChange} name="ThoiDiem" />
+                            {/* <InputComponent value={stateTaiKhaoThi['ThoiDiem']} onChange={handleChange} name="ThoiDiem" /> */}
 
-
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayQD} name="ThoiDiem"
+                                format="DD/MM/YYYY"
+                            />
 
                         </Form.Item>
 
@@ -831,10 +852,15 @@ const TaiKhaoThi = ({ }) => {
 
                         <Form.Item
                             label="Thời điểm"
-                            name="ThoiDiem"
+                            // name="ThoiDiem"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateTaiKhaoThiDetails.ThoiDiem} onChange={handleOnchangeDetails} name="ThoiDiem" />
+                            {/* <InputComponent value={stateTaiKhaoThiDetails.ThoiDiem} onChange={handleOnchangeDetails} name="ThoiDiem" /> */}
+                            <DatePicker
+                                value={NgayQD}
+                                onChange={handleOnchangeDetailNgayQD} name="ThoiDiem"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
                         <Form.Item

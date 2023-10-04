@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Select, Button, Space } from 'antd';
+import { Form, Select, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as message from '../../../components/Message/Message'
 import { renderOptions } from '../../../utils'
@@ -24,13 +24,13 @@ const QTCDCMKT = () => {
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-
+    const [NgayQD, setNgayQD] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         QuyetDinh: '',
-        NgayQuyetDinh: '',
+        NgayQuyetDinh: moment(),
         CDCMKT: '',
         CaoNhat: '',
         GhiChu: '',
@@ -102,7 +102,23 @@ const QTCDCMKT = () => {
             return res
         },
     )
+    useEffect(() => {
+        setNgayQD(moment(stateQTCDCMKTDetails['NgayQuyetDinh']));
+        // setNgayQD(convertDateToString(stateQTCDCMKTDetails['NgayQuyetDinh']));
+    }, [form, stateQTCDCMKTDetails, isOpenDrawer])
 
+    const handleOnchangeDetailNgayQD = (date) => {
+        setStateQTCDCMKTDetails({
+            ...stateQTCDCMKTDetails,
+            NgayQuyetDinh: date
+        })
+    }
+    const handleOnchangeNgayQD = (date) => {
+        setStateQTCDCMKT({
+            ...stateQTCDCMKT,
+            NgayQuyetDinh: date
+        })
+    }
 
     const getAllQTCDCMKTs = async () => {
         const res = await QTCDCMKTService.getAllQTCDCMKT()
@@ -605,15 +621,13 @@ const QTCDCMKT = () => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="NgayQuyetDinh"
+                            //  name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateQTCDCMKT['NgayQuyetDinh']}
-                                onChange={handleChangeCheckCaoNhat}
-                                name="NgayQuyetDinh"
+                            <DatePicker
+                                //  value={NgayQD}
+                                onChange={handleOnchangeNgayQD} name="NgayQuyetDinh"
+                                format="DD/MM/YYYY"
                             />
                         </Form.Item>
 
@@ -703,10 +717,14 @@ const QTCDCMKT = () => {
 
                         <Form.Item
                             label="Ngày quyết định"
-                            name="NgayQuyetDinh"
+                            // name="NgayQuyetDinh"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateQTCDCMKTDetails['NgayQuyetDinh']} onChange={handleOnchangeDetails} name="NgayQuyetDinh" />
+                            <DatePicker
+                                value={NgayQD}
+                                onChange={handleOnchangeDetailNgayQD} name="NgayQuyetDinh"
+                                format="DD/MM/YYYY"
+                            />
                         </Form.Item>
 
                         <Form.Item

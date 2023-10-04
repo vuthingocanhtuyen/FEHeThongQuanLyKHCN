@@ -22,7 +22,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const BienSoan = ({ }) => {
+const BienSoan = ({ quannhanId }) => {
     const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
     const [currentUserDonViCode, setCurrentUserDonViCode] = useState(null);
     const [htcvId, sethtcvId] = useState('')
@@ -44,7 +44,7 @@ const BienSoan = ({ }) => {
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+    //   const quannhanId = user.QuanNhanId;
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
 
