@@ -80,13 +80,10 @@ const TaiDonVi = () => {
 
     return (
         <div>
-            <div style={{ width: '910px', margin: '0 auto' }}>
+            <div style={{ width: '1200px', margin: '0 auto', padding: '100px 10px 10px 10px' }}>
 
+                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", }}>
 
-
-
-                <div style={{ margin: '0 auto', background: '#fff', borderRadius: "8px", padding: '200px 10px 10px 10px', }}>
-                    <h2>TỔNG TẢI ĐÀO TẠO VÀ NGHIÊN CỨU KHOA HỌC</h2>
                     <KetQuaDTNCKH />
                 </div>
 

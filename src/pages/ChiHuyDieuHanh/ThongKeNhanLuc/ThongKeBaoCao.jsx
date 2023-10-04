@@ -143,12 +143,12 @@ const ThongKeBaoCao = () => {
 
             <div style={{ width: '200px', margin: '0 auto', height: '700px', float: 'left', background: '#fff' }}>
                 <WrapperContentProfileFree>
-                    <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
+                    <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId} />
                 </WrapperContentProfileFree>
             </div>
             <div style={{ width: '750px', margin: '0 auto', height: '700px', float: 'right', textAlign: 'left', padding: '5px', background: 'back' }}>
 
-                
+
                 <Form
                     name="basic"
                     labelCol={{ span: 6 }}
@@ -156,17 +156,17 @@ const ThongKeBaoCao = () => {
                     autoComplete="on"
                 >
 
-                    <h2>Học vị</h2>
-                    <ThongKeHocVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
+                    <h2>Thống kê nhân lực</h2>
+                    <ThongKeHocVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId} />
                     <br />
-                    <h2>Học hàm</h2>
+                    {/* <h2>Học hàm</h2>
                     <ThongKeHocHam handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
                     <br />
                     <h2>Chức danh chuyên môn kỹ thuật</h2>
                     <ThongKeCDCMKT handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
                     <br />
                     <h2>Quân hàm</h2>
-                    <ThongKeQuanHam handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/>
+                    <ThongKeQuanHam handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId}/> */}
 
                 </Form>
             </div>

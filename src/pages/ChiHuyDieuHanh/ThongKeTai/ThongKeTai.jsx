@@ -102,9 +102,9 @@ const ThongKeTai = () => {
     })
 
     return (
-        <div style={{ margin: '0 auto', height: '700px', padding: '5px' }}>
+        <div style={{ margin: '0 auto', padding: '5px' }}>
 
-            <div style={{ margin: '0 auto', height: '700px', float: 'left', padding: '0px 30px 0px 0px' }}>
+            <div style={{ margin: '0 auto', float: 'left', padding: '0px 30px 0px 0px' }}>
                 <WrapperContentProfileFree>
                     <FreeDonVi />
                 </WrapperContentProfileFree>
@@ -188,14 +188,14 @@ const ThongKeTai = () => {
 
                 <br />
 
-                <div style={{ margin: '0 auto', height: '1500px', float: 'none', padding: '50px 0px 0px 0px' }}>
-                    <TaiCaNhan />
-                    {/* <TaiDonVi /> */}
-                </div>
+
 
             </div>
-
-
+            <br />
+            <div style={{ margin: '0 auto', float: 'none', padding: '50px 20px 20px 20px' }}>
+                {/* <TaiCaNhan /> */}
+                <TaiDonVi />
+            </div>
 
 
         </div>

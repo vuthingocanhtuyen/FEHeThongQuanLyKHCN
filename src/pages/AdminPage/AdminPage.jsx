@@ -228,7 +228,7 @@ const AdminPage = () => {
       key: 'baocaothongke',
       icon: <LogoutOutlined />,
       children: [
-        getItem('Thống kê dữ liệu giáo viên', 'thongkenhanluc', <UserOutlined />),
+        getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
         getItem('Thông kê tải', 'thongketai', <LockOutlined />),
 
       ],

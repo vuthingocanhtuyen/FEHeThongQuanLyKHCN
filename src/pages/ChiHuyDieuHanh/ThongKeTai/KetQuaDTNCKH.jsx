@@ -483,7 +483,8 @@ const KetQuaDTNCKH = () => {
     return (
         <div>
 
-            <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '50px' }}>
+
                 <TableNoExecl handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
                     return {
                         onClick: event => {
