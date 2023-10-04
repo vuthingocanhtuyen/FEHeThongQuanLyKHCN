@@ -42,7 +42,9 @@ const TaiGiangDay = ({ }) => {
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
     const [KetThuc, setKetThuc] = useState('');
-
+    const [Nam, setNam] = useState('');
+    const [Quy, setQuy] = useState('');
+    const [HocKy, setHocKy] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -333,7 +335,9 @@ const TaiGiangDay = ({ }) => {
             setIsLoadingUpdate(true);
             settaigiangdayId(rowSelected);
             fetchGetDetailsTaiGiangDay(rowSelected);
-
+            setNam(xacDinhNam(stateTaiGiangDayDetails['KetThuc']));
+            setQuy(xacDinhNam(stateTaiGiangDayDetails['KetThuc']));
+            setHocKy(xacDinhNam(stateTaiGiangDayDetails['KetThuc']));
         }
     }, [rowSelected, isOpenDrawer])
     useEffect(() => {
@@ -1753,24 +1757,20 @@ const TaiGiangDay = ({ }) => {
                             name="Quy"
                         //      rules={[{ required: true, message: 'Nhập ngày kết thúc chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.Quy} onChange={handleOnchange} name="Quy" /> */}
-                            {xacDinhQuy(KetThuc)}
+                            <InputComponent value={Quy} />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
                             name="Nam"
-                        //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.Nam} onChange={handleOnchange} name="Nam" /> */}
-                            {xacDinhNam(stateTaiGiangDayDetails.KetThuc)}
+                            <InputComponent value={Nam} />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
                             name="HocKy"
-                        //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                      
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.HocKy} onChange={handleOnchange} name="HocKy" /> */}
-                            {xacDinhHocKy(stateTaiGiangDayDetails.KetThuc)}
+                           <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="HT thi"
