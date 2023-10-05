@@ -70,17 +70,17 @@ const TaiCaNhan = () => {
 
     ];
     const getAllThongKeTais = async () => {
+        console.log("bat dau");
         const res = await TaiGiangDayService.getTongTaiFromId(quannhanId)
         return res
     }
 
     const queryQuanNhan = useQuery({ queryKey: ['tonghoptais'], queryFn: getAllThongKeTais })
-    const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
+    const { isLoading: isLoadingQuanNhans, data: tonghoptais } = queryQuanNhan
 
-    const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
-        return { ...quannhan, key: quannhan._id }
+    const dataTable = tonghoptais?.data?.length && tonghoptais?.data?.map((tonghoptai) => {
+        return { ...tonghoptai, key: tonghoptai._id }
     })
-    console.log("e: ", queryQuanNhan.data)
     return (
         <div>
             <div>
