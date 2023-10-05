@@ -26,6 +26,7 @@ const TaiCaNhan = () => {
     const quannhanId = user.QuanNhanId;
     const [rowSelected, setRowSelected] = useState('')
     const [data, setData] = useState([]);
+    const [dataTable, setDataTable] = useState([]);
     const columns = [
         {
             title: 'STT',
@@ -75,6 +76,7 @@ const TaiCaNhan = () => {
           const taiData = await TaiGiangDayService.getTongTaiFromId(quannhanId);
           setIsLoading(false);
           setData(taiData);
+          console.log(taiData);
         } catch (error) {
           console.error(error);
           return [];
@@ -83,17 +85,23 @@ const TaiCaNhan = () => {
       useEffect(() => {
         fetchTaiData();
         }, [quannhanId]);
-
-      const dataTable = data.map((item, index) => ({
-        key: index,
-        stt: index + 1,
-        TaiDaoTaoYeuCau: item.TaiDaoTaoYeuCau,
-        TaiNCKHYeuCau: item.TaiNCKHYeuCau,
-        TongTaiYeuCau: item.TongTaiYeuCau,
-        TaiThucDaoTaoYeuCau: item.TaiThucDaoTaoYeuCau,
-        TaiThucNCKHYeuCau: item.TaiThucNCKHYeuCau,
-        TongThucTai: item.TongThucTai,
-      }));
+        useEffect(() => {
+            
+            setDataTable([
+                {
+                    key: 1,
+                    stt: 1,
+                    TaiDaoTaoYeuCau: data.TaiDaoTaoYeuCau,
+                    TaiNCKHYeuCau: data.TaiNCKHYeuCau,
+                    TongTaiYeuCau: data.TongTaiYeuCau,
+                    TaiThucDaoTaoYeuCau: data.TaiThucDaoTaoYeuCau,
+                    TaiThucNCKHYeuCau: data.TaiThucNCKHYeuCau,
+                    TongThucTai: data.TongThucTai,
+                }
+            ]);
+        }, [data]);
+        
+    
     return (
         <div>
             <div>
