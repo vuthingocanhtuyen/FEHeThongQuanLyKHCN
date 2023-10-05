@@ -218,7 +218,7 @@ const ThongKeTaiQuanNhan = () => {
 
     return (
         <div>
-            <WrapperHeader>Điều chuyển cán bộ</WrapperHeader>
+            <WrapperHeader>Danh sách cán bộ đươn vị</WrapperHeader>
             <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc' }}>
                 <div style={{ margin: '0 auto', float: 'left', padding: '5px' }}>
                     <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId} />

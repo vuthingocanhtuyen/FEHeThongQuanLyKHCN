@@ -81,6 +81,8 @@ const TaiCaNhan = () => {
     const dataTable = tonghoptais?.data?.length && tonghoptais?.data?.map((tonghoptai) => {
         return { ...tonghoptai, key: tonghoptai._id }
     })
+
+    console.log('e: ', queryQuanNhan.data)
     return (
         <div>
             <div>
