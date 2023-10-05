@@ -22,10 +22,10 @@ import TableComponent from '../../../components/TableComponent/TableComponent';
 import moment from 'moment';
 const TaiCaNhan = () => {
     const user = useSelector((state) => state?.user)
-    const searchInput = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
     const quannhanId = user.QuanNhanId;
     const [rowSelected, setRowSelected] = useState('')
-
+    const [data, setData] = useState([]);
     const columns = [
         {
             title: 'STT',
@@ -69,31 +69,37 @@ const TaiCaNhan = () => {
 
 
     ];
-    const getAllThongKeTais = async () => {
-        console.log("bat dau");
-        const res = await TaiGiangDayService.getTongTaiFromId(quannhanId)
-        return res
-    }
+    const fetchTaiData = async () => {
+        try{
+          setIsLoading(true);
+          const taiData = await TaiGiangDayService.getTongTaiFromId(quannhanId);
+          setIsLoading(false);
+          setData(taiData);
+        } catch (error) {
+          console.error(error);
+          return [];
+        }
+      };
+      useEffect(() => {
+        fetchTaiData();
+        }, [quannhanId]);
 
-    const queryQuanNhan = useQuery({ queryKey: ['tonghoptais'], queryFn: getAllThongKeTais })
-    const { isLoading: isLoadingQuanNhans, data: tonghoptais } = queryQuanNhan
-
-    const dataTable = tonghoptais?.data?.length && tonghoptais?.data?.map((tonghoptai) => {
-        return { ...tonghoptai, key: tonghoptai._id }
-    })
+      const dataTable = data.map((item, index) => ({
+        key: index,
+        stt: index + 1,
+        TaiDaoTaoYeuCau: item.TaiDaoTaoYeuCau,
+        TaiNCKHYeuCau: item.TaiNCKHYeuCau,
+        TongTaiYeuCau: item.TongTaiYeuCau,
+        TaiThucDaoTaoYeuCau: item.TaiThucDaoTaoYeuCau,
+        TaiThucNCKHYeuCau: item.TaiThucNCKHYeuCau,
+        TongThucTai: item.TongThucTai,
+      }));
     return (
         <div>
             <div>
 
                 <WrapperHeader>Tổng hợp tải</WrapperHeader>
-                <TableComponent columns={columns} isLoading={isLoadingQuanNhans} data={dataTable} onRow={(record, rowSelected) => {
-                    return {
-                        onClick: event => {
-                            setRowSelected(record._id);
-                        }
-                    };
-                }} />
-
+                <TableComponent columns={columns} isLoading={isLoading} data={dataTable}  />
             </div>
         </div>
 
