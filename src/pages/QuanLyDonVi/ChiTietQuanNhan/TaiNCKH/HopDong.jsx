@@ -45,7 +45,7 @@ const HopDong = ({ quannhanId }) => {
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    //   const quannhanId = user.QuanNhanId;
+    //  const quannhanId = user.QuanNhanId;
 
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
@@ -627,8 +627,8 @@ const HopDong = ({ quannhanId }) => {
 
         {
             title: 'Tải',
-            dataIndex: '',
-            key: '',
+            dataIndex: 'Tai',
+            key: 'Tai',
         },
         {
             title: 'Trạng thái',
@@ -1308,7 +1308,13 @@ const HopDong = ({ quannhanId }) => {
                                 format="DD/MM/YYYY"
                             />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHopDong.Tai} onChange={handleOnchange} name="Tai" />
+                        </Form.Item>
                         <Form.Item
                             label="File chứng minh"
                             name="FileCM"
@@ -1497,7 +1503,13 @@ const HopDong = ({ quannhanId }) => {
                                 format="DD/MM/YYYY"
                             />
                         </Form.Item>
-
+                        <Form.Item
+                            label="Tải"
+                            name="Tai"
+                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+                        >
+                            <InputComponent value={stateHopDongDetails.Tai} onChange={handleOnchangeDetails} name="Tai" />
+                        </Form.Item>
 
 
                         <Form.Item

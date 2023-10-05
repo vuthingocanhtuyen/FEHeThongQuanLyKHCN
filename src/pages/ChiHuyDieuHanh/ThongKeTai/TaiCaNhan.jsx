@@ -55,10 +55,10 @@ const TaiCaNhan = () => {
         TaiThucDaoTaoYeuCau: '',
         TaiThucNCKHYeuCau: '',
         TongThucTai: '',
-
         GhiChu: '',
     })
-
+    const [stateTaiGiangDay, setStateTaiGiangDay] = useState(inittial())
+    const [stateTaiGiangDayDetails, setStateTaiGiangDayDetails] = useState(inittial())
     const getAllThongKeTais = async () => {
         const res = await ThongKeTaiService.getAllThongKeTai()
         return res
@@ -189,15 +189,17 @@ const TaiCaNhan = () => {
     const mutation = useMutationHooks(
         (data) => {
             const { QuanNhanId = quannhanId
-                , TaiDaoTaoYeuCau = 150,
-                TaiNCKHYeuCau = 150, TongTaiYeuCau = 150, TaiThucDaoTaoYeuCau, TaiThucNCKHYeuCau, TongThucTai,
+                , TaiDaoTaoYeuCau,
+                TaiNCKHYeuCau,
+                TongTaiYeuCau
+                , TaiThucDaoTaoYeuCau, TaiThucNCKHYeuCau, TongThucTai,
 
-                GhiChu } = data
+                edituser, edittime, GhiChu } = data
             const res = ThongKeTaiService.createThongKeTai({
                 QuanNhanId, TaiDaoTaoYeuCau,
                 TaiNCKHYeuCau, TongTaiYeuCau, TaiThucDaoTaoYeuCau, TaiThucNCKHYeuCau, TongThucTai,
 
-                GhiChu
+                edituser, edittime, GhiChu
             })
             console.log("data create qtct:", res.data)
             return res
@@ -221,13 +223,6 @@ const TaiCaNhan = () => {
     )
 
 
-
-    const handleCancelPheDuyet = () => {
-        setIsModalOpenPheDuyet(false)
-    }
-    const handleCancelNhapLai = () => {
-        setIsModalOpenNhapLai(false)
-    }
 
 
     const mutationDeleted = useMutationHooks(
@@ -322,7 +317,7 @@ const TaiCaNhan = () => {
 
 
     const queryThongKeTai = useQuery({ queryKey: ['thongketais'], queryFn: getAllThongKeTais })
-    const thongketaiDetails = useQuery(['hosoquannhan', quannhanId], fetchGetThongKeTai, { enabled: !!quannhanId })
+    const thongketaiDetails = useQuery(['hosoquannhantktai', quannhanId], fetchGetThongKeTai, { enabled: !!quannhanId })
     console.log("tk tải:", thongketaiDetails.data, queryThongKeTai.data)
     const { isLoading: isLoadingThongKeTai, data: thongketais } = queryThongKeTai
     const renderAction = () => {
@@ -330,8 +325,9 @@ const TaiCaNhan = () => {
             <div>
                 <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
                 <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsThongKeTai} />
-                <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
+                {/* <CheckOutlined style={{ color: 'green', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenPheDuyet(true)} />
                 <WarningOutlined style={{ color: 'blue', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenNhapLai(true)} />
+             */}
             </div>
         )
     }
@@ -466,7 +462,7 @@ const TaiCaNhan = () => {
             title: 'Tải đào tạo yêu cầu',
             dataIndex: 'TaiDaoTaoYeuCau',
             key: 'TaiDaoTaoYeuCau',
-            value: 123
+
         },
         {
             title: 'Tải NCKH yêu cầu',
@@ -478,45 +474,33 @@ const TaiCaNhan = () => {
             dataIndex: 'TongTaiYeuCau',
             key: 'TongTaiYeuCau',
         },
+
+
         {
-            title: 'Tải giảng dạy',
-            render: getTaiGiangDayQuanNhan()
+            title: 'Tải thực đào tạo',
+            dataIndex: 'TaiThucDaoTaoYeuCau',
+            key: 'TaiThucDaoTaoYeuCau',
         },
         {
-            title: 'Tải NCKH yêu cầu',
-            dataIndex: 'TaiNCKHYeuCau',
-            key: 'TaiNCKHYeuCau',
+            title: 'Tải thực NCKH',
+            dataIndex: 'TaiThucNCKHYeuCau',
+            key: 'TaiThucNCKHYeuCau',
         },
         {
-            title: 'Tổng tải yêu cầu',
-            dataIndex: 'TongTaiYeuCau',
-            key: 'TongTaiYeuCau',
+            title: 'Tổng tải thực',
+            dataIndex: 'TongThucTai',
+            key: 'TongThucTai',
         },
-        //   {
-        //     title: 'Đơn vị',
-        //     dataIndex: 'TaiThucDaoTaoYeuCau',
-        //     key: 'TaiThucDaoTaoYeuCau',
-        //   },
-        //   {
-        //     title: 'Kết thúc',
-        //     dataIndex: 'TaiThucNCKHYeuCau',
-        //     key: 'TaiThucNCKHYeuCau',
-        //   },
-        //   {
-        //     title: 'Đơn vị sinh hoạt học thuật',
-        //     dataIndex: 'TongThucTai',
-        //     key: 'TongThucTai',
-        //   },
         //   {
         //     title: 'Trạng thái',
         //     dataIndex: 'TrangThai',
         //     key: 'TrangThai',
         //   },
-        //   {
-        //     title: 'Chức năng',
-        //     dataIndex: 'action',
-        //     render: renderAction
-        //   },
+        {
+            title: 'Chức năng',
+            dataIndex: 'action',
+            render: renderAction
+        },
 
 
     ];
@@ -623,20 +607,66 @@ const TaiCaNhan = () => {
 
 
 
-    const handleOnchange = (e) => {
-        console.log("e: ", e.target.name, e.target.value)
+    const handleOnchange = async (e) => {
+        console.log("e: ", e.target.name, e.target.value, stateThongKeTai.TaiDaoTaoYeuCau, stateThongKeTai.TaiNCKHYeuCau)
+        const tgiangday = getTaiGiangDayQuanNhan();
+        const thoidong = getTaiHoiDongQuanNhan();
+        const thuongdan = getTaiHuongDanNCKHQuanNhan();
+        const tkhaothi = getTaiKhaoThiQuanNhan();
+
+        const baibao = getTaiBaiBaoQuanNhan();
+        const detai = getDeTaiNCKHQuanNhan();
+        const huongdan = getTaiHuongDanNCKHQuanNhan();
+        const sangche = getSangCheQuanNhan();
+        const biensoan = getTaiBienSoanQuanNhan();
+        const hopdong = getHopDongQuanNhan();
+        const hdkhac = getHoatDongNCKhacQuanNhan();
+        const giaithuong = getGiaiThuongQuanNhan();
+
+
         setStateThongKeTai({
             ...stateThongKeTai,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
+            TongTaiYeuCau: parseInt(stateThongKeTai.TaiDaoTaoYeuCau) + parseInt(stateThongKeTai.TaiNCKHYeuCau),
+
+            TaiThucDaoTaoYeuCau: parseInt(tgiangday) + parseInt(thoidong)
+                + parseInt(thuongdan) + parseInt(tkhaothi),
+
+            TaiThucNCKHYeuCau: parseInt(baibao) + parseInt(detai) + parseInt(huongdan) + parseInt(sangche)
+                + parseInt(biensoan) + parseInt(hopdong) + parseInt(hdkhac) + parseInt(giaithuong),
+
+            TongThucTai: parseInt(stateThongKeTai.TaiThucDaoTaoYeuCau) + parseInt(stateThongKeTai.TaiThucNCKHYeuCau)
         })
     }
 
 
-    const handleOnchangeDetails = (e) => {
+    const handleOnchangeDetails = async (e) => {
         console.log('check', e.target.name, e.target.value)
+        const tgiangday = await getTaiGiangDayQuanNhan();
+        const thoidong = await getTaiHoiDongQuanNhan();
+        const thuongdan = await getTaiHuongDanNCKHQuanNhan();
+        const tkhaothi = await getTaiKhaoThiQuanNhan();
+
+        const baibao = await getTaiBaiBaoQuanNhan();
+        const detai = await getDeTaiNCKHQuanNhan();
+        const huongdan = await getTaiHuongDanNCKHQuanNhan();
+        const sangche = await getSangCheQuanNhan();
+        const biensoan = await getTaiBienSoanQuanNhan();
+        const hopdong = await getHopDongQuanNhan();
+        const hdkhac = await getHoatDongNCKhacQuanNhan();
+        const giaithuong = await getGiaiThuongQuanNhan();
         setStateThongKeTaiDetails({
             ...stateThongKeTaiDetails,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
+
+            TongTaiYeuCau: parseInt(stateThongKeTaiDetails.TaiDaoTaoYeuCau) + parseInt(stateThongKeTaiDetails.TaiNCKHYeuCau),
+
+            TaiThucDaoTaoYeuCau: parseInt(tgiangday) + parseInt(thoidong) + parseInt(thuongdan) + parseInt(tkhaothi),
+
+            TaiThucNCKHYeuCau: parseInt(baibao) + parseInt(detai) + parseInt(huongdan) +
+                parseInt(sangche) + parseInt(biensoan) + parseInt(hopdong) + parseInt(hdkhac) + parseInt(giaithuong),
+            TongThucTai: parseInt(stateThongKeTaiDetails.TaiThucDaoTaoYeuCau) + parseInt(stateThongKeTaiDetails.TaiThucNCKHYeuCau)
+
         })
     }
 
@@ -657,11 +687,28 @@ const TaiCaNhan = () => {
         return moment(date).format('DD/MM/YYYY');
     }
     const dataTable = thongketaiDetails?.data?.length && thongketaiDetails?.data?.map((thongketaiDetails) => {
+        const tgiangday = getTaiGiangDayQuanNhan();
+        const thoidong = getTaiHoiDongQuanNhan();
+        const thuongdan = getTaiHuongDanNCKHQuanNhan();
+        const tkhaothi = getTaiKhaoThiQuanNhan();
+
+        const baibao = getTaiBaiBaoQuanNhan();
+        const detai = getDeTaiNCKHQuanNhan();
+        const huongdan = getTaiHuongDanNCKHQuanNhan();
+        const sangche = getSangCheQuanNhan();
+        const biensoan = getTaiBienSoanQuanNhan();
+        const hopdong = getHopDongQuanNhan();
+        const hdkhac = getHoatDongNCKhacQuanNhan();
+        const giaithuong = getGiaiThuongQuanNhan();
         return {
             ...thongketaiDetails,
             key: thongketaiDetails._id,
+            TaiDaoTaoYeuCau: thongketaiDetails.TaiDaoTaoYeuCau,
+            TaiNCKHYeuCau: thongketaiDetails.TaiNCKHYeuCau,
+            TongTaiYeuCau: parseInt(thongketaiDetails.TaiDaoTaoYeuCau) + parseInt(thongketaiDetails.TaiNCKHYeuCau),
 
 
+            TongThucTai: parseInt(thongketaiDetails.TaiThucDaoTaoYeuCau) + parseInt(thongketaiDetails.TaiThucNCKHYeuCau)
 
         }
     })
@@ -677,6 +724,7 @@ const TaiCaNhan = () => {
     return (
         <div>
             <div>
+
                 <WrapperHeader>Tổng hợp tải</WrapperHeader>
                 <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
@@ -698,7 +746,7 @@ const TaiCaNhan = () => {
                 )}
 
             </div>
-            <ModalComponent forceRender title="Thêm mới thông kê tả" open={isModalOpen} onCancel={handleCancel} footer={null}>
+            <ModalComponent forceRender title="Thêm mới thông kê tải" open={isModalOpen} onCancel={handleCancel} footer={null}>
                 <Loading isLoading={isLoading}>
 
                     <Form
@@ -738,64 +786,11 @@ const TaiCaNhan = () => {
                         </Form.Item>
 
 
-                        <Form.Item
-                            label="Tổng Tải yêu cầu"
-                            name="TongTaiYeuCau"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
 
-                                value={stateThongKeTai['TongTaiYeuCau']}
-                                onChange={handleOnchange}
-                                name="TongTaiYeuCau"
-                            />
-                        </Form.Item>
 
-                        <Form.Item
-                            label="Tải đào tạo thực"
-                            name="TaiThucDaoTaoYeuCau"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent
-                                value={stateThongKeTai['TaiThucDaoTaoYeuCau'] = getTaiGiangDayQuanNhan() + getTaiHuongDanQuanNhan() + getTaiHoiDongQuanNhan() + getTaiKhaoThiQuanNhan()}
-                            /> */}
-                            <InputComponent
-                                style={{ width: '100%' }}
 
-                                value={stateThongKeTai['TaiThucDaoTaoYeuCau']}
-                                onChange={handleOnchange}
-                                name="TaiThucDaoTaoYeuCau"
-                            />
-                        </Form.Item>
 
-                        <Form.Item
-                            label="Tải NCKH thực"
-                            name="TaiThucNCKHYeuCau"
-                        //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
 
-                                value={stateThongKeTai['TaiThucNCKHYeuCau']}
-                                onChange={handleOnchange}
-                                name="TaiThucNCKHYeuCau"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Đơn vị sinh hoạt học thuật"
-                            name="TongThucTai"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent
-                                style={{ width: '100%' }}
-
-                                value={stateThongKeTai['TongThucTai']}
-                                onChange={handleOnchange}
-                                name="TongThucTai"
-                            />
-                        </Form.Item>
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">
@@ -819,55 +814,31 @@ const TaiCaNhan = () => {
                         form={form}
                     >
                         <Form.Item
-                            label="Mã quyết định"
+                            label="Tải đào tạo yêu cầu"
                             name="TaiDaoTaoYeuCau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            <InputComponent value={stateThongKeTaiDetails['TaiDaoTaoYeuCau']} onChange={handleOnchangeDetails} name="TaiDaoTaoYeuCau" />
-                        </Form.Item>
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateThongKeTaiDetails['TaiDaoTaoYeuCau']}
+                                onChange={handleOnchangeDetails}
+                                name="TaiDaoTaoYeuCau"
+                            />
+                        </Form.Item>
                         <Form.Item
-                            label="Ngày quyết định"
-                            // name="TaiNCKHYeuCau"
+                            label="Tải NCKH yêu cầu"
+                            name="TaiNCKHYeuCau"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateThongKeTaiDetails['TaiNCKHYeuCau']} onChange={handleOnchangeDetails} name="TaiNCKHYeuCau" /> */}
+                            <InputComponent
+                                style={{ width: '100%' }}
 
+                                value={stateThongKeTaiDetails['TaiNCKHYeuCau']}
+                                onChange={handleOnchangeDetails}
+                                name="TaiNCKHYeuCau"
+                            />
                         </Form.Item>
-
-                        <Form.Item
-                            label="Chức vụ"
-                            name="TongTaiYeuCau"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateThongKeTaiDetails['TongTaiYeuCau']} onChange={handleOnchangeDetails} name="TongTaiYeuCau" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Đơn vị"
-                            name="TaiThucDaoTaoYeuCau"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateThongKeTaiDetails['TaiThucDaoTaoYeuCau']} onChange={handleOnchangeDetails} name="TaiThucDaoTaoYeuCau" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Kết thúc"
-                        //  name="TaiThucNCKHYeuCau"
-                        // rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Đơn vị sinh hoạt học thuật"
-                            name="TongThucTai"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateThongKeTaiDetails['TongThucTai']} onChange={handleOnchangeDetails} name="TongThucTai" />
-                        </Form.Item>
-
-
 
                         <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
                             <Button type="primary" htmlType="submit">

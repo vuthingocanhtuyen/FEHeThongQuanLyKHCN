@@ -42,11 +42,13 @@ const TaiGiangDay = ({ quannhanId }) => {
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
     const [KetThuc, setKetThuc] = useState('');
-
+    const [Nam, setNam] = useState('');
+    const [Quy, setQuy] = useState('');
+    const [HocKy, setHocKy] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-
+    //    const quannhanId = user.QuanNhanId;
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
 
@@ -160,11 +162,22 @@ const TaiGiangDay = ({ quannhanId }) => {
     }, [form, stateTaiGiangDayDetails, isOpenDrawer])
 
     const handleOnchangeDetailKetThuc = (date) => {
-        setStateTaiGiangDayDetails({
-            ...stateTaiGiangDayDetails,
-            KetThuc: date
-        })
-
+        try {
+            setStateTaiGiangDayDetails({
+                ...stateTaiGiangDayDetails,
+                KetThuc: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+                HocKy: xacDinhHocKyISO(date)
+            })
+            const nam = xacDinhNamISO(date);
+            const hocky = xacDinhHocKyISO(date);
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+            setHocKy(hocky);
+        }
+        catch { }
     }
 
     const mutationUpdateTrangThai = useMutationHooks(
@@ -257,7 +270,7 @@ const TaiGiangDay = ({ quannhanId }) => {
 
 
     const fetchGetTaiGiangDay = async (context) => {
-        // const quannhanId = context?.queryKey && context?.queryKey[1]
+        const quannhanId = context?.queryKey && context?.queryKey[1]
 
         if (quannhanId) {
 
@@ -334,8 +347,22 @@ const TaiGiangDay = ({ quannhanId }) => {
             settaigiangdayId(rowSelected);
             fetchGetDetailsTaiGiangDay(rowSelected);
 
+            // setQuy(xacDinhQuy(stateTaiGiangDayDetails['KetThuc']));
+            // setHocKy(xacDinhHocKy(stateTaiGiangDayDetails['KetThuc']));
         }
     }, [rowSelected, isOpenDrawer])
+    // useEffect(() => {
+    //     if (stateTaiGiangDayDetails['KetThuc']) {
+    //         const quy = xacDinhQuy(stateTaiGiangDayDetails['KetThuc']);
+    //         const nam = xacDinhNamISO(stateTaiGiangDayDetails['KetThuc']);
+    //         const hocky = xacDinhHocKy(stateTaiGiangDayDetails['KetThuc']);
+    //         console.log(stateTaiGiangDayDetails['KetThuc']);
+    //         setQuy(quy);
+    //         setNam(nam);
+    //         setHocKy(hocky);
+    //         console.log(nam);
+    //     }
+    // }, [stateTaiGiangDayDetails['KetThuc']]);
     useEffect(() => {
         if (rowSelected2 && isOpenDrawer2) {
             setIsLoadingUpdate(true);
@@ -412,6 +439,9 @@ const TaiGiangDay = ({ quannhanId }) => {
         console.log("detail row");
         const res = await TaiGiangDayService.getDetailsTaiGiangDay(rowSelected)
         if (res?.data) {
+            setNam(xacDinhNamISO(res?.data.KetThuc));
+            setQuy(xacDinhQuyISO(res?.data.KetThuc));
+            setHocKy(xacDinhHocKyISO(res?.data.KetThuc));
             setStateTaiGiangDayDetails({
                 code: res?.data.code,
                 QuanNhanId: res?.data.QuanNhanId,
@@ -436,8 +466,7 @@ const TaiGiangDay = ({ quannhanId }) => {
             })
         }
 
-        console.log(res);
-        console.log("xong detail row");
+
         setIsLoadingUpdate(false)
     }
     const fetchGetDetailsHTCV = async (rowSelected2) => {
@@ -966,32 +995,73 @@ const TaiGiangDay = ({ quannhanId }) => {
         onFinish();
         setIsModalOpen2(true);
     }
-    const handleOnchange = (e, date) => {
-        if (e.target) {
-            const { name, value } = e.target;
+    // const handleOnchange = (e, date) => {
+    //     if (e.target) {
+    //         const { name, value } = e.target;
 
-            if (name === "KetThuc") {
-                const quy = xacDinhQuy(value);
-                const nam = xacDinhNam(value);
-                const hocky = xacDinhHocKy(value);
-                setStateTaiGiangDay((prevState) => ({
-                    ...prevState,
-                    KetThuc: date,
-                    Quy: quy,
-                    Nam: nam,
-                    HocKy: hocky
-                }));
-                console.log("Quý:", stateTaiGiangDay);
-            } else {
-                setStateTaiGiangDay((prevState) => ({
-                    ...prevState,
-                    [name]: value
-                }));
-            }
+    //         if (name === "KetThuc") {
+    //             const quy = xacDinhQuy(value);
+    //             const nam = xacDinhNam(value);
+    //             const hocky = xacDinhHocKy(value);
+    //             setStateTaiGiangDay((prevState) => ({
+    //                 ...prevState,
+    //                 KetThuc: date,
+    //                 Quy: quy,
+    //                 Nam: nam,
+    //                 HocKy: hocky,
+    //                 Quy: value,
+    //                 Nam: value,
+    //                 HocKy: value,
+    //             }));
+    //             console.log("Quý:", stateTaiGiangDay);
+    //         } else {
+    //             setStateTaiGiangDay((prevState) => ({
+    //                 ...prevState,
+    //                 [name]: value,
+    //                 Quy: value,
+    //                 Nam: value,
+    //                 HocKy: value,
+    //             }));
+    //         }
+    //     }
+    // };
+    const handleOnchangeNgay = (date) => {
+        try {
+            setStateTaiGiangDay({
+                ...stateTaiGiangDay,
+                KetThuc: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+                HocKy: xacDinhHocKyISO(date)
+            })
+            const nam = xacDinhNamISO(date);
+            const hocky = xacDinhHocKyISO(date);
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+            setHocKy(hocky);
         }
-    };
+        catch { }
+    }
 
+    const handleOnchange = (e) => {
+        console.log("e: ", e.target.name, e.target.value)
+        const { name, value } = e.target;
 
+        if (name === "KetThuc") {
+            const quy = xacDinhQuy(value);
+            const nam = xacDinhNam(value);
+            const hocky = xacDinhHocKy(value)
+            // Cập nhật giá trị của ô Quy
+            setStateTaiGiangDay((prevState) => ({
+                ...prevState,
+                Quy: quy,
+                Nam: nam,
+                HocKy: hocky
+            }));
+            console.log("Quý:", stateTaiGiangDay)
+        }
+    }
     // const handleOnchangeKetThuc = (date) => {
     //     setStateTaiGiangDay({
     //         ...stateTaiGiangDay,
@@ -1132,6 +1202,7 @@ const TaiGiangDay = ({ quannhanId }) => {
             ...taigiangdayDetails,
             key: taigiangdayDetails._id,
             TrangThai: getTrangThaiText(taigiangdayDetails.TrangThai)
+
         }
     })
     const dataTable2 = HTCVDetails?.data?.length && HTCVDetails?.data?.map((HTCVDetails) => {
@@ -1287,30 +1358,7 @@ const TaiGiangDay = ({ quannhanId }) => {
         })
 
     }
-    // Xác định Quý, năm, học kỳ
-    // function xacDinhQuyNamHocKy(date) {
-    //     const parts = date.split("/");
-    //     const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
 
-    //     const quy = Math.floor((ngay.getMonth() + 3) / 3);
-    //     const nam = ngay.getFullYear();
-
-    //     let hocKy;
-    //     if (quy <= 2) {
-    //         hocKy = "Học kỳ 1";
-    //     } else if (quy <= 4) {
-    //         hocKy = "Học kỳ 2";
-    //     } else {
-    //         hocKy = "Học kỳ hè";
-    //     }
-
-    //     return {
-    //         quy: quy,
-    //         nam: nam,
-    //         hocKy: hocKy,
-    //     };
-    // }
-    //Quý
     function xacDinhQuy(date) {
         // Chuyển đổi ngày thành đối tượng Date
         if (typeof date === "string" && date.length > 0) {
@@ -1323,7 +1371,6 @@ const TaiGiangDay = ({ quannhanId }) => {
         }
         return null
 
-
     }
     //Năm
     function xacDinhNam(date) {
@@ -1333,6 +1380,57 @@ const TaiGiangDay = ({ quannhanId }) => {
             const ngay = new Date(parts[2], parts[1] - 1, parts[0]);
             const nam = ngay.getFullYear();
             return nam
+        }
+
+        return null;
+    }
+    function xacDinhNamISO(date) {
+        const dateObj = new Date(date);
+        if (!isNaN(dateObj.getTime())) {
+            const nam = dateObj.getFullYear();
+            console.log(nam);
+            return nam;
+        }
+        return null;
+    }
+    function xacDinhHocKyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+            let hocKy;
+            if (quy <= 2) {
+                hocKy = "Học kỳ 1";
+            } else if (quy <= 4) {
+                hocKy = "Học kỳ 2";
+            } else {
+                hocKy = "Học kỳ hè";
+            }
+
+            return hocKy;
+        }
+
+        return null;
+    }
+    function xacDinhQuyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const thang = ngay.getMonth() + 1;
+            console.log(thang);
+            let quy;
+            if (thang >= 1 && thang <= 3) {
+                quy = 1;
+            } else if (thang >= 4 && thang <= 6) {
+                quy = 2;
+            } else if (thang >= 7 && thang <= 9) {
+                quy = 3;
+            } else if (thang >= 10 && thang <= 12) {
+                quy = 4;
+            }
+
+            return quy;
         }
 
         return null;
@@ -1476,32 +1574,32 @@ const TaiGiangDay = ({ quannhanId }) => {
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <DatePicker
-                                onChange={handleOnchange} name="KetThuc"
+                                onChange={handleOnchangeNgay} name="KetThuc"
                                 format="DD/MM/YYYY"
                             />
                         </Form.Item>
 
                         <Form.Item
                             label="Quý"
-                            name="Quy"
+                        // name="Quy"
                         >
-                            {xacDinhQuy(KetThuc)}
+                            <InputComponent value={Quy} />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
+                        //  name="Nam"
                         //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiGiangDay.Nam} onChange={handleOnchange} name="Nam" /> */}
-                            {xacDinhNam(stateTaiGiangDay.KetThuc)}
+                            <InputComponent value={Nam} />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
-                            name="HocKy"
+                        //  name="HocKy"
                         //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiGiangDay.HocKy} onChange={handleOnchange} name="HocKy" /> */}
-                            {xacDinhHocKy(stateTaiGiangDay.KetThuc)}
+                            <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="HT thi"
@@ -1750,27 +1848,20 @@ const TaiGiangDay = ({ quannhanId }) => {
                         </Form.Item>
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                        //      rules={[{ required: true, message: 'Nhập ngày kết thúc chỗ trống!' }]}
+
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.Quy} onChange={handleOnchange} name="Quy" /> */}
-                            {xacDinhQuy(KetThuc)}
+                            <InputComponent value={Quy} />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                        //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.Nam} onChange={handleOnchange} name="Nam" /> */}
-                            {xacDinhNam(stateTaiGiangDayDetails.KetThuc)}
+                            <InputComponent value={Nam} />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
-                            name="HocKy"
-                        //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiGiangDay.HocKy} onChange={handleOnchange} name="HocKy" /> */}
-                            {xacDinhHocKy(stateTaiGiangDayDetails.KetThuc)}
+                            <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="HT thi"

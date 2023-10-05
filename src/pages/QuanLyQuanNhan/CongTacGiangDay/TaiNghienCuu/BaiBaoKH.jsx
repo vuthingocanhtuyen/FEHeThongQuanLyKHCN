@@ -43,6 +43,8 @@ const BaiBaoKH = ({ }) => {
 
     const [NgayQD, setNgayQD] = useState('');
 
+    const [Nam, setNam] = useState('');
+    const [Quy, setQuy] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -173,16 +175,92 @@ const BaiBaoKH = ({ }) => {
     }, [form, stateBaiBaoKHDetails, isOpenDrawer])
 
     const handleOnchangeDetailNgayQD = (date) => {
-        setStateBaiBaoKHDetails({
-            ...stateBaiBaoKHDetails,
-            ThoiDiemXuatBan: date
-        })
+        try {
+            setStateBaiBaoKHDetails({
+                ...stateBaiBaoKHDetails,
+                ThoiDiemXuatBan: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+
+            })
+            const nam = xacDinhNamISO(date);
+
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+
+        }
+        catch { }
+    }
+    function xacDinhQuyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const thang = ngay.getMonth() + 1;
+            console.log(thang);
+            let quy;
+            if (thang >= 1 && thang <= 3) {
+                quy = 1;
+            } else if (thang >= 4 && thang <= 6) {
+                quy = 2;
+            } else if (thang >= 7 && thang <= 9) {
+                quy = 3;
+            } else if (thang >= 10 && thang <= 12) {
+                quy = 4;
+            }
+
+            return quy;
+        }
+
+        return null;
+    }
+
+    function xacDinhNamISO(date) {
+        const dateObj = new Date(date);
+        if (!isNaN(dateObj.getTime())) {
+            const nam = dateObj.getFullYear();
+            console.log(nam);
+            return nam;
+        }
+        return null;
+    }
+    function xacDinhHocKyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+            let hocKy;
+            if (quy <= 2) {
+                hocKy = "Học kỳ 1";
+            } else if (quy <= 4) {
+                hocKy = "Học kỳ 2";
+            } else {
+                hocKy = "Học kỳ hè";
+            }
+
+            return hocKy;
+        }
+
+        return null;
     }
     const handleOnchangeNgayQD = (date) => {
-        setStateBaiBaoKH({
-            ...stateBaiBaoKH,
-            ThoiDiemXuatBan: date
-        })
+        try {
+            setStateBaiBaoKH({
+                ...stateBaiBaoKH,
+                ThoiDiemXuatBan: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+
+            })
+            const nam = xacDinhNamISO(date);
+
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+
+        }
+        catch { }
     }
 
     const handleCancelPheDuyet = () => {
@@ -1438,21 +1516,17 @@ const BaiBaoKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent value={stateBaiBaoKH.Quy} onChange={handleOnchange} name="Quy" /> */}
-                            {xacDinhQuy(stateBaiBaoKH.ThoiDiemXuatBan)}
-                        </Form.Item>
 
+                        >
+                            <InputComponent value={Quy} />
+                        </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            {/* <InputComponent value={stateBaiBaoKH.Nam} onChange={handleOnchange} name="Nam" /> */}
-                            {xacDinhNam(stateBaiBaoKH.ThoiDiemXuatBan)}
+                            <InputComponent value={Nam} />
                         </Form.Item>
+
                         <Form.Item
                             label="Ngôn ngữ báo"
                             name="NgonNguBao"
@@ -1701,21 +1775,17 @@ const BaiBaoKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            {/* <InputComponent value={stateBaiBaoKHDetails.Quy} onChange={handleOnchangeDetails} name="Quy" /> */}
-                            {xacDinhQuy(stateBaiBaoKHDetails.ThoiDiemXuatBan)}
-                        </Form.Item>
 
+                        >
+                            <InputComponent value={Quy} />
+                        </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            {/* <InputComponent value={stateBaiBaoKHDetails.Nam} onChange={handleOnchangeDetails} name="Nam" /> */}
-                            {xacDinhNam(stateBaiBaoKHDetails.ThoiDiemXuatBan)}
+                            <InputComponent value={Nam} />
                         </Form.Item>
+
                         <Form.Item
                             label="Ngôn ngữ báo"
                             name="NgonNguBao"

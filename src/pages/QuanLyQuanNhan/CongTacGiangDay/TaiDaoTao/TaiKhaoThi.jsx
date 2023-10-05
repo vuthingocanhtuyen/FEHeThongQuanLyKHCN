@@ -27,6 +27,9 @@ const TaiKhaoThi = ({ }) => {
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
     const user = useSelector((state) => state?.user)
     const [NgayQD, setNgayQD] = useState('');
+    const [Nam, setNam] = useState('');
+    const [Quy, setQuy] = useState('');
+    const [HocKy, setHocKy] = useState('');
     const searchInput = useRef(null);
     const quannhanId = user.QuanNhanId;
     const inittial = () => ({
@@ -113,18 +116,93 @@ const TaiKhaoThi = ({ }) => {
         setNgayQD(moment(stateTaiKhaoThiDetails['ThoiDiem']));
         // setNgayQD(convertDateToString(stateQuaTrinhCongTacDetails['NgayQuyetDinh']));
     }, [form, stateTaiKhaoThiDetails, isOpenDrawer])
+    function xacDinhQuyISO(date) {
+        const ngay = new Date(date);
 
+        if (!isNaN(ngay.getTime())) {
+            const thang = ngay.getMonth() + 1;
+            console.log(thang);
+            let quy;
+            if (thang >= 1 && thang <= 3) {
+                quy = 1;
+            } else if (thang >= 4 && thang <= 6) {
+                quy = 2;
+            } else if (thang >= 7 && thang <= 9) {
+                quy = 3;
+            } else if (thang >= 10 && thang <= 12) {
+                quy = 4;
+            }
+
+            return quy;
+        }
+
+        return null;
+    }
+
+    function xacDinhNamISO(date) {
+        const dateObj = new Date(date);
+        if (!isNaN(dateObj.getTime())) {
+            const nam = dateObj.getFullYear();
+            console.log(nam);
+            return nam;
+        }
+        return null;
+    }
+    function xacDinhHocKyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+            let hocKy;
+            if (quy <= 2) {
+                hocKy = "Học kỳ 1";
+            } else if (quy <= 4) {
+                hocKy = "Học kỳ 2";
+            } else {
+                hocKy = "Học kỳ hè";
+            }
+
+            return hocKy;
+        }
+
+        return null;
+    }
     const handleOnchangeDetailNgayQD = (date) => {
-        setStateTaiKhaoThiDetails({
-            ...stateTaiKhaoThiDetails,
-            ThoiDiem: date
-        })
+        try {
+            setStateTaiKhaoThiDetails({
+                ...stateTaiKhaoThiDetails,
+                ThoiDiem: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+                HocKy: xacDinhHocKyISO(date)
+            })
+            const nam = xacDinhNamISO(date);
+            const hocky = xacDinhHocKyISO(date);
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+            setHocKy(hocky);
+        }
+        catch { }
     }
     const handleOnchangeNgayQD = (date) => {
-        setStateTaiKhaoThi({
-            ...stateTaiKhaoThi,
-            ThoiDiem: date
-        })
+        try {
+            setStateTaiKhaoThi({
+                ...stateTaiKhaoThi,
+                ThoiDiem: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+                HocKy: xacDinhHocKyISO(date)
+            })
+            const nam = xacDinhNamISO(date);
+            const hocky = xacDinhHocKyISO(date);
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+            setHocKy(hocky);
+        }
+        catch { }
     }
 
     const handleCancelPheDuyet = () => {
@@ -740,25 +818,21 @@ const TaiKhaoThi = ({ }) => {
 
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateTaiKhaoThi['Quy']} onChange={handleChange} name="Quy" />
-                        </Form.Item>
 
+                        >
+                            <InputComponent value={Quy} />
+                        </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateTaiKhaoThi.Nam} onChange={handleChange} name="Nam" />
+                            <InputComponent value={Nam} />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
-                            name="HocKy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateTaiKhaoThi.HocKy} onChange={handleChange} name="HocKy" />
+                            <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="Hình thức khảo thí"
@@ -865,25 +939,21 @@ const TaiKhaoThi = ({ }) => {
 
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
-                        >
-                            <InputComponent value={stateTaiKhaoThiDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
-                        </Form.Item>
 
+                        >
+                            <InputComponent value={Quy} />
+                        </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateTaiKhaoThiDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                            <InputComponent value={Nam} />
                         </Form.Item>
                         <Form.Item
                             label="Học kỳ"
-                            name="HocKy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateTaiKhaoThiDetails.HocKy} onChange={handleOnchangeDetails} name="HocKy" />
+                            <InputComponent value={HocKy} />
                         </Form.Item>
                         <Form.Item
                             label="Hình thức khảo thí"

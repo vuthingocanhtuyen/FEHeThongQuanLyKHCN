@@ -40,7 +40,8 @@ const BienSoan = ({ }) => {
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
     const [NgayQD, setNgayQD] = useState('');
-
+    const [Nam, setNam] = useState('');
+    const [Quy, setQuy] = useState('');
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -171,16 +172,91 @@ const BienSoan = ({ }) => {
     }, [form, stateBienSoanDetails, isOpenDrawer])
 
     const handleOnchangeDetailNgayQD = (date) => {
-        setStateBienSoanDetails({
-            ...stateBienSoanDetails,
-            NgayXuatBan: date
-        })
+        try {
+            setStateBienSoanDetails({
+                ...stateBienSoanDetails,
+                NgayXuatBan: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+
+            })
+            const nam = xacDinhNamISO(date);
+
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+
+        }
+        catch { }
+    }
+    function xacDinhNamISO(date) {
+        const dateObj = new Date(date);
+        if (!isNaN(dateObj.getTime())) {
+            const nam = dateObj.getFullYear();
+            console.log(nam);
+            return nam;
+        }
+        return null;
+    }
+    function xacDinhHocKyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const quy = Math.floor((ngay.getMonth() + 3) / 3);
+
+            let hocKy;
+            if (quy <= 2) {
+                hocKy = "Học kỳ 1";
+            } else if (quy <= 4) {
+                hocKy = "Học kỳ 2";
+            } else {
+                hocKy = "Học kỳ hè";
+            }
+
+            return hocKy;
+        }
+
+        return null;
+    }
+    function xacDinhQuyISO(date) {
+        const ngay = new Date(date);
+
+        if (!isNaN(ngay.getTime())) {
+            const thang = ngay.getMonth() + 1;
+            console.log(thang);
+            let quy;
+            if (thang >= 1 && thang <= 3) {
+                quy = 1;
+            } else if (thang >= 4 && thang <= 6) {
+                quy = 2;
+            } else if (thang >= 7 && thang <= 9) {
+                quy = 3;
+            } else if (thang >= 10 && thang <= 12) {
+                quy = 4;
+            }
+
+            return quy;
+        }
+
+        return null;
     }
     const handleOnchangeNgayQD = (date) => {
-        setStateBienSoan({
-            ...stateBienSoan,
-            NgayXuatBan: date
-        })
+        try {
+            setStateBienSoan({
+                ...stateBienSoan,
+                NgayXuatBan: date.toISOString(),
+                Quy: xacDinhQuyISO(date),
+                Nam: xacDinhNamISO(date),
+
+            })
+            const nam = xacDinhNamISO(date);
+
+            const quy = xacDinhQuyISO(date);
+            setQuy(quy);
+            setNam(nam);
+
+        }
+        catch { }
     }
     const handleCancelPheDuyet = () => {
         setIsModalOpenPheDuyet(false)
@@ -1291,18 +1367,17 @@ const BienSoan = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateBienSoan.Quy} onChange={handleOnchange} name="Quy" />
+                            <InputComponent value={Quy} />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateBienSoan.Nam} onChange={handleOnchange} name="Nam" />
+                            <InputComponent value={Nam} />
                         </Form.Item>
+
                         <Form.Item
                             label="Ngôn ngữ sách"
                             name="NgonNguSach"
@@ -1526,18 +1601,17 @@ const BienSoan = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Quý"
-                            name="Quy"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateBienSoanDetails.Quy} onChange={handleOnchangeDetails} name="Quy" />
+                            <InputComponent value={Quy} />
                         </Form.Item>
                         <Form.Item
                             label="Năm"
-                            name="Nam"
-                            rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
+
                         >
-                            <InputComponent value={stateBienSoanDetails.Nam} onChange={handleOnchangeDetails} name="Nam" />
+                            <InputComponent value={Nam} />
                         </Form.Item>
+
                         <Form.Item
                             label="Ngôn ngữ sách"
                             name="NgonNguSach"

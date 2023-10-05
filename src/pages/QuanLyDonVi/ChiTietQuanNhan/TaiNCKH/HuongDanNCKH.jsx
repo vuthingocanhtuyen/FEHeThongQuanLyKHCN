@@ -33,7 +33,7 @@ const HuongDanNCKH = ({ quannhanId }) => {
     const [NgayThu, setNgayThu] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    //   const quannhanId = user.QuanNhanId;
+    //  const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         Ten: '',
         LoaiDeTai: '',
