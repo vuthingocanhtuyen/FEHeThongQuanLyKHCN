@@ -26,7 +26,7 @@ export const updateTaiGiangDay = async (id, access_token, data) => {
 export const getDetailsTaiGiangDay = async (id) => {
     // const res = await axios.get(`${process.env.REACT_APP_API_URL}/taigiangday/get-details/${id}`);
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/taigiangday/get-details/${id}`);
-    
+
     return res.data;
 };
 
@@ -74,15 +74,21 @@ export const getAllType = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/taigiangday/all-type`);
     return res.data;
 };
-export const updateHTCVLists = async (id,data,access_token) => {
+export const updateHTCVLists = async (id, data, access_token) => {
     const res = await axiosJWT.post(
-      `${process.env.REACT_APP_API_URL}/taigiangday/pushdata/${id}`,
-      data,
-      {
-        headers: {
-          token: `Bearer ${access_token}`,
-        },
-      }
+        `${process.env.REACT_APP_API_URL}/taigiangday/pushdata/${id}`,
+        data,
+        {
+            headers: {
+                token: `Bearer ${access_token}`,
+            },
+        }
     );
     return res.data;
-  };
+};
+
+export const getTongTaiFromId = async (id) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/taigiangday/get-tong/${id}`);
+    return res.data;
+};
+
