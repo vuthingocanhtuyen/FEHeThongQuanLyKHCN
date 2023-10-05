@@ -50,7 +50,7 @@ import HoSoCanBo from '../QuanLyDonVi/HoSoCanBo';
 import ChiTietQuanNhan from '../QuanLyDonVi/ChiTietQuanNhan/ChiTietQuanNhan';
 import QuanLyNhuCauBC from '../QuanLyDonVi/QuanLyNhuCauBC';
 import DieuChuyenCanBo from '../QuanLyDonVi/DieuChuyenCanBo';
-
+import ThongKeTaiQuanNhan from '../ChiHuyDieuHanh/ThongKeTai/ThongKeTaiQuanNhan'
 
 import TabThanhNhanTaiSan from '../QuanLyQuanNhan/HoSoCanBo/TabThanNhanTaiSan';
 import ThongKeBaoCao from '../ChiHuyDieuHanh/ThongKeNhanLuc/ThongKeBaoCao';
@@ -237,6 +237,8 @@ const AdminPage = () => {
       children: [
         getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
         getItem('Thông kê tải', 'thongketai', <LockOutlined />),
+        getItem('Thống kê tải cá nhân', 'thongketaiquannhan', <AppstoreAddOutlined />)
+
 
       ],
     },
@@ -481,7 +483,10 @@ const AdminPage = () => {
           // <TKCapBac />
         )
 
-
+      case 'thongketaiquannhan':
+        return (
+          <ThongKeTaiQuanNhan />
+        )
       case 'thongketai':
         return (
 
