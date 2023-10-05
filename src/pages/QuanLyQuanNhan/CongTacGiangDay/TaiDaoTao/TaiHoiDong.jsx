@@ -118,7 +118,7 @@ const TaiHoiDong = ({ }) => {
         try {
             setStateTaiHoiDongDetails({
                 ...stateTaiHoiDongDetails,
-                KetThuc: date.toISOString(),
+                ThoiDiem: date.toISOString(),
                 Quy: xacDinhQuyISO(date),
                 Nam: xacDinhNamISO(date),
 
@@ -188,7 +188,7 @@ const TaiHoiDong = ({ }) => {
         try {
             setStateTaiHoiDong({
                 ...stateTaiHoiDong,
-                KetThuc: date.toISOString(),
+                ThoiDiem: date.toISOString(),
                 Quy: xacDinhQuyISO(date),
                 Nam: xacDinhNamISO(date),
 
