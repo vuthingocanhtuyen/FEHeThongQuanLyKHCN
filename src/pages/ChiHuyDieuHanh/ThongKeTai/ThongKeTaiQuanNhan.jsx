@@ -14,7 +14,7 @@ import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-
+import moment from 'moment';
 import FreeDonVi from '../../../pages/QuanLyDonVi/DanhMucDonVi/FreeDonVi'
 import { WrapperContentProfile, WrapperInput, WrapperLabel, WrapperContentProfileFree, WrapperContentProfileText } from '../style'
 const ThongKeTaiQuanNhan = () => {
@@ -201,8 +201,16 @@ const ThongKeTaiQuanNhan = () => {
 
 
     ];
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
     const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
-        return { ...quannhan, key: quannhan._id }
+        return {
+            ...quannhan,
+            key: quannhan._id,
+            NgaySinh: convertDateToString(quannhan.NgaySinh)
+        }
     })
     const filteredData = quannhans?.data?.filter(item => {
 
@@ -256,7 +264,7 @@ const ThongKeTaiQuanNhan = () => {
 
 
             <div style={{ marginTop: '20px' }}>
-                <TableComponent columns={columns} isLoading={isLoadingQuanNhans} data={filteredData} onRow={(record, rowIndex) => {
+                <TableComponent columns={columns} isLoading={isLoadingQuanNhans} data={dataTable} onRow={(record, rowIndex) => {
                     return {
 
                         onClick: event => {

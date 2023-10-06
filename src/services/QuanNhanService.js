@@ -76,6 +76,17 @@ export const getQuanNhanFromDonVi = async (id, access_token) => {
   );
   return res.data;
 };
+export const getTaiFromDonVi = async (id, access_token) => {
+  const res = await axiosJWT.get(
+    `${process.env.REACT_APP_API_URL}/quannhan/get-tai/${id}`,
+    {
+      headers: {
+        token: `Bearer ${access_token}`,
+      },
+    }
+  );
+  return res.data;
+};
 export const getObjectIdByQuanNhanId = async (id, access_token) => {
   const res = await axiosJWT.get(
     `${process.env.REACT_APP_API_URL}/quannhan/getobjectid/${id}`,

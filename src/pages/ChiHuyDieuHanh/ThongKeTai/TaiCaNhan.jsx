@@ -60,23 +60,6 @@ const TaiCaNhan = () => {
         },
 
 
-        // {
-        //     title: 'Tải đào tạo yêu cầu',
-        //     dataIndex: 'TaiDaoTaoYeuCau',
-
-
-        // },
-        // {
-        //     title: 'Tải NCKH yêu cầu',
-        //     dataIndex: 'TaiNCKHYeuCau',
-
-        // },
-        // {
-        //     title: 'Tổng tải yêu cầu',
-        //     dataIndex: 'TongTaiYeuCau',
-
-        // },
-
 
         {
             title: 'Tải thực đào tạo',
@@ -88,16 +71,7 @@ const TaiCaNhan = () => {
             dataIndex: 'KetQuaDaoTao',
 
         },
-        // {
-        //     title: 'Tải thực NCKH',
-        //     dataIndex: 'TaiThucNCKHYeuCau',
 
-        // },
-        // {
-        //     title: 'Tổng tải thực',
-        //     dataIndex: 'TongThucTai',
-
-        // },
 
 
     ];
@@ -198,22 +172,7 @@ const TaiCaNhan = () => {
         },
 
 
-        // {
-        //     title: 'Tải đào tạo yêu cầu',
-        //     dataIndex: 'TaiDaoTaoYeuCau',
 
-
-        // },
-        // {
-        //     title: 'Tải NCKH yêu cầu',
-        //     dataIndex: 'TaiNCKHYeuCau',
-
-        // },
-        // {
-        //     title: 'Tổng tải yêu cầu',
-        //     dataIndex: 'TongTaiYeuCau',
-
-        // },
 
 
         {
@@ -226,16 +185,7 @@ const TaiCaNhan = () => {
             dataIndex: 'KetQuaNCKH',
 
         },
-        // {
-        //     title: 'Tải thực NCKH',
-        //     dataIndex: 'TaiThucNCKHYeuCau',
 
-        // },
-        // {
-        //     title: 'Tổng tải thực',
-        //     dataIndex: 'TongThucTai',
-
-        // },
 
 
     ];
@@ -251,9 +201,6 @@ const TaiCaNhan = () => {
             return [];
         }
     };
-    useEffect(() => {
-        fetchTaiData();
-    }, [quannhanId]);
 
     useEffect(() => {
 

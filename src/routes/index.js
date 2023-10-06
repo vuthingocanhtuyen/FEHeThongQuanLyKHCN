@@ -12,8 +12,9 @@ import ProfilePage from "../pages/Profile/ProfilePage";
 import ChiTietQuanNhan from "../pages/QuanLyDonVi/ChiTietQuanNhan/ChiTietQuanNhan";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
+import DieuChuyenCanBoId from "../pages/QuanLyDonVi/DieuChuyenCanBoId";
 import TypeProductPage from "../pages/TypeProductPage/TypeProductPage";
-import TongHopTai from "../pages/ChiHuyDieuHanh/ThongKeTai/TongHopTai"
+import TongHopTaiBoId from "../pages/ChiHuyDieuHanh/ThongKeTai/TongHopTaiBoId"
 export const routes = [
     {
         path: '/hosocanbo/:id',
@@ -22,7 +23,7 @@ export const routes = [
     },
     {
         path: '/tonghoptai/:id',
-        page: TongHopTai,
+        page: TongHopTaiBoId,
         isShowHeader: true
     },
     {
@@ -64,6 +65,11 @@ export const routes = [
         path: '/sign-in',
         page: SignInPage,
         isShowHeader: false
+    },
+    {
+        path: '/dieuchuyencanbo/:id',
+        page: DieuChuyenCanBoId,
+        isShowHeader: true
     },
     {
         path: '/sign-up',

@@ -236,7 +236,7 @@ const AdminPage = () => {
       icon: <LogoutOutlined />,
       children: [
         getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
-        getItem('Thông kê tải', 'thongketai', <LockOutlined />),
+        getItem('Thông kê tải đơn vị', 'thongketai', <LockOutlined />),
         getItem('Thống kê tải cá nhân', 'thongketaiquannhan', <AppstoreAddOutlined />)
 
 

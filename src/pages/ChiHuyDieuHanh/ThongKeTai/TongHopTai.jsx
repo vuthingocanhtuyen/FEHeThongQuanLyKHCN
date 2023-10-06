@@ -2,16 +2,27 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Form, Table, Button, Space, DatePicker } from 'antd';
 import { useSelector } from 'react-redux';
 import * as TaiGiangDayService from '../../../services/TaiGiangDayService';
+import * as QuanNhanService from '../../../services/QuanNhanService';
 import { WrapperHeader } from '../style'
 import TableComponent from '../../../components/TableComponent/TableComponent';
-
-const TongHopTai = ({ quannhanId }) => {
+import { useQuery } from '@tanstack/react-query'
+const TongHopTai = ({ idQuanNhan }) => {
     const user = useSelector((state) => state?.user)
     const [isLoading, setIsLoading] = useState(true);
     //  const quannhanId = user.QuanNhanId;
     const [rowSelected, setRowSelected] = useState('')
     const [data, setData] = useState([]);
     const [dataTable, setDataTable] = useState([]);
+    const fetchGetDetailsQuanNhan = async () => {
+        if (idQuanNhan) {
+            const res = await QuanNhanService.getDetailsQuanNhan(idQuanNhan)
+            console.log("qn:", res.data)
+            return res.data
+        }
+    }
+
+    const { data: quannhanDetails } = useQuery(['hosoquannhan', idQuanNhan], fetchGetDetailsQuanNhan, { enabled: !!idQuanNhan })
+    const quannhanId = quannhanDetails?.QuanNhanId;
     const columns = [
         {
             title: 'STT',

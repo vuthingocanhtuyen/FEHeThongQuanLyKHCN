@@ -1,180 +1,84 @@
-import { Button, Form, Select, Space } from 'antd'
-import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
+
+import { Button, Form, Space } from 'antd'
+import { SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-
+import { WrapperHeader } from './style'
+import 'antd/dist/antd.css';
 import TableComponent from '../../components/TableComponent/TableComponent'
-
 import { useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
-
-import { getBase64, renderOptions } from '../../utils'
-import * as ProductService from '../../services/ProductService'
-
-import { useMutationHooks } from '../../hooks/useMutationHook'
-import Loading from '../../components/LoadingComponent/Loading'
+import * as QuanNhanService from '../../services/QuanNhanService'
+import * as DonViService from '../../services/DonViService'
+import * as PriorityByUserService from '../../services/PriorityByUserService'
 import { useEffect } from 'react'
-import * as message from '../../components/Message/Message'
 import { useQuery } from '@tanstack/react-query'
-import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
-import ModalComponent from '../../components/ModalComponent/ModalComponent'
-
+import { useNavigate } from 'react-router-dom'
+import SearchBar from './Components/SearchBar';
+import moment from 'moment';
+import FreeDonVi from '../../pages/QuanLyDonVi/DanhMucDonVi/FreeDonVi'
+import { WrapperContentProfile, WrapperInput, WrapperLabel, WrapperContentProfileFree, WrapperContentProfileText } from './Components/style'
 const DieuChuyenCanBo = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [rowSelected, setRowSelected] = useState('')
-    const [isOpenDrawer, setIsOpenDrawer] = useState(false)
-    const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
-    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+    const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
+    const [searchTermHoTen, setSearchTermHoTen] = useState('');
+    const [searchTermQuanNhanId, setSearchTermQuanNhanId] = useState('');
     const user = useSelector((state) => state?.user)
+    const navigate = useNavigate()
     const searchInput = useRef(null);
-    const inittial = () => ({
-        name: '',
-        price: '',
-        description: '',
-        rating: '',
-        image: '',
-        type: '',
-        countInStock: '',
-        newType: '',
-        discount: '',
-    })
-    const [stateProduct, setStateProduct] = useState(inittial())
-    const [stateProductDetails, setStateProductDetails] = useState(inittial())
-
-    const [form] = Form.useForm();
-
-    const mutation = useMutationHooks(
-        (data) => {
-            const { name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock, discount } = data
-            const res = ProductService.createProduct({
-                name,
-                price,
-                description,
-                rating,
-                image,
-                type,
-                countInStock,
-                discount
-            })
-            return res
-        }
-    )
-    const mutationUpdate = useMutationHooks(
-        (data) => {
-            const { id,
-                token,
-                ...rests } = data
-            const res = ProductService.updateProduct(
-                id,
-                token,
-                { ...rests })
-            return res
-        },
-    )
-
-    const mutationDeleted = useMutationHooks(
-        (data) => {
-            const { id,
-                token,
-            } = data
-            const res = ProductService.deleteProduct(
-                id,
-                token)
-            return res
-        },
-    )
-
-    const mutationDeletedMany = useMutationHooks(
-        (data) => {
-            const { token, ...ids
-            } = data
-            const res = ProductService.deleteManyProduct(
-                ids,
-                token)
-            return res
-        },
-    )
-
-    const getAllProducts = async () => {
-        const res = await ProductService.getAllProduct()
-        return res
+    const [treeNodeClickedId, setTreeNodeClickedId] = useState(null);
+    const handleTreeNodeClick = (item) => {
+        setTreeNodeClickedId(item);
+        getDonViCode(item);
     }
-
-    const fetchGetDetailsProduct = async (rowSelected) => {
-        const res = await ProductService.getDetailsProduct(rowSelected)
-        if (res?.data) {
-            setStateProductDetails({
-                name: res?.data?.name,
-                price: res?.data?.price,
-                description: res?.data?.description,
-                rating: res?.data?.rating,
-                image: res?.data?.image,
-                type: res?.data?.type,
-                countInStock: res?.data?.countInStock,
-                discount: res?.data?.discount
-            })
-        }
-        setIsLoadingUpdate(false)
-    }
-
     useEffect(() => {
-        if (!isModalOpen) {
-            form.setFieldsValue(stateProductDetails)
-        } else {
-            form.setFieldsValue(inittial())
-        }
-    }, [form, stateProductDetails, isModalOpen])
+        const fetchGetChucVuDonVi = async () => {
 
-    useEffect(() => {
-        if (rowSelected && isOpenDrawer) {
-            setIsLoadingUpdate(true)
-            fetchGetDetailsProduct(rowSelected)
-        }
-    }, [rowSelected, isOpenDrawer])
+            try {
+                // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
+                const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
+                if (response.data && response.data.length > 0) {
+                    const firstData = response.data[0];
+                    console.log(response.data[0]);
+                    const donViValue = firstData.DonVi[0];
+                    setCurrentUserDonVi(donViValue);
+                }
 
-    const handleDetailsProduct = () => {
-        setIsOpenDrawer(true)
-    }
-
-    const handleDelteManyProducts = (ids) => {
-        mutationDeletedMany.mutate({ ids: ids, token: user?.access_token }, {
-            onSettled: () => {
-                queryProduct.refetch()
+            } catch (error) {
+                console.error('Error fetching ChucVuDonVi:', error);
             }
-        })
-    }
+        };
 
-    const fetchAllTypeProduct = async () => {
-        const res = await ProductService.getAllTypeProduct()
+        fetchGetChucVuDonVi();
+    }, [user.QuanNhanId, user.access_token]);
+    const getQuanNhanFromDonVi = async () => {
+        const res = await QuanNhanService.getQuanNhanFromDonVi(currentUserDonVi)
         return res
     }
-
-    const { data, isLoading, isSuccess, isError } = mutation
-    const { data: dataUpdated, isLoading: isLoadingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
-    const { data: dataDeleted, isLoading: isLoadingDeleted, isSuccess: isSuccessDelected, isError: isErrorDeleted } = mutationDeleted
-    const { data: dataDeletedMany, isLoading: isLoadingDeletedMany, isSuccess: isSuccessDelectedMany, isError: isErrorDeletedMany } = mutationDeletedMany
-
-
-    const queryProduct = useQuery({ queryKey: ['products'], queryFn: getAllProducts })
-    const typeProduct = useQuery({ queryKey: ['type-product'], queryFn: fetchAllTypeProduct })
-    const { isLoading: isLoadingProducts, data: products } = queryProduct
-    const renderAction = () => {
-        return (
-            <div>
-                <DeleteOutlined style={{ color: 'red', fontSize: '30px', cursor: 'pointer' }} onClick={() => setIsModalOpenDelete(true)} />
-                <EditOutlined style={{ color: 'orange', fontSize: '30px', cursor: 'pointer' }} onClick={handleDetailsProduct} />
-            </div>
-        )
+    const getDonViCode = async (item) => {
+        console.log(item);
+        if (item) {
+            try {
+                const res = await DonViService.getDetailsDonVi(item);
+                console.log(res.data.code);
+                setCurrentUserDonVi(res.data.code);
+                return res
+            }
+            catch { }
+        }
     }
+    const handleDetailsHoSoCanBo = (ids) => {
+        navigate(`/dieuchuyencanbo/${ids}`)
+    }
+    const handleSearchHoTen = (searchText) => {
+        setSearchTermHoTen(searchText);
+    };
 
+    const handleSearchQuanNhanId = (searchText) => {
+        setSearchTermQuanNhanId(searchText);
+    };
 
+    const queryQuanNhan = useQuery({ queryKey: ['quannhans'], queryFn: getQuanNhanFromDonVi })
+    const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         // setSearchText(selectedKeys[0]);
@@ -242,461 +146,136 @@ const DieuChuyenCanBo = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     // <Highlighter
-        //     //   highlightStyle={{
-        //     //     backgroundColor: '#ffc069',
-        //     //     padding: 0,
-        //     //   }}
-        //     //   searchWords={[searchText]}
-        //     //   autoEscape
-        //     //   textToHighlight={text ? text.toString() : ''}
-        //     // />
-        //   ) : (
-        //     text
-        //   ),
+
     });
 
 
     const columns = [
         {
-            title: 'STT',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            title: 'Mã quân nhân',
+            dataIndex: 'QuanNhanId',
+            sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
+            ...getColumnSearchProps('QuanNhanId')
         },
         {
-            title: 'Số quyết định',
-            dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            title: 'Họ và tên',
+            dataIndex: 'HoTen',
+            sorter: (a, b) => a.HoTen.length - b.HoTen.length,
+            ...getColumnSearchProps('HoTen')
         },
         {
-            title: 'Ngày quyết định',
-            dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            title: 'Ngày sinh',
+            dataIndex: 'NgaySinh',
+            sorter: (a, b) => a.NgaySinh.length - b.NgaySinh.length,
+            ...getColumnSearchProps('NgaySinh')
         },
         {
-            title: 'Đơn vị hiện tại',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            title: 'Giới tính',
+            dataIndex: 'GioiTinh',
+            sorter: (a, b) => a.GioiTinh.length - b.GioiTinh.length,
+            ...getColumnSearchProps('GioiTinh')
         },
         {
-            title: 'Chức vụ hiện tại',
-            dataIndex: 'isAdmin',
-            filters: [
-                {
-                    text: 'True',
-                    value: true,
-                },
-                {
-                    text: 'False',
-                    value: false,
-                }
-            ],
+            title: 'Quê quán',
+            dataIndex: 'QueQuan',
+            sorter: (a, b) => a.QueQuan.length - b.QueQuan.length,
+            ...getColumnSearchProps('QueQuan')
+        },
+        {
+            title: 'Địa chỉ',
+            dataIndex: 'DiaChi',
+            sorter: (a, b) => a.DiaChi.length - b.DiaChi.length,
+            ...getColumnSearchProps('DiaChi')
+        },
+        {
+            title: 'Đơn vị',
+            dataIndex: 'DonVi',
+            sorter: (a, b) => a.DonVi.length - b.DonVi.length,
+            ...getColumnSearchProps('DonVi')
+        },
+        {
+            title: 'Chức vụ',
+            dataIndex: 'HoatDong',
+            sorter: (a, b) => a.HoatDong.length - b.HoatDong.length,
+            ...getColumnSearchProps('HoatDong')
         },
 
-        {
-            title: 'Đơn vị điều chuyển',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
-        },
-        {
-            title: 'Chức vụ mớI',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
-        },
-        {
-            title: 'Ngày có hiệu lực',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
-        },
-        {
-            title: 'Người ký',
-            dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
-        },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+
     ];
-
-    const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
+    const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
+        return {
+            ...quannhan,
+            key: quannhan._id,
+            NgaySinh: convertDateToString(quannhan.NgaySinh)
+        }
     })
+    const filteredData = quannhans?.data?.filter(item => {
+
+        const matchesHoTen = item.HoTen.toLowerCase().includes(searchTermHoTen.toLowerCase());
+        const matchesQuanNhanId = item.QuanNhanId.includes(searchTermQuanNhanId.toLowerCase());
+        return matchesHoTen && matchesQuanNhanId;
+    });
 
     useEffect(() => {
-        if (isSuccess && data?.status === 'OK') {
-            message.success()
-            handleCancel()
-        } else if (isError) {
-            message.error()
+        if (currentUserDonVi) {
+            queryQuanNhan.refetch();
         }
-    }, [isSuccess])
-
-    useEffect(() => {
-        if (isSuccessDelectedMany && dataDeletedMany?.status === 'OK') {
-            message.success()
-        } else if (isErrorDeletedMany) {
-            message.error()
-        }
-    }, [isSuccessDelectedMany])
-
-    useEffect(() => {
-        if (isSuccessDelected && dataDeleted?.status === 'OK') {
-            message.success()
-            handleCancelDelete()
-        } else if (isErrorDeleted) {
-            message.error()
-        }
-    }, [isSuccessDelected])
-
-    const handleCloseDrawer = () => {
-        setIsOpenDrawer(false);
-        setStateProductDetails({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: ''
-        })
-        form.resetFields()
-    };
-
-    useEffect(() => {
-        if (isSuccessUpdated && dataUpdated?.status === 'OK') {
-            message.success()
-            handleCloseDrawer()
-        } else if (isErrorUpdated) {
-            message.error()
-        }
-    }, [isSuccessUpdated])
-
-    const handleCancelDelete = () => {
-        setIsModalOpenDelete(false)
-    }
-
-
-    const handleDeleteProduct = () => {
-        mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
-            onSettled: () => {
-                queryProduct.refetch()
-            }
-        })
-    }
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
-        setStateProduct({
-            name: '',
-            price: '',
-            description: '',
-            rating: '',
-            image: '',
-            type: '',
-            countInStock: '',
-            discount: '',
-        })
-        form.resetFields()
-    };
-
-    const onFinish = () => {
-        const params = {
-            name: stateProduct.name,
-            price: stateProduct.price,
-            description: stateProduct.description,
-            rating: stateProduct.rating,
-            image: stateProduct.image,
-            type: stateProduct.type === 'add_type' ? stateProduct.newType : stateProduct.type,
-            countInStock: stateProduct.countInStock,
-            discount: stateProduct.discount
-        }
-        mutation.mutate(params, {
-            onSettled: () => {
-                queryProduct.refetch()
-            }
-        })
-    }
-
-    const handleOnchange = (e) => {
-        setStateProduct({
-            ...stateProduct,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    const handleOnchangeDetails = (e) => {
-        setStateProductDetails({
-            ...stateProductDetails,
-            [e.target.name]: e.target.value
-        })
-    }
-
-    const handleOnchangeAvatar = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProduct({
-            ...stateProduct,
-            image: file.preview
-        })
-    }
-
-    const handleOnchangeAvatarDetails = async ({ fileList }) => {
-        const file = fileList[0]
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
-        setStateProductDetails({
-            ...stateProductDetails,
-            image: file.preview
-        })
-    }
-    const onUpdateProduct = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateProductDetails }, {
-            onSettled: () => {
-                queryProduct.refetch()
-            }
-        })
-    }
-
-    const handleChangeSelect = (value) => {
-        setStateProduct({
-            ...stateProduct,
-            type: value
-        })
-    }
+    }, [currentUserDonVi, queryQuanNhan]);
 
     return (
         <div>
             <WrapperHeader>Điều chuyển cán bộ</WrapperHeader>
-            <div style={{ marginTop: '10px' }}>
-                <Button onClick={() => setIsModalOpen(true)}>Thêm</Button>
+            <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc' }}>
+                <div style={{ margin: '0 auto', float: 'left', padding: '5px' }}>
+                    <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId} />
+                </div>
+                <div style={{ margin: '0 auto', height: '115px', float: 'left' }}>
+
+                    <WrapperContentProfile>
+                        <Form.Item
+                            label="Mã quân nhân: "
+                            name="QuanNhanId"
+                        >
+                            <SearchBar onSearch={handleSearchQuanNhanId} />
+                        </Form.Item>
+                    </WrapperContentProfile>
+                </div>
+                <div style={{ margin: '0 auto', height: '115px', float: 'left' }}>
+                    <WrapperContentProfile>
+                        <Form.Item
+                            label="Họ tên: "
+                            name="HoTen"
+                        >
+                            <SearchBar onSearch={handleSearchHoTen} />
+                        </Form.Item>
+                    </WrapperContentProfile>
+                </div>
+
+                {/* <Button type="primary" htmlType="submit" style={{ marginTop: '40px', marginLeft: '10px' }} >
+                    Lấy dữ liệu
+                </Button> */}
             </div>
+
+            <div style={{ clear: 'both' }}></div>
+            <br />
+
+
+
             <div style={{ marginTop: '20px' }}>
-                <TableComponent handleDelteMany={handleDelteManyProducts} columns={columns} isLoading={isLoadingProducts} data={dataTable} onRow={(record, rowIndex) => {
+                <TableComponent columns={columns} isLoading={isLoadingQuanNhans} data={dataTable} onRow={(record, rowIndex) => {
                     return {
+
                         onClick: event => {
-                            setRowSelected(record._id)
-                        }
+                            handleDetailsHoSoCanBo(record._id);
+                        },
                     };
                 }} />
             </div>
-            <ModalComponent forceRender title="Thêm điều chuyển cán bộ" open={isModalOpen} onCancel={handleCancel} footer={null} width="60%">
-                <Loading isLoading={isLoading}>
 
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 6 }}
-                        wrapperCol={{ span: 18 }}
-                        onFinish={onFinish}
-                        autoComplete="on"
-                        form={form}
-                    >
-                        <Form.Item
-                            label="Số quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Ngày quyết định"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Đơn vị hiện tại"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Chức vụ hiện tại"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Đơn vị điều chuyển"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Chức vụ mới"
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProduct['name']} onChange={handleOnchange} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ngày có hiệu lựuc"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <Select
-                                name="type"
-                                // defaultValue="lucy"
-                                // style={{ width: 120 }}
-                                value={stateProduct.type}
-                                onChange={handleChangeSelect}
-                                options={renderOptions(typeProduct?.data?.data)}
-                            />
-                        </Form.Item>
-                        {stateProduct.type === 'add_type' && (
-                            <Form.Item
-                                label='New type'
-                                name="newType"
-                                rules={[{ required: true, message: 'Please input your type!' }]}
-                            >
-                                <InputComponent value={stateProduct.newType} onChange={handleOnchange} name="newType" />
-                            </Form.Item>
-                        )}
-                        <Form.Item
-                            label="Trạng thái"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Người ký"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProduct.countInStock} onChange={handleOnchange} name="countInStock" />
-                        </Form.Item>
-
-
-                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Thêm
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </ModalComponent>
-
-
-            <DrawerComponent title='Chi tiết điều chuyển cán bộ' isOpen={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} width="70%">
-                <Loading isLoading={isLoadingUpdate || isLoadingUpdated}>
-
-                    <Form
-                        name="basic"
-                        labelCol={{ span: 5 }}
-                        wrapperCol={{ span: 22 }}
-                        onFinish={onUpdateProduct}
-                        autoComplete="on"
-                        form={form}
-                    >
-                        <Form.Item
-                            label="Số quyết định  "
-                            name="name"
-                            rules={[{ required: true, message: 'Please input your name!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['name']} onChange={handleOnchangeDetails} name="name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ngày quyết định"
-                            name="type"
-                            rules={[{ required: true, message: 'Please input your type!' }]}
-                        >
-                            <InputComponent value={stateProductDetails['type']} onChange={handleOnchangeDetails} name="type" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Đơn vị hiện tại"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Chức vụ hiện tại"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Đơn vị điều chuyển  "
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Chức vụ mới"
-                            name="countInStock"
-                            rules={[{ required: true, message: 'Please input your count inStock!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.countInStock} onChange={handleOnchangeDetails} name="countInStock" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Ngày có hiệu lực  "
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Trạng thái"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-                        <Form.Item
-                            label="Người ký"
-                            name="description"
-                            rules={[{ required: true, message: 'Please input your count description!' }]}
-                        >
-                            <InputComponent value={stateProductDetails.description} onChange={handleOnchangeDetails} name="description" />
-                        </Form.Item>
-
-
-
-
-                        <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
-                            <Button type="primary" htmlType="submit">
-                                Sửa
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Loading>
-            </DrawerComponent>
-            <ModalComponent title="Xóa điều chuyển cán bộ này" open={isModalOpenDelete} onCancel={handleCancelDelete} onOk={handleDeleteProduct}>
-                <Loading isLoading={isLoadingDeleted}>
-                    <div>Bạn có chắc xóa điều chuyển cán bộ này không?</div>
-                </Loading>
-            </ModalComponent>
         </div>
     )
 }

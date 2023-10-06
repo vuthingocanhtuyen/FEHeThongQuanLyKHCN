@@ -2,7 +2,8 @@ import { Button, Form, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import React, { useRef } from 'react'
 import { WrapperHeader, WrapperUploadFile } from './style'
-
+import { DatePicker } from 'antd';
+import 'antd/dist/antd.css';
 import TableComponent from '../../components/TableComponent/TableComponent'
 import { useState } from 'react'
 import InputComponent from '../../components/InputComponent/InputComponent'
@@ -23,7 +24,11 @@ import DrawerComponent from '../../components/DrawerComponent/DrawerComponent'
 import { useSelector } from 'react-redux'
 import ModalComponent from '../../components/ModalComponent/ModalComponent'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
+import SearchBar from './Components/SearchBar';
+import FreeDonVi from '../../pages/QuanLyDonVi/DanhMucDonVi/FreeDonVi'
+import { WrapperContentProfile, WrapperInput, WrapperLabel, WrapperContentProfileFree, WrapperContentProfileText } from './Components/style'
 import { useNavigate } from 'react-router-dom'
+import moment from 'moment';
 const HoSoCanBo = () => {
   const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
   const [currentUserDonViCode, setCurrentUserDonViCode] = useState(null);
@@ -33,9 +38,16 @@ const HoSoCanBo = () => {
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
   const user = useSelector((state) => state?.user)
+  const [searchTermHoTen, setSearchTermHoTen] = useState('');
+  const [searchTermQuanNhanId, setSearchTermQuanNhanId] = useState('');
   const [prevDonViCode, setPrevDonViCode] = useState(null);
   const navigate = useNavigate()
   const searchInput = useRef(null);
+  const [treeNodeClickedId, setTreeNodeClickedId] = useState(null);
+  const handleTreeNodeClick = (item) => {
+    setTreeNodeClickedId(item);
+    getDonViCode(item);
+  }
   useEffect(() => {
     const fetchGetChucVuDonVi = async () => {
 
@@ -59,6 +71,25 @@ const HoSoCanBo = () => {
 
     fetchGetChucVuDonVi();
   }, [user.QuanNhanId, user.access_token]);
+  const getDonViCode = async (item) => {
+    console.log(item);
+    if (item) {
+      try {
+        const res = await DonViService.getDetailsDonVi(item);
+        console.log(res.data.code);
+        setCurrentUserDonVi(res.data.code);
+        return res
+      }
+      catch { }
+    }
+  }
+  const handleSearchHoTen = (searchText) => {
+    setSearchTermHoTen(searchText);
+  };
+
+  const handleSearchQuanNhanId = (searchText) => {
+    setSearchTermQuanNhanId(searchText);
+  };
   const inittial = () => ({
     QuanNhanId: '',
     HoTen: '',
@@ -377,9 +408,19 @@ const HoSoCanBo = () => {
 
 
   ];
+  function convertDateToString(date) {
+    // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+    return moment(date).format('DD/MM/YYYY');
+  }
   const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
-    return { ...quannhan, key: quannhan._id }
+    return { ...quannhan, key: quannhan._id, NgaySinh: convertDateToString(quannhan.NgaySinh) }
   })
+  const filteredData = quannhans?.data?.filter(item => {
+
+    const matchesHoTen = item.HoTen.toLowerCase().includes(searchTermHoTen.toLowerCase());
+    const matchesQuanNhanId = item.QuanNhanId.includes(searchTermQuanNhanId.toLowerCase());
+    return matchesHoTen && matchesQuanNhanId;
+  });
 
   useEffect(() => {
     if (isSuccess && data?.status === 'OK') {
@@ -518,6 +559,13 @@ const HoSoCanBo = () => {
       ...stateQuanNhan,
       [e.target.name]: e.target.value
     })
+    console.log(stateQuanNhan);
+  }
+  const handleOnchange2 = (date, dateString) => {
+    setStateQuanNhan({
+      ...stateQuanNhan,
+      NgaySinh: dateString
+    })
   }
 
   const handleOnchangeDetails = (e) => {
@@ -559,60 +607,60 @@ const HoSoCanBo = () => {
   const handleChangeSelect = (value) => {
     // console.log("bat dau");
     // console.log(allDonVi2?.data?.data);
-    try{
-    const selectedDonVi = allDonVi2?.data?.data.find(DonVi => DonVi.name === value);
-    if (selectedDonVi) {
-      setCurrentUserDonViCode(selectedDonVi.code);
-      // console.log(selectedDonVi.code);
-    }
+    try {
+      const selectedDonVi = allDonVi2?.data?.data.find(DonVi => DonVi.name === value);
+      if (selectedDonVi) {
+        setCurrentUserDonViCode(selectedDonVi.code);
+        // console.log(selectedDonVi.code);
+      }
       setStateQuanNhan({
         ...stateQuanNhan,
         DonVi: selectedDonVi.code
       })
     }
-    catch{}
+    catch { }
   }
-const handleChangeSelect2 = (value) => {
+  const handleChangeSelect2 = (value) => {
     setStateQuanNhan({
       ...stateQuanNhan,
       QuanHam: value
     })
     // console.log(stateQuanNhan)
-}
-const handleChangeSelect4 = (value) => {
-  setStateQuanNhan({
-    ...stateQuanNhan,
-    LoaiQN: value
-  })
-  // console.log(stateQuanNhan)
-}
-// const handleChangeSelect3 = (value) => {
-//   setStateQuanNhan({
-//     ...stateQuanNhan,
-//     HoatDong: value
-//   })
-//   console.log(stateQuanNhan)
-// }
-const handleChangeSelect3 = (value) => {
-  try{
-    const selectedChucVu = allChucVu2?.data?.data.find(ChucVuDonVi => ChucVuDonVi.name === value);
-    if (selectedChucVu) {
-      setCurrentUserDonViCode(selectedChucVu.chucvucode);
-      // console.log(selectedChucVu.chucvucode);
-    }
+  }
+  const handleChangeSelect4 = (value) => {
+    setStateQuanNhan({
+      ...stateQuanNhan,
+      LoaiQN: value
+    })
+    // console.log(stateQuanNhan)
+  }
+  // const handleChangeSelect3 = (value) => {
+  //   setStateQuanNhan({
+  //     ...stateQuanNhan,
+  //     HoatDong: value
+  //   })
+  //   console.log(stateQuanNhan)
+  // }
+  const handleChangeSelect3 = (value) => {
+    try {
+      const selectedChucVu = allChucVu2?.data?.data.find(ChucVuDonVi => ChucVuDonVi.name === value);
+      if (selectedChucVu) {
+        setCurrentUserDonViCode(selectedChucVu.chucvucode);
+        // console.log(selectedChucVu.chucvucode);
+      }
       setStateQuanNhan({
         ...stateQuanNhan,
         HoatDong: selectedChucVu.chucvucode
       })
     }
-    catch{}
-  
-  // setStateQuanNhan({
-  //   ...stateQuanNhan,
-  //   HoatDong: value
-  // })
-  // console.log(stateQuanNhan)
-}
+    catch { }
+
+    // setStateQuanNhan({
+    //   ...stateQuanNhan,
+    //   HoatDong: value
+    // })
+    // console.log(stateQuanNhan)
+  }
 
   return (
     <div>
@@ -620,6 +668,39 @@ const handleChangeSelect3 = (value) => {
       <div style={{ marginTop: '10px' }}>
         <Button style={{ height: '50px', width: '50px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '20px' }} /></Button>
       </div>
+      <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', marginTop: '15px' }}>
+        <div style={{ margin: '0 auto', float: 'left', padding: '5px' }}>
+          <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId} />
+        </div>
+        <div style={{ margin: '0 auto', height: '115px', float: 'left' }}>
+
+          <WrapperContentProfile>
+            <Form.Item
+              label="Mã quân nhân: "
+              name="QuanNhanId"
+            >
+              <SearchBar onSearch={handleSearchQuanNhanId} />
+            </Form.Item>
+          </WrapperContentProfile>
+        </div>
+        <div style={{ margin: '0 auto', height: '115px', float: 'left' }}>
+          <WrapperContentProfile>
+            <Form.Item
+              label="Họ tên: "
+              name="HoTen"
+            >
+              <SearchBar onSearch={handleSearchHoTen} />
+            </Form.Item>
+          </WrapperContentProfile>
+        </div>
+
+        {/* <Button type="primary" htmlType="submit" style={{ marginTop: '40px', marginLeft: '10px' }} >
+                    Lấy dữ liệu
+                </Button> */}
+      </div>
+
+      <div style={{ clear: 'both' }}></div>
+      <br />
       <div style={{ marginTop: '20px' }}>
         <TableComponent handleDelteMany={handleDelteManyQuanNhans} columns={columns} isLoading={isLoadingQuanNhans} data={dataTable} onRow={(record, rowIndex) => {
           return {
@@ -644,49 +725,60 @@ const handleChangeSelect3 = (value) => {
             form={form}
           >
             <Form.Item
-              label="QuanNhanId"
+              label="Mã quân nhân"
               name="QuanNhanId"
               rules={[{ required: true, message: 'Please input your QuanNhanId!' }]}
             >
               <InputComponent value={stateQuanNhan['QuanNhanId']} onChange={handleOnchange} name="QuanNhanId" />
             </Form.Item>
             <Form.Item
-              label="HoTen"
+              label="Họ tên"
               name="HoTen"
               rules={[{ required: true, message: 'Please input your HoTen!' }]}
             >
               <InputComponent value={stateQuanNhan['HoTen']} onChange={handleOnchange} name="HoTen" />
             </Form.Item>
-            <Form.Item
-              label="NgaySinh"
+            {/* <Form.Item
+              label="Ngày sinh"
               name="NgaySinh"
               rules={[{ required: true, message: 'Please input your NgaySinh!' }]}
             >
               <InputComponent value={stateQuanNhan['NgaySinh']} onChange={handleOnchange} name="NgaySinh" />
+            </Form.Item> */}
+            <Form.Item
+              label="Ngày sinh"
+              name="NgaySinh"
+              rules={[{ required: true, message: 'Please input your NgaySinh!' }]}
+            >
+              <DatePicker
+                value={stateQuanNhan['NgaySinh']}
+                onChange={handleOnchange2} name="NgaySinh"
+                format="YYYY-MM-DD"
+              />
             </Form.Item>
             <Form.Item
-              label="GioiTinh"
+              label="Giới tính"
               name="GioiTinh"
               rules={[{ required: true, message: 'Please input your GioiTinh!' }]}
             >
               <InputComponent value={stateQuanNhan['GioiTinh']} onChange={handleOnchange} name="GioiTinh" />
             </Form.Item>
             <Form.Item
-              label="QueQuan"
+              label="Quê quán"
               name="QueQuan"
               rules={[{ required: true, message: 'Please input your QueQuan!' }]}
             >
               <InputComponent value={stateQuanNhan['QueQuan']} onChange={handleOnchange} name="QueQuan" />
             </Form.Item>
             <Form.Item
-              label="DiaChi"
+              label="Địa chỉ"
               name="DiaChi"
               rules={[{ required: true, message: 'Please input your DiaChi!' }]}
             >
               <InputComponent value={stateQuanNhan['DiaChi']} onChange={handleOnchange} name="DiaChi" />
             </Form.Item>
             <Form.Item
-              label="SoDienThoai"
+              label="Số điện thoại"
               name="SoDienThoai"
               rules={[{ required: true, message: 'Please input your SoDienThoai!' }]}
             >
@@ -700,7 +792,7 @@ const handleChangeSelect3 = (value) => {
               <InputComponent value={stateQuanNhan['Email']} onChange={handleOnchange} name="Email" />
             </Form.Item>
             <Form.Item
-              label="QuanHam"
+              label="Quân hàm"
               name="QuanHam"
               rules={[{ required: true, message: 'Please input your QuanHam!' }]}
             >
@@ -711,10 +803,10 @@ const handleChangeSelect3 = (value) => {
                 // value={stateQuanNhan.QuanHam}
                 onChange={handleChangeSelect2}
                 options={renderOptions(typeQuanHam?.data?.data)}
-                />
-            </Form.Item>    
+              />
+            </Form.Item>
             <Form.Item
-              label="LoaiQN"
+              label="Loại quân nhân"
               name="LoaiQN"
               rules={[{ required: true, message: 'Please input your LoaiQN!' }]}
             >
@@ -725,10 +817,10 @@ const handleChangeSelect3 = (value) => {
                 // value={stateQuanNhan.LoaiQN}
                 onChange={handleChangeSelect4}
                 options={renderOptions(typeLoaiQuanNhan?.data?.data)}
-                />
-            </Form.Item>   
+              />
+            </Form.Item>
             <Form.Item
-              label="DonVi"
+              label="Đơn vị"
               name="DonVi"
               rules={[{ required: true, message: 'Please input your DonVi!' }]}
             >
@@ -739,10 +831,10 @@ const handleChangeSelect3 = (value) => {
                 // value={stateQuanNhan.DonVi}
                 onChange={handleChangeSelect}
                 options={renderOptions(allDonVi?.data?.data)}
-                />
+              />
             </Form.Item>
             <Form.Item
-              label="ChucVu"
+              label="Chức vụ"
               name="HoatDong"
               rules={[{ required: true, message: 'Please input your ChucVu!' }]}
             >
@@ -753,8 +845,8 @@ const handleChangeSelect3 = (value) => {
                 // value={stateQuanNhan.HoatDong}
                 onChange={handleChangeSelect3}
                 options={renderOptions(allChucVu?.data?.data)}
-                />
-            </Form.Item>         
+              />
+            </Form.Item>
             <Form.Item wrapperCol={{ offset: 20, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Submit
