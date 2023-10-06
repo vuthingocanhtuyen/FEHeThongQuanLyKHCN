@@ -56,37 +56,39 @@ const ThongKeTai = () => {
     const fetchTaiData = async () => {
         try {
             setIsLoading(true);
-            const taiData = await QuanNhanService.getTaiFromDonVi(currentUserDonVi)
+            const taiData = await QuanNhanService.getTaiFromDonVi(currentUserDonVi); 
             setIsLoading(false);
-            setDataTK(taiData);
-            console.log('e tk tai donvi: ', taiData);
+            setDataTK(taiData.data);
+            console.log(taiData.data);
+            console.log(taiData.data[0]);
         } catch (error) {
             console.error(error);
             return [];
         }
     };
+    useEffect(() => {
+        fetchTaiData();
+    }, [currentUserDonVi]);
 
     useEffect(() => {
-
-        setDataTableTK([
-            {
-                key: 1,
-                stt: 1,
-                QuanNhanId: dataTK.QuanNhanId,
-                HoTen: dataTK.HoTen,
-                TaiDaoTaoYeuCau: dataTK.TaiDaoTaoYeuCau,
-                TaiThucDaoTaoYeuCau: dataTK.TaiThucDaoTaoYeuCau,
-
-                KetQuaDaoTao: dataTK.KetQuaDaoTao,
-                KetQuaNCKH: dataTK.KetQuaNCKH,
-
-                TongTaiYeuCau: dataTK.TongTaiYeuCau,
-                TongThucTai: dataTK.TongThucTai,
-                KetQuaTongThuc: dataTK.KetQuaTongThuc
-
-            }
-        ]);
+        const tableData = dataTK.map((item, index) => ({
+            key: index + 1,
+            QuanNhanId: item.QuanNhanId,
+            HoTen: item.HoTen,
+            TaiDaoTaoYeuCau: item.tongTai.TaiDaoTaoYeuCau,
+            TaiThucDaoTaoYeuCau: item.tongTai.TaiThucDaoTaoYeuCau,
+            KetQuaDaoTao: item.tongTai.KetQuaDaoTao,
+            TaiNCKHYeuCau: item.tongTai.TaiNCKHYeuCau,
+            TaiThucNCKHYeuCau: item.tongTai.TaiThucNCKHYeuCau,
+            KetQuaNCKH: item.tongTai.KetQuaNCKH,
+            TongTaiYeuCau: item.tongTai.TongTaiYeuCau,
+            TongThucTai: item.tongTai.TongThucTai,
+            KetQuaTongThuc: item.tongTai.KetQuaTongThuc
+        }));
+        console.log(tableData);
+        setDataTableTK(tableData);
     }, [dataTK]);
+    
 
 
     useEffect(() => {
@@ -131,274 +133,20 @@ const ThongKeTai = () => {
     const handleSearchQuanNhanId = (searchText) => {
         setSearchTermQuanNhanId(searchText);
     };
-    const inittial = () => ({
-        QuanNhanId: '',
-        HoTen: '',
-        NgaySinh: '',
-        GioiTinh: '',
-        QueQuan: '',
-        DiaChi: '',
-        SoDienThoai: '',
-        Email: '',
-        HoatDong: '',
-        QuanHam: '',
-        DonVi: '',
-        LoaiQN: ''
-    })
-    const [stateQuanNhan, setStateQuanNhan] = useState(inittial())
-    const [stateQuanNhanDetails, setStateQuanNhanDetails] = useState(inittial())
-
-    const [form] = Form.useForm();
-
-    const mutation = useMutationHooks(
-        (data) => {
-            const { QuanNhanId,
-                HoTen,
-                NgaySinh,
-                GioiTinh,
-                QueQuan,
-                DiaChi,
-                SoDienThoai,
-                Email,
-                HoatDong,
-                QuanHam,
-                DonVi,
-                LoaiQN
-            } = data
-            const res = QuanNhanService.createQuanNhan({
-                QuanNhanId,
-                HoTen,
-                NgaySinh,
-                GioiTinh,
-                QueQuan,
-                DiaChi,
-                SoDienThoai,
-                Email,
-                HoatDong,
-                QuanHam,
-                DonVi,
-                LoaiQN
-            })
-            return res
-        }
-    )
-    const mutationUpdate = useMutationHooks(
-        (data) => {
-            const { id,
-                token,
-                ...rests } = data
-            const res = QuanNhanService.updateQuanNhan(
-                id,
-                token,
-                { ...rests })
-            return res
-        },
-    )
-
-    const mutationDeleted = useMutationHooks(
-        (data) => {
-            const { id,
-                token,
-            } = data
-            const res = QuanNhanService.deleteQuanNhan(
-                id,
-                token)
-            return res
-        },
-    )
-
-    const mutationDeletedMany = useMutationHooks(
-        (data) => {
-            const { token, ...ids
-            } = data
-            const res = QuanNhanService.deleteManyQuanNhan(
-                ids,
-                token)
-            return res
-        },
-    )
-
-    const getQuanNhanFromDonVi = async () => {
-        const res = await QuanNhanService.getTaiFromDonVi(currentUserDonVi)
-        console.log('e: ', res.data);
-        return res
-    }
 
 
-    const fetchGetDetailsQuanNhan = async (rowSelected) => {
-        const res = await QuanNhanService.getDetailsQuanNhan(rowSelected)
-        if (res?.data) {
-            setStateQuanNhanDetails({
-                QuanNhanId: res?.data?.QuanNhanId,
-                HoTen: res?.data?.HoTen,
-                NgaySinh: res?.data?.NgaySinh,
-                GioiTinh: res?.data?.GioiTinh,
-                QueQuan: res?.data?.QueQuan,
-                DiaChi: res?.data?.DiaChi,
-                SoDienThoai: res?.data?.SoDienThoai,
-                Email: res?.data?.Email,
-                HoatDong: res?.data?.HoatDong,
-                QuanHam: res?.data?.QuanHam,
-                DonVi: res?.data?.DonVi,
-                LoaiQN: res?.data?.LoaiQN
-            })
-        }
-        setIsLoadingUpdate(false)
-    }
-
-    useEffect(() => {
-        if (!isModalOpen) {
-            form.setFieldsValue(stateQuanNhanDetails);
-            setCurrentUserDonViCode(currentUserDonVi);
-            console.log("dong");
-        } else {
-            form.setFieldsValue(inittial())
-        }
-    }, [form, stateQuanNhanDetails, isModalOpen])
-
-    useEffect(() => {
-        if (rowSelected && isOpenDrawer) {
-            setIsLoadingUpdate(true)
-            fetchGetDetailsQuanNhan(rowSelected)
-        }
-    }, [rowSelected, isOpenDrawer])
-
-    const handleDetailsQuanNhan = () => {
-        setIsOpenDrawer(true)
-    }
-
-
-
-
-    const fetchAllChucVu = async () => {
-        const res = await ChucVuService.getChucVuFromDonVi(currentUserDonViCode)
-        return res
-    }
-    const fetchAllChucVu2 = async () => {
-        const res = await ChucVuService.getDataChucVuByDonVi(currentUserDonViCode)
-        return res
-    }
-    const fetchAllQuanHam = async () => {
-        const res = await QuanHamService.getAllType()
-        return res
-    }
-    const fetchAllLoaiQuanNhan = async () => {
-        const res = await LoaiQuanNhanService.getAllType()
-        return res
-    }
-    const fetchAllDonVi = async () => {
-        const res = await DonViService.getDonViConByTen(currentUserDonViCode)
-        return res
-    }
-    const fetchAllDonVi2 = async () => {
-        const res = await DonViService.getDonViConOnly(currentUserDonViCode)
-        return res
-    }
-
-
-    // const queryQuanNhan = useQuery({ queryKey: ['quannhans'], queryFn: getQuanNhanFromDonVi })
-    const typeQuanHam = useQuery({ queryKey: ['type-quanham'], queryFn: fetchAllQuanHam })
-    const typeLoaiQuanNhan = useQuery({ queryKey: ['type-loaiquannhan'], queryFn: fetchAllLoaiQuanNhan })
-    const allDonVi = useQuery({ queryKey: ['all-donvi'], queryFn: fetchAllDonVi })
-    const allDonVi2 = useQuery({ queryKey: ['all-donvi2'], queryFn: fetchAllDonVi2 })
-    const allChucVu = useQuery({ queryKey: ['all-chucvu'], queryFn: fetchAllChucVu })
-    const allChucVu2 = useQuery({ queryKey: ['all-chucvu2'], queryFn: fetchAllChucVu2 })
-    //  const { isLoading: isLoadingQuanNhans, data: quannhans } = queryQuanNhan
-
-    const renderAction = () => {
-        return (
-            <div>
-                {/* <Button style={{ fontSize: '15px' }} onClick={() => handleDetailsThongKeTai(record._id)} > Chi tiết</Button> */}
-                &nbsp;
-                <Button style={{ fontSize: '15px' }} onClick={handleDetailsQuanNhan} >Tải xuống</Button>
-            </div>
-        )
-    }
-
-
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
-    };
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        // setSearchText('');
-    };
-
-    const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div
-                style={{
-                    padding: 8,
-                }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
-                <InputComponent
-                    ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => clearFilters && handleReset(clearFilters)}
-                        size="small"
-                        style={{
-                            width: 90,
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1890ff' : undefined,
-                }}
-            />
-        ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-
-    });
 
 
     const columns = [
         {
             title: 'Mã quân nhân',
             dataIndex: 'QuanNhanId',
-            // sorter: (a, b) => a.QuanNhanId.length - b.QuanNhanId.length,
-            // ...getColumnSearchProps('QuanNhanId')
+
         },
         {
             title: 'Họ và tên',
             dataIndex: 'HoTen',
-            // sorter: (a, b) => a.HoTen.length - b.HoTen.length,
-            // ...getColumnSearchProps('HoTen')
+        
         },
         {
             title: 'Tải đào tạo',
@@ -460,31 +208,6 @@ const ThongKeTai = () => {
 
 
     ];
-
-
-    useEffect(() => {
-        if (currentUserDonViCode) {
-            allDonVi.refetch();
-        }
-    }, [currentUserDonViCode, allDonVi]);
-    useEffect(() => {
-        if (currentUserDonViCode) {
-            allChucVu.refetch();
-        }
-    }, [currentUserDonViCode, allChucVu]);
-    useEffect(() => {
-        if (currentUserDonViCode) {
-            allDonVi2.refetch();
-        }
-    }, [currentUserDonViCode, allDonVi2]);
-    useEffect(() => {
-        if (currentUserDonViCode) {
-            allChucVu2.refetch();
-        }
-    }, [currentUserDonViCode, allChucVu2]);
-
-
-
     return (
         <div>
             <WrapperHeader>Quản lý quân nhân</WrapperHeader>
@@ -525,7 +248,7 @@ const ThongKeTai = () => {
             <div style={{ clear: 'both' }}></div>
             <br />
             <div style={{ marginTop: '20px' }}>
-                <TableComponent columns={columns} isLoading={isLoading} dataTK={dataTableTK} onRow={(record, rowIndex) => {
+                <TableComponent columns={columns} isLoading={isLoading} data={dataTableTK} onRow={(record, rowIndex) => {
 
                 }} />
             </div>
