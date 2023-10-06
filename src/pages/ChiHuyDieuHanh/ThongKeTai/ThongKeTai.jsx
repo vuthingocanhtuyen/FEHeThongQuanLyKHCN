@@ -59,8 +59,6 @@ const ThongKeTai = () => {
             const taiData = await QuanNhanService.getTaiFromDonVi(currentUserDonVi); 
             setIsLoading(false);
             setDataTK(taiData.data);
-            console.log(taiData.data);
-            console.log(taiData.data[0]);
         } catch (error) {
             console.error(error);
             return [];
