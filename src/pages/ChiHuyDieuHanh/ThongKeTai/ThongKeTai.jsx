@@ -56,7 +56,7 @@ const ThongKeTai = () => {
     const fetchTaiData = async () => {
         try {
             setIsLoading(true);
-            const taiData = await QuanNhanService.getTaiFromDonVi(currentUserDonVi); 
+            const taiData = await QuanNhanService.getTaiFromDonVi(currentUserDonVi);
             setIsLoading(false);
             setDataTK(taiData.data);
             console.log(taiData.data);
@@ -75,20 +75,20 @@ const ThongKeTai = () => {
             key: index + 1,
             QuanNhanId: item.QuanNhanId,
             HoTen: item.HoTen,
-            TaiDaoTaoYeuCau: item.tongTai.TaiDaoTaoYeuCau,
-            TaiThucDaoTaoYeuCau: item.tongTai.TaiThucDaoTaoYeuCau,
-            KetQuaDaoTao: item.tongTai.KetQuaDaoTao,
-            TaiNCKHYeuCau: item.tongTai.TaiNCKHYeuCau,
-            TaiThucNCKHYeuCau: item.tongTai.TaiThucNCKHYeuCau,
-            KetQuaNCKH: item.tongTai.KetQuaNCKH,
-            TongTaiYeuCau: item.tongTai.TongTaiYeuCau,
-            TongThucTai: item.tongTai.TongThucTai,
-            KetQuaTongThuc: item.tongTai.KetQuaTongThuc
+            TaiDaoTaoYeuCau: item.tongTai.TaiDaoTaoYeuCau.toFixed(2),
+            TaiThucDaoTaoYeuCau: item.tongTai.TaiThucDaoTaoYeuCau.toFixed(2),
+            KetQuaDaoTao: item.tongTai.KetQuaDaoTao.toFixed(2),
+            TaiNCKHYeuCau: item.tongTai.TaiNCKHYeuCau.toFixed(2),
+            TaiThucNCKHYeuCau: item.tongTai.TaiThucNCKHYeuCau.toFixed(2),
+            KetQuaNCKH: item.tongTai.KetQuaNCKH.toFixed(2),
+            TongTaiYeuCau: item.tongTai.TongTaiYeuCau.toFixed(2),
+            TongThucTai: item.tongTai.TongThucTai.toFixed(2),
+            KetQuaTongThuc: item.tongTai.KetQuaTongThuc.toFixed(2)
         }));
         console.log(tableData);
         setDataTableTK(tableData);
     }, [dataTK]);
-    
+
 
 
     useEffect(() => {
@@ -146,7 +146,7 @@ const ThongKeTai = () => {
         {
             title: 'Họ và tên',
             dataIndex: 'HoTen',
-        
+
         },
         {
             title: 'Tải đào tạo',

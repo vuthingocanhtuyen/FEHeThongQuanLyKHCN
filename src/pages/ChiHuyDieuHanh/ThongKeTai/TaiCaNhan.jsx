@@ -216,7 +216,6 @@ const TaiCaNhan = () => {
                 SoGioChuanHuongDan: data.SoGioChuanHuongDan,
                 KetQuaDaoTao: data.KetQuaDaoTao,
 
-
                 TaiNCKHYeuCau: data.TaiNCKHYeuCau,
                 TaiThucNCKHYeuCau: data.TaiThucNCKHYeuCau,
                 SoGioChuanBaiBao: data.SoGioChuanBaiBao,

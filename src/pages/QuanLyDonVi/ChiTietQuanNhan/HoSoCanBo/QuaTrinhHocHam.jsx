@@ -2,22 +2,22 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Form, Select, Button, Space, Checkbox, Breadcrumb } from 'antd';
 import { useSelector } from 'react-redux';
-import * as message from '../../../components/Message/Message'
-import { renderOptions } from '../../../utils'
-import Loading from '../../../components/LoadingComponent/Loading'
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as QuaTrinhHocHamService from '../../../services/QuaTrinhHocHamService';
-import * as DanhMucHocHamService from '../../../services/DanhMucHocHamService';
-import CheckboxComponent from '../../../components/CheckBox/CheckBox'
+import * as message from '../../../../components/Message/Message'
+import { renderOptions } from '../../../../utils'
+import Loading from '../../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../../hooks/useMutationHook'
+import * as QuaTrinhHocHamService from '../../../../services/QuaTrinhHocHamService';
+import * as DanhMucHocHamService from '../../../../services/DanhMucHocHamService';
+import CheckboxComponent from '../../../../components/CheckBox/CheckBox'
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import TableComponent from '../../../components/TableComponent/TableComponent';
+import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QuaTrinhHocHam = () => {
+const QuaTrinhHocHam = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -27,7 +27,7 @@ const QuaTrinhHocHam = () => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    const quannhanId = user.QuanNhanId;
+    // const quannhanId = user.QuanNhanId;
     const inittial = () => ({
         QuyetDinh: '',
         NgayQuyetDinh: '',

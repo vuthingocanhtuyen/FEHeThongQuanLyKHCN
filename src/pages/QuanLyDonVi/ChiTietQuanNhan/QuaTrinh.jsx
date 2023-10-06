@@ -13,6 +13,8 @@ import QTNgoaiNgu from '../ChiTietQuanNhan/HoSoCanBo/QTNgoaiNgu'
 import DaiHoc from '../ChiTietQuanNhan/HoSoCanBo/DaiHoc'
 import SauDaiHoc from '../ChiTietQuanNhan/HoSoCanBo/SauDaiHoc'
 import TinhTrangCT from '../ChiTietQuanNhan/HoSoCanBo/TinhTrangCT'
+import QuaTrinhHocHam from './HoSoCanBo/QuaTrinhHocHam'
+import QuaTrinhHocVi from './HoSoCanBo/QuaTrinhHocVi'
 //import QTCongTac from '../../QuanLyQuanNhan/HoSoCanBo/QTCongTac'
 // import QTDang from '../ChiTietQuanNhan/HoSoCanBo/QTDang'
 // import QTQuanHam from '../ChiTietQuanNhan/HoSoCanBo/QTQuanHam'
@@ -70,6 +72,15 @@ const QuaTrinh = ({ idQuanNhan }) => {
             <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QTQuanHam quannhanId={quannhanDetails?.QuanNhanId} />
             </div>
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QuaTrinhHocHam quannhanId={quannhanDetails?.QuanNhanId} />
+            </div>
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QuaTrinhHocVi quannhanId={quannhanDetails?.QuanNhanId} />
+            </div>
+            <br />
             <br />
             <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <QTCDCMKT quannhanId={quannhanDetails?.QuanNhanId} />
