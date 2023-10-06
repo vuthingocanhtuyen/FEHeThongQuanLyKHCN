@@ -201,7 +201,9 @@ const TaiCaNhan = () => {
             return [];
         }
     };
-
+    useEffect(() => {
+        fetchTaiData();
+    }, [quannhanId]);
     useEffect(() => {
 
         setDataTable([
@@ -215,7 +217,6 @@ const TaiCaNhan = () => {
                 SoGioQuyDoiHoiDong: data.SoGioQuyDoiHoiDong,
                 SoGioChuanHuongDan: data.SoGioChuanHuongDan,
                 KetQuaDaoTao: data.KetQuaDaoTao,
-
 
                 TaiNCKHYeuCau: data.TaiNCKHYeuCau,
                 TaiThucNCKHYeuCau: data.TaiThucNCKHYeuCau,
