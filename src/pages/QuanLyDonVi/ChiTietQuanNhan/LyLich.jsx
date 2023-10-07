@@ -1,6 +1,7 @@
 import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
+import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux'
 import * as QuanNhanService from '../../../services/QuanNhanService'
 import * as UserService from '../../../services/UserService'
@@ -46,7 +47,10 @@ const LyLich = ({ idQuanNhan }) => {
     const dispatch = useDispatch()
     const { data, isSuccess, isError } = mutation
 
-
+    function convertDateToString(date) {
+        // Sử dụng Moment.js để chuyển đổi đối tượng Date thành chuỗi theo định dạng mong muốn
+        return moment(date).format('DD/MM/YYYY');
+    }
     useEffect(() => {
 
         console.log(quannhann);
@@ -184,7 +188,7 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="NgaySinh">Ngày sinh</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="NgaySinh" value={NgaySinh} />
+                        <InputForm style={{ width: '500px' }} id="NgaySinh" value={convertDateToString(NgaySinh)} />
 
                     </WrapperInput>
                     <WrapperInput>
