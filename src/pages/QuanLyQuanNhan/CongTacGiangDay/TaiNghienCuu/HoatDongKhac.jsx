@@ -44,7 +44,12 @@ const HoatDongKhac = ({ }) => {
     const [isModalOpenPheDuyet, setIsModalOpenPheDuyet] = useState(false)
     const [isModalOpenNhapLai, setIsModalOpenNhapLai] = useState(false)
 
-
+    const [stateNhomNghienCuu, setStateNhomNghienCuu] = useState({
+        NhomNghienCuu: ' ',
+        LoaiHoatDong: '  '
+        // replace defaultValue with your desired default value
+    });
+    const [stateNhomNghienCuuDetails, setStateNhomNghienCuuDetails] = useState({});
     const [selectedName, setSelectedName] = useState('');
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
@@ -1162,6 +1167,23 @@ const HoatDongKhac = ({ }) => {
             FileCM: file.preview
         })
     }
+    const filterOptions = (options) => {
+        const uniqueOptions = [];
+        const optionValues = new Set();
+
+        if (options) { // Add a check for undefined or null options
+            options.forEach((option) => {
+                if (!optionValues.has(option)) {
+                    uniqueOptions.push(option);
+                    optionValues.add(option);
+                }
+            });
+        }
+
+        return uniqueOptions;
+    };
+
+
 
     const handleChangeCheckTHCSDTDeTail = (e) => {
         const checkedValue = e.target.checked ? 1 : 0;
@@ -1195,7 +1217,7 @@ const HoatDongKhac = ({ }) => {
     }
     // loại hoạt động
     const fetchAllLoaiHoatDong = async () => {
-        const res = await LoaiHoatDongService.getAllType()
+        const res = await NhomHoatDongNCService.getAllTypeLoaiHoatDong()
         return res
     }
 
@@ -1218,25 +1240,82 @@ const HoatDongKhac = ({ }) => {
     }
     // nhos óốạt động nc
     const fetchAllNhomHoatDongNC = async () => {
-        const res = await NhomHoatDongNCService.getAllType()
+        const res = await NhomHoatDongNCService.getAllTypeNhomHoatDong()
+        console.log(" e nhóm nc: ", res)
+        return res
+    }
+    const fetchAllCapHoiDong = async () => {
+        const res = await NhomHoatDongNCService.getAllNhomHoatDongNC()
+        console.log(" nhóm hội đồng: ", res)
         return res
     }
 
-    const allNhomHoatDongNC = useQuery({ queryKey: ['all-nhomhdnc'], queryFn: fetchAllNhomHoatDongNC })
+    const queryNhom = useQuery({ queryKey: ['nhomhd'], queryFn: fetchAllNhomHoatDongNC })
+    const queryDeTailCapHoiDong = useQuery({ queryKey: ['detailnhomhoatdongs'], queryFn: fetchAllCapHoiDong })
+    const { isLoading: isLoadingNhomHoatDongs, data: detailnhomhoatdongs } = queryDeTailCapHoiDong
+    console.log("queryNhom nc:", queryNhom.data)
+    const dataTableNhom = detailnhomhoatdongs?.data?.length > 0 && detailnhomhoatdongs?.data?.map((detailnhomhoatdong) => {
+        return {
+            ...detailnhomhoatdong,
+            key: detailnhomhoatdong._id,
+        }
+    })
+
     const handleChangeSelectNhomHoatDongNC = (value) => {
-        setStateHoatDongKhac({
-            ...stateHoatDongKhac,
-            NhomHoatDongNCSach: value
-        })
+        const selectedNhom = value;
+
+        console.log("value nhóm hđ:", selectedNhom);
+
+        const filteredDataTable = dataTableNhom.filter((item) => {
+            console.log("item nhóm hđ:", item.NhomNghienCuu, item);
+            return item.NhomNghienCuu === selectedNhom;
+        });
+        console.log("Cấp hội đồng detail:", filteredDataTable);
+        const tenLoaiHoatDongOptions = filteredDataTable.map((option) => option.LoaiHoatDong);
+
+        setStateNhomNghienCuu((prevState) => ({
+            ...prevState,
+            LoaiHoatDong: value,
+            LoaiHoiDong: tenLoaiHoatDongOptions[0],
+            tenTenLoaiHoatDongOptions: tenLoaiHoatDongOptions,
+        }));
+
+        setStateHoatDongKhac((prevState) => ({
+            ...prevState,
+            NhomNghienCuu: value,
+        }));
+
+        console.log("Loại detail hội đồng:", tenLoaiHoatDongOptions);
 
     }
 
 
     const handleChangeSelectNhomHoatDongNCDetails = (value) => {
-        setStateHoatDongKhacDetails({
-            ...stateHoatDongKhacDetails,
-            NhomHoatDongNCSach: value
-        })
+        const selectedNhom = value;
+
+        console.log("detail nhóm hđ:", selectedNhom);
+
+        const filteredDataTable = dataTableNhom.filter((item) => {
+            console.log("item detailnhóm hđ:", item.TenNhomHoatDongNC, item);
+            return item.TenNhomHoatDongNC === selectedNhom;
+        });
+        console.log(" detail:", filteredDataTable);
+        const tenLoaiHoatDongOptions = filteredDataTable.map((option) => option.LoaiHoatDong);
+
+        setStateNhomNghienCuuDetails((prevState) => ({
+            ...prevState,
+            LoaiHoatDong: value,
+            TenLoaiHoiDong: tenLoaiHoatDongOptions[0],
+            tenTenLoaiHoatDongOptions: tenLoaiHoatDongOptions,
+        }));
+
+        setStateHoatDongKhacDetails((prevState) => ({
+            ...prevState,
+            NhomNghienCuu: value,
+        }));
+
+        console.log("Loại detail :", tenLoaiHoatDongOptions);
+
 
     }
     return (
@@ -1286,7 +1365,7 @@ const HoatDongKhac = ({ }) => {
                                 name="NhomNghienCuu"
 
                                 onChange={handleChangeSelectNhomHoatDongNC}
-                                options={renderOptions(allNhomHoatDongNC?.data?.data)}
+                                options={renderOptions(queryNhom?.data?.data)}
                             />
 
                         </Form.Item>
@@ -1299,7 +1378,7 @@ const HoatDongKhac = ({ }) => {
                             {/* <InputComponent value={stateHoatDongKhac.LoaiHoatDong} onChange={handleOnchange} name="LoaiHoatDong" /> */}
                             <Select
                                 name="LoaiHoatDong"
-
+                                value={stateNhomNghienCuu.LoaiHoatDong}
                                 onChange={handleChangeSelectLoaiHoatDong}
                                 options={renderOptions(allLoaiHoatDong?.data?.data)}
                             />
@@ -1466,13 +1545,6 @@ const HoatDongKhac = ({ }) => {
                         form={form}
                     >
 
-
-
-
-
-
-
-
                         <Form.Item
                             label="Nhóm nghiên cứu"
                             name="NhomNghienCuu"
@@ -1483,7 +1555,7 @@ const HoatDongKhac = ({ }) => {
                                 name="NhomNghienCuu"
 
                                 onChange={handleChangeSelectNhomHoatDongNCDetails}
-                                options={renderOptions(allNhomHoatDongNC?.data?.data)}
+                                options={renderOptions(queryNhom?.data?.data)}
                             />
 
                         </Form.Item>
@@ -1496,9 +1568,12 @@ const HoatDongKhac = ({ }) => {
                             {/* <InputComponent value={stateHoatDongKhacDetails.LoaiHoatDong} onChange={handleOnchangeDetails} name="LoaiHoatDong" /> */}
                             <Select
                                 name="LoaiHoatDong"
-
+                                value={stateNhomNghienCuuDetails.LoaiHoatDong}
                                 onChange={handleChangeSelectLoaiHoatDongDetails}
-                                options={renderOptions(allLoaiHoatDong?.data?.data)}
+                                options={filterOptions(stateNhomNghienCuuDetails.tenTenLoaiHoatDongOptions).map((option) => ({
+                                    label: option,
+                                    value: option,
+                                }))}
                             />
 
                         </Form.Item>

@@ -35,13 +35,14 @@ const TaiHoiDong = ({ quannhanId }) => {
     // const quannhanId = user.QuanNhanId;
 
     const [stateCapHoiDong, setStateCapHoiDong] = useState({
-        CapHoiDong: 'Cao học',
-        LoaiHoiDong: 'Hội đồng chấm thi môn học Cao học', // replace defaultValue with your desired default value
+        TenCapHoiDong: ' ',
+        TenLoaiHoiDong: '  '
+        // replace defaultValue with your desired default value
     });
-
+    const [stateCapHoiDongDetails, setStateCapHoiDongDetails] = useState({});
     const inittial = () => ({
         CapHoiDong: '',
-        LoaiHoiDong: '',
+        TenLoaiHoiDong: '',
         VaiTro: '',
         ThoiDiem: moment(),
 
@@ -63,13 +64,13 @@ const TaiHoiDong = ({ quannhanId }) => {
         (data) => {
             const { QuanNhanId = quannhanId,
                 CapHoiDong,
-                LoaiHoiDong,
+                TenLoaiHoiDong,
                 VaiTro,
                 ThoiDiem, Quy, Nam, KhoiLuongCongViec, SoGioQuyDoi, FileCM, TrangThai = 0, GhiChu } = data
             const res = TaiHoiDongService.createTaiHoiDong({
                 QuanNhanId, ThoiDiem,
                 CapHoiDong,
-                LoaiHoiDong,
+                TenLoaiHoiDong,
                 VaiTro,
                 ThoiDiem, Quy, Nam,
                 KhoiLuongCongViec,
@@ -194,6 +195,7 @@ const TaiHoiDong = ({ quannhanId }) => {
 
             })
             const nam = xacDinhNamISO(date);
+
             const quy = xacDinhQuyISO(date);
             setQuy(quy);
             setNam(nam);
@@ -262,7 +264,7 @@ const TaiHoiDong = ({ quannhanId }) => {
             if (res?.data) {
                 setStateTaiHoiDongDetails({
                     CapHoiDong: res?.data.CapHoiDong,
-                    LoaiHoiDong: res?.data.LoaiHoiDong,
+                    TenLoaiHoiDong: res?.data.TenLoaiHoiDong,
                     VaiTro: res?.data.VaiTro,
                     ThoiDiem: res?.data.ThoiDiem,
                     Quy: res?.data.Quy,
@@ -341,7 +343,7 @@ const TaiHoiDong = ({ quannhanId }) => {
         if (res?.data) {
             setStateTaiHoiDongDetails({
                 CapHoiDong: res?.data.CapHoiDong,
-                LoaiHoiDong: res?.data.LoaiHoiDong,
+                TenLoaiHoiDong: res?.data.TenLoaiHoiDong,
                 VaiTro: res?.data.VaiTro,
                 ThoiDiem: res?.data.ThoiDiem,
                 Quy: res?.data.Quy,
@@ -459,8 +461,8 @@ const TaiHoiDong = ({ quannhanId }) => {
         },
         {
             title: 'Hội đồng',
-            dataIndex: 'LoaiHoiDong',
-            key: 'LoaiHoiDong',
+            dataIndex: 'TenLoaiHoiDong',
+            key: 'TenLoaiHoiDong',
         },
         {
             title: 'Số lượng',
@@ -516,7 +518,7 @@ const TaiHoiDong = ({ quannhanId }) => {
         setIsOpenDrawer(false);
         setStateTaiHoiDongDetails({
             CapHoiDong: '',
-            LoaiHoiDong: '',
+            TenLoaiHoiDong: '',
             VaiTro: '',
             ThoiDiem: '',
             Quy: '',
@@ -556,7 +558,7 @@ const TaiHoiDong = ({ quannhanId }) => {
         setIsModalOpen(false);
         setStateTaiHoiDong({
             CapHoiDong: '',
-            LoaiHoiDong: '',
+            TenLoaiHoiDong: '',
             VaiTro: '',
             ThoiDiem: '',
             Quy: '',
@@ -574,7 +576,7 @@ const TaiHoiDong = ({ quannhanId }) => {
     const onFinish = () => {
         const params = {
             CapHoiDong: stateTaiHoiDong.CapHoiDong,
-            LoaiHoiDong: stateTaiHoiDong.LoaiHoiDong,
+            TenLoaiHoiDong: stateTaiHoiDong.TenLoaiHoiDong,
             VaiTro: stateTaiHoiDong.VaiTro,
             ThoiDiem: stateTaiHoiDong.ThoiDiem,
             Quy: stateTaiHoiDong.Quy,
@@ -676,37 +678,90 @@ const TaiHoiDong = ({ quannhanId }) => {
 
         }
     })
+
+
+    const fetchAllCapHoiDong = async () => {
+        const res = await CapHoiDongService.getAllTypeByCapHoiDong()
+        console.log(" e cấp hội đồng: ", res)
+        return res
+    }
+    const fetchDeTailCapHoiDong = async () => {
+        const res = await CapHoiDongService.getAllCapHoiDong()
+        console.log(" detail cấp hội đồng: ", res)
+        return res
+    }
+    const queryCapHoiDong = useQuery({ queryKey: ['caphoidongs'], queryFn: fetchAllCapHoiDong })
+    const queryDeTailCapHoiDong = useQuery({ queryKey: ['detailcaphoidongs'], queryFn: fetchDeTailCapHoiDong })
+    const { isLoading: isLoadingCapHoiDongs, data: detailcaphoidongs } = queryDeTailCapHoiDong
+
+    const dataTableCapHoiDong = detailcaphoidongs?.data?.length > 0 && detailcaphoidongs?.data?.map((detailcaphoidong) => {
+        return {
+            ...detailcaphoidong,
+            key: detailcaphoidong._id,
+        }
+    })
+    console.log("data Cấp hội đồng:", queryCapHoiDong.data, dataTableCapHoiDong.data);
     // loại hội đồng
-    const handleChangeSelectLoaiHoiDong = (child) => {
-        setStateCapHoiDong({
-            ...stateCapHoiDong,
-            LoaiHoiDong: child,
+    const handleChangeSelectTenLoaiHoiDong = (child) => {
+        setStateTaiHoiDong({
+            ...stateTaiHoiDong,
+            TenLoaiHoiDong: child,
         });
     };
+    const handleChangeSelectTenLoaiHoiDongDeTail = (child) => {
+        setStateTaiHoiDongDetails({
+            ...stateTaiHoiDongDetails,
+            TenLoaiHoiDong: child,
+        });
+    };
+    // const handleChangeSelectTenLoaiHoiDong = (value) => {
+    //     if (e.target && e.target.name) {
+    //         console.log("e: ", e.target.name, e.target.value);
+    //         setStateTaiHoiDong({
+    //             ...stateTaiHoiDong,
+    //             [e.target.name]: e.target.value,
+    //             TenLoaiHoiDong: e.target.value
+
+    //         });
+
+    //         if (e.target.name === "TenLoaiHoiDong") {
+    //             setStateCapHoiDong({
+    //                 ...stateCapHoiDong,
+    //                 TenLoaiHoiDong: e.target.value,
+    //             });
+    //         }
+    //     }
+    // };
+
+
 
     const handleChangeSelectCapHoiDong = (value) => {
         const selectedCapHoiDong = value;
 
+        console.log("value Cấp hội đồng:", selectedCapHoiDong);
 
-        const filteredDataTable = dataTable.filter((item) => {
-            return item.CapHoiDong === selectedCapHoiDong;
+        const filteredDataTable = dataTableCapHoiDong.filter((item) => {
+            console.log("item Cấp hội đồng:", item.TenCapHoiDong, item);
+            return item.TenCapHoiDong === selectedCapHoiDong;
         });
+        console.log("Cấp hội đồng:", filteredDataTable);
+        const tenTenLoaiHoiDongOptions = filteredDataTable.map((option) => option.TenLoaiHoiDong);
 
-        const tenLoaiHoiDongOptions = filteredDataTable.map((option) => option.LoaiHoiDong);
+        setStateCapHoiDong((prevState) => ({
+            ...prevState,
+            TenCapHoiDong: value,
+            TenLoaiHoiDong: tenTenLoaiHoiDongOptions[0],
+            tenTenLoaiHoiDongOptions: tenTenLoaiHoiDongOptions,
+        }));
 
+        setStateTaiHoiDong((prevState) => ({
+            ...prevState,
+            TenCapHoiDong: value,
+        }));
 
-        setStateCapHoiDong({
-            ...stateCapHoiDong,
-            CapHoiDong: value,
-            // TenDanhMucLoaiHoiDong: '',
-            LoaiHoiDong: tenLoaiHoiDongOptions[0],
-            tenLoaiHoiDongOptions: tenLoaiHoiDongOptions,
-        });
-        console.log("Huyện:", tenLoaiHoiDongOptions);
-
-
-
+        console.log("Loại hội đồng:", tenTenLoaiHoiDongOptions);
     };
+
     // Hàm lọc danh sách options không trùng nhau
     const filterOptions = (options) => {
         const uniqueOptions = [];
@@ -746,10 +801,7 @@ const TaiHoiDong = ({ quannhanId }) => {
 
 
     //Cấp hội đồng
-    const fetchAllCapHoiDong = async () => {
-        const res = await CapHoiDongService.getAllType()
-        return res
-    }
+
     const allCapHoiDong = useQuery({ queryKey: ['all-caphoidong'], queryFn: fetchAllCapHoiDong })
     console.log("caphoidong:", allCapHoiDong.data)
 
@@ -764,46 +816,74 @@ const TaiHoiDong = ({ quannhanId }) => {
     console.log("all caphoidong:", CapHoiDong);
 
     const handleChangeSelect1 = (value) => {
-        const selectedCapHD = value;
+        const selectedCapHoiDong = value;
 
+        console.log("value Cấp hội đồng:", selectedCapHoiDong);
 
-        const filteredDataTable = Array.isArray(CapHoiDong) ? CapHoiDong.filter((data) => {
-            return data.TenCapHoiDong === selectedCapHD;
-        }) : [];
+        const filteredDataTable = dataTableCapHoiDong.filter((item) => {
+            console.log("item Cấp hội đồng:", item.TenCapHoiDong, item);
+            return item.TenCapHoiDong === selectedCapHoiDong;
+        });
+        console.log("Cấp hội đồng:", filteredDataTable);
+        const tenTenLoaiHoiDongOptions = filteredDataTable.map((option) => option.TenLoaiHoiDong);
 
+        setStateCapHoiDong((prevState) => ({
+            ...prevState,
+            TenCapHoiDong: value,
+            TenLoaiHoiDong: tenTenLoaiHoiDongOptions[0],
+            tenTenLoaiHoiDongOptions: tenTenLoaiHoiDongOptions,
+        }));
 
-        console.log("all caphoidong1:", filteredDataTable,);
-
-        console.log("loaihoidong:", filteredDataTable.map((option) => option.CapHoiDong || ' '), selectedCapHD);
-        const tenLoaiOptions = filteredDataTable.map((option) => option.TenLoaiHoiDong);
-
-
-
-
-        setStateTaiHoiDong({
-            ...stateTaiHoiDong,
+        setStateTaiHoiDong((prevState) => ({
+            ...prevState,
             CapHoiDong: value,
-            TenLoaiHoiDong: tenLoaiOptions[0],
-            tenLoaiOptions: tenLoaiOptions,
-        })
-        console.log("Tên loại hội đồng: ", tenLoaiOptions)
+        }));
+
+        console.log("Loại hội đồng:", tenTenLoaiHoiDongOptions);
+    }
+
+    const handleChangeSelect1DeTail = (value) => {
+        const selectedCapHoiDong = value;
+
+        console.log("value detail Cấp hội đồng:", selectedCapHoiDong);
+
+        const filteredDataTable = dataTableCapHoiDong.filter((item) => {
+            console.log("item detail Cấp hội đồng:", item.TenCapHoiDong, item);
+            return item.TenCapHoiDong === selectedCapHoiDong;
+        });
+        console.log("Cấp hội đồng detail:", filteredDataTable);
+        const tenTenLoaiHoiDongOptions = filteredDataTable.map((option) => option.TenLoaiHoiDong);
+
+        setStateCapHoiDongDetails((prevState) => ({
+            ...prevState,
+            TenCapHoiDong: value,
+            TenLoaiHoiDong: tenTenLoaiHoiDongOptions[0],
+            tenTenLoaiHoiDongOptions: tenTenLoaiHoiDongOptions,
+        }));
+
+        setStateTaiHoiDongDetails((prevState) => ({
+            ...prevState,
+            CapHoiDong: value,
+        }));
+
+        console.log("Loại detail hội đồng:", tenTenLoaiHoiDongOptions);
     }
 
     //loại hội đồng
 
-    // const fetchAllLoaiHoiDong = async () => {
+    // const fetchAllTenLoaiHoiDong = async () => {
 
-    //     const res = await CapHoiDongService.getAllTypeByLoaiHoiDong()
+    //     const res = await CapHoiDongService.getAllTypeByTenLoaiHoiDong()
     //     return res
     // }
 
-    // const allLoaiHoiDong = useQuery(['all-loaihoidong'], fetchAllLoaiHoiDong)
-    // console.log("loaihd: ", allLoaiHoiDong.data)
+    // const allTenLoaiHoiDong = useQuery(['all-loaihoidong'], fetchAllTenLoaiHoiDong)
+    // console.log("loaihd: ", allTenLoaiHoiDong.data)
 
     // const handleChangeSelect3 = (value) => {
     //     setStateTaiHoiDong({
     //         ...stateTaiHoiDong,
-    //         LoaiHoiDong: value
+    //         TenLoaiHoiDong: value
     //     })
     //     // console.log(stateQuanNhan)
     // }
@@ -819,6 +899,13 @@ const TaiHoiDong = ({ quannhanId }) => {
     const handleChangeSelect2 = (value) => {
         setStateTaiHoiDong({
             ...stateTaiHoiDong,
+            VaiTro: value
+        })
+        // console.log(stateQuanNhan)
+    }
+    const handleChangeSelect2DeTail = (value) => {
+        setStateTaiHoiDongDetails({
+            ...stateTaiHoiDongDetails,
             VaiTro: value
         })
         // console.log(stateQuanNhan)
@@ -883,14 +970,13 @@ const TaiHoiDong = ({ quannhanId }) => {
                     >
                         <Form.Item
                             label="Cấp hội đồng"
-                            //  name="CapHoiDong"
+                            name="CapHoiDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
+
                             <Select
                                 name="CapHoiDong"
-                                value={stateCapHoiDong.CapHoiDong}
-                                onChange={handleChangeSelectCapHoiDong}
-
+                                onChange={handleChangeSelect1}
                                 options={renderOptions(allCapHoiDong?.data?.data)}
                             />
 
@@ -898,17 +984,17 @@ const TaiHoiDong = ({ quannhanId }) => {
 
                         <Form.Item
                             label="Loại hội đồng"
-                            //  name="LoaiHoiDong"
+                            name="TenLoaiHoiDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiHoiDong['LoaiHoiDong']} onChange={handleOnchange} name="LoaiHoiDong" /> */}
+                            {/* <InputComponent value={stateTaiHoiDong['TenLoaiHoiDong']} onChange={handleOnchange} name="TenLoaiHoiDong" /> */}
 
                             <Select
-                                name="LoaiHoiDong"
-                                value={stateCapHoiDong.LoaiHoiDong}
-                                onChange={handleChangeSelectLoaiHoiDong}
+                                name="TenLoaiHoiDong"
+                                value={stateCapHoiDong.TenLoaiHoiDong}
+                                onChange={handleChangeSelectTenLoaiHoiDong}
 
-                                options={filterOptions(stateCapHoiDong.tenLoaiHoiDongOptions).map((option) => ({
+                                options={filterOptions(stateCapHoiDong.tenTenLoaiHoiDongOptions).map((option) => ({
                                     label: option,
                                     value: option,
                                 }))}
@@ -1031,7 +1117,7 @@ const TaiHoiDong = ({ quannhanId }) => {
                         >
                             <Select
                                 name="CapHoiDong"
-                                onChange={handleChangeSelect1}
+                                onChange={handleChangeSelect1DeTail}
                                 options={renderOptions(allCapHoiDong?.data?.data)}
                             />
 
@@ -1039,15 +1125,20 @@ const TaiHoiDong = ({ quannhanId }) => {
 
                         <Form.Item
                             label="Loại hội đồng"
-                            name="LoaiHoiDong"
+                            name="TenLoaiHoiDong"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateTaiHoiDongDetails['LoaiHoiDong']} onChange={handleOnchangeDetails} name="LoaiHoiDong" /> */}
-                            {/* <Select
-                                name="LoaiHoiDong"
-                                onChange={handleChangeSelect3}
-                                options={renderOptions(allLoaiHoiDong?.data?.data)}
-                            /> */}
+                            {/* <InputComponent value={stateTaiHoiDongDetails['TenLoaiHoiDong']} onChange={handleOnchangeDetails} name="TenLoaiHoiDong" /> */}
+                            <Select
+                                name="TenLoaiHoiDong"
+                                value={stateCapHoiDongDetails.TenLoaiHoiDong}
+                                onChange={handleChangeSelectTenLoaiHoiDongDeTail}
+
+                                options={filterOptions(stateCapHoiDongDetails.tenTenLoaiHoiDongOptions).map((option) => ({
+                                    label: option,
+                                    value: option,
+                                }))}
+                            />
                         </Form.Item>
 
                         <Form.Item
@@ -1059,7 +1150,7 @@ const TaiHoiDong = ({ quannhanId }) => {
                        */}
                             <Select
                                 name="VaiTro"
-                                onChange={handleChangeSelect2}
+                                onChange={handleChangeSelect2DeTail}
                                 options={renderOptions(allVaiTroHoiDong?.data?.data)}
                             />
                         </Form.Item>

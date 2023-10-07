@@ -70,8 +70,12 @@ export const deleteManyNhomHoatDongNC = async (data, access_token) => {
     return res.data;
 };
 
-export const getAllType = async () => {
-    const res = await axios.get(`${process.env.REACT_APP_API_URL}/nhomhoatdongnc/get-all-type`);
+export const getAllTypeNhomHoatDong = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/nhomhoatdongnc/get-all-typenhom`);
+    return res.data;
+};
+export const getAllTypeLoaiHoatDong = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/nhomhoatdongnc/get-all-typeloai`);
     return res.data;
 };
 export const updateNhomHoatDongNCLists = async (id, data, access_token) => {

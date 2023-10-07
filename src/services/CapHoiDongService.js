@@ -78,3 +78,7 @@ export const getAllTypeByLoaiHoiDong = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/caphoidong/get-all-typeloai`);
     return res.data;
 };
+export const getAllTypeByCapHoiDong = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/caphoidong/get-all-typecap`);
+    return res.data;
+};

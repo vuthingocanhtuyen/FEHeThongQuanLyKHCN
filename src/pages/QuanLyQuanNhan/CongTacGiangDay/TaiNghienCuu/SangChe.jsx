@@ -716,8 +716,8 @@ const SangChe = ({ }) => {
         },
         {
             title: 'Mã quân nhân',
-            dataIndex: 'MaQuanNhan',
-            key: 'MaQuanNhan',
+            dataIndex: 'QuanNhanId',
+            key: 'QuanNhanId',
             render: (text, record) => (
                 <span onClick={() => handleNameClick(record.QuanNhanId, record._id)}>{text}</span>
             ),
