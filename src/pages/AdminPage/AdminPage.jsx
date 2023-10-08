@@ -4,7 +4,7 @@ import { getItem } from '../../utils';
 import { UserOutlined, AppstoreOutlined, SettingOutlined, LogoutOutlined, LockOutlined, AppstoreAddOutlined, UsergroupAddOutlined } from '@ant-design/icons'
 import HeaderComponent from '../../components/HeaderCompoent/HeaderComponent';
 import AdminUser from '../../components/AdminUser/AdminUser';
-
+import HoSoDonVi from '../QuanLyDonVi/HoSoDonVi';
 import * as OrderService from '../../services/OrderService'
 import * as ProductService from '../../services/ProductService'
 import * as UserService from '../../services/UserService'
@@ -222,11 +222,12 @@ const AdminPage = () => {
       key: 'donvis',
       icon: <AppstoreOutlined />,
       children: [
+        getItem('Hồ sơ đơn vị', 'hsdv', <AppstoreAddOutlined />),
         getItem('Danh mục đơn vị', 'donvi', <LogoutOutlined />),
         getItem('Hồ sơ cán bộ', 'hscb', <LockOutlined />),
         //   getItem('Chi tiết hồ sơ cán bộ', 'cthscb', <LockOutlined />),
-        getItem('Quản lý nhu cầu/biên chế', 'quanlynhucaubc', <UserOutlined />),
-        getItem('Điểu chuyển cán bộ', 'dieuchuyen', <UserOutlined />),
+        // getItem('Quản lý nhu cầu/biên chế', 'quanlynhucaubc', <UserOutlined />),
+        //  getItem('Điểu chuyển cán bộ', 'dieuchuyen', <UserOutlined />),
       ],
     },
     {
@@ -235,7 +236,7 @@ const AdminPage = () => {
       key: 'baocaothongke',
       icon: <LogoutOutlined />,
       children: [
-        getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
+        //    getItem('Thống kê nhân lực', 'thongkenhanluc', <UserOutlined />),
         getItem('Thông kê tải đơn vị', 'thongketai', <LockOutlined />),
         getItem('Thống kê tải cá nhân', 'thongketaiquannhan', <AppstoreAddOutlined />)
 
@@ -451,7 +452,10 @@ const AdminPage = () => {
         )
 
       //Quanly đơn vị
-
+      case 'hsdv':
+        return (
+          <HoSoDonVi />
+        )
       case 'donvi':
         return (
           <DMDonVi />
