@@ -17,7 +17,7 @@ import ModalComponent from '../../../../components/ModalComponent/ModalComponent
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTDang = ({ quannhanId}) => {
+const QTDang = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -29,7 +29,7 @@ const QTDang = ({ quannhanId}) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    
+
     const inittial = () => ({
         QuyetDinh: '',
         NgayQuyetDinh: '',
@@ -143,7 +143,7 @@ const QTDang = ({ quannhanId}) => {
 
 
     const fetchGetQTCTDang = async (context) => {
-        
+
         if (quannhanId) {
 
             const res = await QTCTDangService.getQTCTDangByQuanNhanId(quannhanId)
@@ -380,11 +380,11 @@ const QTDang = ({ quannhanId}) => {
             dataIndex: 'GhiChu',
             key: 'GhiChu',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -606,9 +606,9 @@ const QTDang = ({ quannhanId}) => {
         <div>
             <div>
                 <WrapperHeader>Quá trình sinh hoạt Đảng</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

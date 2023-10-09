@@ -209,14 +209,8 @@ const ThongKeTaiQuanNhan = () => {
         return moment(date).format('DD/MM/YYYY');
     }
     const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
-        return {
-            ...quannhan,
-            key: quannhan._id,
-            NgaySinh: convertDateToString(quannhan.NgaySinh)
-        }
-    })
-    const filteredData = quannhans?.data?.filter(item => {
-
+        return { ...quannhan, key: quannhan._id, NgaySinh: convertDateToString(quannhan.NgaySinh) }
+    }).filter(item => {
         const matchesHoTen = item.HoTen.toLowerCase().includes(searchTermHoTen.toLowerCase());
         const matchesQuanNhanId = item.QuanNhanId.includes(searchTermQuanNhanId.toLowerCase());
         return matchesHoTen && matchesQuanNhanId;

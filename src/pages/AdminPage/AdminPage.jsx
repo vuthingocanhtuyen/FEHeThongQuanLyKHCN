@@ -114,18 +114,8 @@ const AdminPage = () => {
       key: 'system',
       icon: <AppstoreOutlined />,
       children: [
-        {
-          label: 'Hệ thống',
-          key: 'id',
-          icon: <SettingOutlined />,
-          children: managementChildren
-        },
-        {
-          label: 'Quản lý NSD và Quyền',
-          key: 'management',
-          icon: <UserOutlined />,
-          children: managementChildren2
-        },
+        getItem('Đổi mật khẩu', 'changepassword', <LockOutlined />),
+        getItem('Tham số hệ thống', 'systemparams', <AppstoreAddOutlined />),
 
       ],
     },

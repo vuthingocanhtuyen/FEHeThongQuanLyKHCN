@@ -15,7 +15,7 @@ import InputForm from '../../../components/InputForm/InputForm'
 import Loading from '../../../components/LoadingComponent/Loading'
 import { Button, Upload } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
-import TaiGiangDay from './TaiDaoTao/TaiGiangDay'
+import TaiGiangDay2 from './TaiDaoTao/TaiGiangDay2'
 import TaiHuongDan from './TaiDaoTao/TaiHuongDan'
 import TaiKhaoThi from './TaiDaoTao/TaiKhaoThi'
 import TaiHoiDong from './TaiDaoTao/TaiHoiDong'
@@ -102,7 +102,7 @@ const TaiChiTiet = () => {
 
             <h3>1. Tải giảng dạy</h3>
             <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
-                <TaiGiangDay />
+                <TaiGiangDay2 />
             </div>
             <br />
             <h3>2. Tải hướng dẫn</h3>

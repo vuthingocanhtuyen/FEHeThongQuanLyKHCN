@@ -24,14 +24,14 @@ import CheckboxComponent from '../../components/CheckBox/CheckBox'
 const LyLich = () => {
     const [donvi, setDonVi] = useState([]);
     const user = useSelector((state) => state.user)
-    
+
     const [name, setName] = useState('')
     const [managestaff, setManagestaff] = useState('')
     const [bienche, setBienChe] = useState('')
     const [email, setEmail] = useState('')
     const [phone, setPhone] = useState('')
-    
-    
+
+
     const [currentUserDonVi, setCurrentUserDonVi] = useState(null);
     const mutation = useMutationHooks(
         (data) => {
@@ -40,33 +40,33 @@ const LyLich = () => {
         }
     )
     const dispatch = useDispatch()
-    const { data,  isSuccess, isError } = mutation
+    const { data, isSuccess, isError } = mutation
     useEffect(() => {
         const fetchGetChucVuDonVi = async () => {
-    
-          try {
-            // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
-            const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
-            console.log(response.data);
-    
-            if (response.data && response.data.length > 0) {
-              const firstData = response.data[0];
-              console.log(response.data[0]);
-              const donViValue = firstData.DonVi[0];
-              setCurrentUserDonVi(donViValue);
-              
+
+            try {
+                // Gọi API để lấy thông tin đơn vị hiện tại của người dùng
+                const response = await PriorityByUserService.getChucVuDonViFromUser(user.QuanNhanId, user.access_token);
+                console.log(response.data);
+
+                if (response.data && response.data.length > 0) {
+                    const firstData = response.data[0];
+                    console.log(response.data[0]);
+                    const donViValue = firstData.DonVi[0];
+                    setCurrentUserDonVi(donViValue);
+
+                }
+
+            } catch (error) {
+                console.error('Error fetching ChucVuDonVi:', error);
             }
-    
-          } catch (error) {
-            console.error('Error fetching ChucVuDonVi:', error);
-          }
         };
-    
+
         fetchGetChucVuDonVi();
-      }, [user.QuanNhanId, user.access_token]);
+    }, [user.QuanNhanId, user.access_token]);
 
     useEffect(() => {
-        
+
         setName(donviDetails?.name);
         setManagestaff(donviDetails?.managestaff);
         setBienChe(donviDetails?.bienche);
@@ -107,17 +107,17 @@ const LyLich = () => {
     const handleOnchangeManageStaff = (value) => {
         setManagestaff(value)
     }
-    
+
     // show dữ liệu
 
     const fetchGetDetailsDonVi = async () => {
-            const res = await DonViService.getDonVifromcode(currentUserDonVi);
-            setDonVi(res); 
-            return res.data[0]
+        const res = await DonViService.getDonVifromcode(currentUserDonVi);
+        setDonVi(res);
+        return res.data[0]
     }
 
-    
-    const { isLoading, data: donviDetails } = useQuery(['hsquannhan', currentUserDonVi], fetchGetDetailsDonVi, { enabled : !!currentUserDonVi})
+
+    const { isLoading, data: donviDetails } = useQuery(['hsquannhan', currentUserDonVi], fetchGetDetailsDonVi, { enabled: !!currentUserDonVi })
 
 
 
@@ -130,7 +130,7 @@ const LyLich = () => {
 
 
     const handleUpdate = () => {
-        mutation.mutate({ id: donviDetails?._id, name, managestaff,bienche,email,phone, access_token: user?.access_token }, {
+        mutation.mutate({ id: donviDetails?._id, name, managestaff, bienche, email, phone, access_token: user?.access_token }, {
             onSettled: () => {
                 fetchGetDetailsDonVi();
             }
@@ -140,40 +140,40 @@ const LyLich = () => {
     return (
 
         <div style={{ width: '1200px', margin: '0 auto', height: '500px', padding: '30px', marginBottom: '50px' }}>
-            <WrapperHeader style={{ marginLeft: '500px'}}>HỒ SƠ ĐƠN VỊ</WrapperHeader>
+            <WrapperHeader style={{ marginLeft: '500px' }}>HỒ SƠ ĐƠN VỊ</WrapperHeader>
 
             <Loading isLoading={isLoading}>
-            <WrapperContentProfile style={{  width: '900px',display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <WrapperContentProfile style={{ width: '900px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-                    <WrapperInput style={{marginTop: '10px'}}>
+                    <WrapperInput style={{ marginTop: '10px' }}>
                         <WrapperLabel htmlFor="name">Đơn vị</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="name" value={name} onChange={handleOnchangeName} readOnly />
-                        
+                        <InputForm style={{ width: '500px' }} id="name" value={name} readOnly />
+
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="managestaff">Cấp trưởng</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="managestaff" value={managestaff} onChange={handleOnchangeManageStaff} />
-                        
+                        <InputForm style={{ width: '500px' }} id="managestaff" value={managestaff} readOnly />
+
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="phone">Số điện thoại liên hệ</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="phone" value={phone} onChange={handleOnchangePhone} />
-                        
+                        <InputForm style={{ width: '500px' }} id="phone" value={phone} readOnly />
+
                     </WrapperInput>
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="bienche">Số lượng biên chế</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="bienche" value={bienche} onChange={handleOnchangeBienChe} />
-                        
+                        <InputForm style={{ width: '500px' }} id="bienche" value={bienche} readOnly />
+
                     </WrapperInput>
 
-                    
+
                     <WrapperInput>
                         <WrapperLabel htmlFor="Email">Email</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="email" value={email} onChange={handleOnchangeEmail} />
-                       
+                        <InputForm style={{ width: '500px' }} id="email" value={email} readOnly />
+
                     </WrapperInput>
-                     <ButtonComponent
+                    {/* <ButtonComponent
                             onClick={handleUpdate}
                             size={40}
                             styleButton={{
@@ -185,7 +185,7 @@ const LyLich = () => {
                             }}
                             textbutton={'Cập nhật'}
                             styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                        ></ButtonComponent>
+                        ></ButtonComponent> */}
                 </WrapperContentProfile>
             </Loading>
         </div>

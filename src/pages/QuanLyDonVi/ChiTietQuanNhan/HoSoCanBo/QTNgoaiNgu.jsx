@@ -14,7 +14,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const NgoaiNgu = ({ quannhanId}) => {
+const NgoaiNgu = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -27,7 +27,7 @@ const NgoaiNgu = ({ quannhanId}) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    
+
     const quyen = user.isAdmin;
     console.log(quyen);
     const inittial = () => ({
@@ -147,7 +147,7 @@ const NgoaiNgu = ({ quannhanId}) => {
 
 
     const fetchGetNgoaiNgu = async (context) => {
-        
+
         if (quannhanId) {
 
             const res = await NgoaiNguService.getNgoaiNguByQuanNhanId(quannhanId)
@@ -401,11 +401,11 @@ const NgoaiNgu = ({ quannhanId}) => {
             dataIndex: 'GhiChu',
             key: 'GhiChu',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -614,9 +614,9 @@ const NgoaiNgu = ({ quannhanId}) => {
         <div>
             <div>
                 <WrapperHeader>Ngôn ngữ</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

@@ -14,7 +14,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const QTHoaTapKhac = ({ quannhanId}) => {
+const QTHoaTapKhac = ({ quannhanId }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
@@ -24,7 +24,7 @@ const QTHoaTapKhac = ({ quannhanId}) => {
 
   const user = useSelector((state) => state?.user)
   const searchInput = useRef(null);
-  
+
   const inittial = () => ({
     Ten: '',
     Loai: '',
@@ -111,7 +111,7 @@ const QTHoaTapKhac = ({ quannhanId}) => {
 
 
   const fetchGetQuyTrinhHocTapKhac = async (context) => {
-    
+
     if (quannhanId) {
       const res = await QuyTrinhHocTapKhacService.getQuaTrinhHocTapKhacByQuanNhanId(quannhanId)
       console.log("qthtk res: ", res)
@@ -331,11 +331,11 @@ const QTHoaTapKhac = ({ quannhanId}) => {
       dataIndex: 'GhiChu',
       key: 'GhiChu',
     },
-    {
-      title: 'Chức năng',
-      dataIndex: 'action',
-      render: renderAction
-    },
+    // {
+    //   title: 'Chức năng',
+    //   dataIndex: 'action',
+    //   render: renderAction
+    // },
   ];
 
   useEffect(() => {
@@ -471,9 +471,9 @@ const QTHoaTapKhac = ({ quannhanId}) => {
     <div>
       <div>
         <WrapperHeader>Quá trình học tập khác</WrapperHeader>
-        <div style={{ marginTop: '10px' }}>
+        {/* <div style={{ marginTop: '10px' }}>
           <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-        </div>
+        </div> */}
         {isLoading ? ( // Hiển thị thông báo đang tải
           <div>Loading...</div>
         ) : (

@@ -2,20 +2,20 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Form, Select, Button, Space } from 'antd';
 import { useSelector } from 'react-redux';
-import * as message from '../../../components/Message/Message'
-import { getBase64, renderOptions } from '../../../utils'
-import Loading from '../../../components/LoadingComponent/Loading'
-import InputComponent from '../../../components/InputComponent/InputComponent'
-import { useMutationHooks } from '../../../hooks/useMutationHook'
-import * as QuaTrinhKhenThuongService from '../../../services/QuaTrinhKhenThuongService';
-import * as DanhMucKhenThuongService from '../../../services/DanhMucKhenThuongService';
+import * as message from '../../../../components/Message/Message'
+import { getBase64, renderOptions } from '../../../../utils'
+import Loading from '../../../../components/LoadingComponent/Loading'
+import InputComponent from '../../../../components/InputComponent/InputComponent'
+import { useMutationHooks } from '../../../../hooks/useMutationHook'
+import * as QuaTrinhKhenThuongService from '../../../../services/QuaTrinhKhenThuongService';
+import * as DanhMucKhenThuongService from '../../../../services/DanhMucKhenThuongService';
 import { WrapperHeader } from './style'
 import { useQuery } from '@tanstack/react-query'
 import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOutlined } from '@ant-design/icons'
 
-import ModalComponent from '../../../components/ModalComponent/ModalComponent'
-import DrawerComponent from '../../../components/DrawerComponent/DrawerComponent'
-import TableComponent from '../../../components/TableComponent/TableComponent';
+import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
+import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
+import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
 const QuaTrinhKhenThuong = ({ }) => {
 
@@ -377,11 +377,11 @@ const QuaTrinhKhenThuong = ({ }) => {
             dataIndex: 'TrangThai',
             key: 'TrangThai',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -603,9 +603,9 @@ const QuaTrinhKhenThuong = ({ }) => {
         <div>
             <div>
                 <WrapperHeader>Quá trình khen thưởng</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

@@ -16,7 +16,7 @@ import ModalComponent from '../../../../components/ModalComponent/ModalComponent
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTCongTac = ({ quannhanId}) => {
+const QTCongTac = ({ quannhanId }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rowSelected, setRowSelected] = useState('')
@@ -28,7 +28,7 @@ const QTCongTac = ({ quannhanId}) => {
 
   const user = useSelector((state) => state?.user)
   const searchInput = useRef(null);
-  
+
   const inittial = () => ({
     SoQuyetDinh: '',
     NgayQuyetDinh: '',
@@ -142,7 +142,7 @@ const QTCongTac = ({ quannhanId}) => {
 
 
   const fetchGetQuaTrinhCongTac = async (context) => {
-   
+
     if (quannhanId) {
 
       const res = await QuaTrinhCongTacService.getQuaTrinhCongTacByQuanNhanId(quannhanId)
@@ -379,11 +379,11 @@ const QTCongTac = ({ quannhanId}) => {
       dataIndex: 'TrangThai',
       key: 'TrangThai',
     },
-    {
-      title: 'Chức năng',
-      dataIndex: 'action',
-      render: renderAction
-    },
+    // {
+    //   title: 'Chức năng',
+    //   dataIndex: 'action',
+    //   render: renderAction
+    // },
 
 
   ];
@@ -584,9 +584,9 @@ const QTCongTac = ({ quannhanId}) => {
     <div>
       <div>
         <WrapperHeader>Quá trình công tác</WrapperHeader>
-        <div style={{ marginTop: '10px' }}>
+        {/* <div style={{ marginTop: '10px' }}>
           <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-        </div>
+        </div> */}
         {isLoading ? ( // Hiển thị thông báo đang tải
           <div>Loading...</div>
         ) : (

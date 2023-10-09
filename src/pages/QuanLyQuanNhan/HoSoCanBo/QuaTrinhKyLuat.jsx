@@ -377,11 +377,11 @@ const QuaTrinhKyLuat = ({ }) => {
             dataIndex: 'TrangThai',
             key: 'TrangThai',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -603,9 +603,9 @@ const QuaTrinhKyLuat = ({ }) => {
         <div>
             <div>
                 <WrapperHeader>Quá trình kỷ luật</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

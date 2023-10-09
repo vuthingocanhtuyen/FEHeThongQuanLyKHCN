@@ -35,9 +35,9 @@ function TabNghienCuu() {
             <TabPane tab="Hợp đồng" key="7">
                 <HopDong />
             </TabPane>
-            <TabPane tab="Hoạt động khác" key="8">
+            {/* <TabPane tab="Hoạt động khác" key="8">
                 <HoatDongKhac />
-            </TabPane>
+            </TabPane> */}
         </Tabs>
     );
 }

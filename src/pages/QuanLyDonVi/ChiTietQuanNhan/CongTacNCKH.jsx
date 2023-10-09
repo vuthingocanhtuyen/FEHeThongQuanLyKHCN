@@ -69,10 +69,10 @@ const CongTacNCKH = ({ idQuanNhan }) => {
                 <h3> Sáng chế</h3>
                 <SangChe quannhanId={quannhanDetails?.QuanNhanId} />
             </div><br />
-            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+            {/* <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
                 <h3> Hoạt động khác</h3>
                 <HoatDongKhac quannhanId={quannhanDetails?.QuanNhanId} />
-            </div><br />
+            </div><br /> */}
 
         </div>
     )

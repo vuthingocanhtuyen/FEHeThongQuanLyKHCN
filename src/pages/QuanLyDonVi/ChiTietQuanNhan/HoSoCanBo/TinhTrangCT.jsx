@@ -16,7 +16,7 @@ import ModalComponent from '../../../../components/ModalComponent/ModalComponent
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const TinhTrangCT = ({ quannhanId}) => {
+const TinhTrangCT = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -30,7 +30,7 @@ const TinhTrangCT = ({ quannhanId}) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    
+
     const inittial = () => ({
         QuyetDinh: '',
         NgayQuyetDinh: '',
@@ -151,7 +151,7 @@ const TinhTrangCT = ({ quannhanId}) => {
 
 
     const fetchGetTinhTrangCongTac = async (context) => {
-       
+
         if (quannhanId) {
 
             const res = await TinhTrangCongTacService.getTinhTrangCongTacByQuanNhanId(quannhanId)
@@ -377,11 +377,11 @@ const TinhTrangCT = ({ quannhanId}) => {
             dataIndex: 'TrangThai',
             key: 'TrangThai',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -576,9 +576,9 @@ const TinhTrangCT = ({ quannhanId}) => {
         <div>
             <div>
                 <WrapperHeader>Tình trạng công tác</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

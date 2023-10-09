@@ -182,40 +182,40 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="HoTen">Họ và Tên</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="HoTen" value={HoTen} onChange={handleOnchangeHoTen} />
+                        <InputForm style={{ width: '500px' }} id="HoTen" value={HoTen} onChange={handleOnchangeHoTen} readOnly />
 
                     </WrapperInput>
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="NgaySinh">Ngày sinh</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="NgaySinh" value={convertDateToString(NgaySinh)} />
+                        <InputForm style={{ width: '500px' }} id="NgaySinh" value={convertDateToString(NgaySinh)} readOnly />
 
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="GioiTinh">Giới tính</WrapperLabel>
-                        <CheckboxComponent style={{ width: '500px' }} id="GioiTinh" value={GioiTinh} checked={GioiTinh === 'Nu'} onChange={handleChangeCheckGioiTinh} />
+                        <CheckboxComponent style={{ width: '500px' }} id="GioiTinh" value={GioiTinh} checked={GioiTinh === 'Nu'} onChange={handleChangeCheckGioiTinh} readOnly />
                     </WrapperInput>
 
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="DonVi">Đơn vị</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="DonVi" value={DonVi} onChange={handleOnchangeDonVi} />
+                        <InputForm style={{ width: '500px' }} id="DonVi" value={DonVi} onChange={handleOnchangeDonVi} readOnly />
 
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="DiaChi">Địa chỉ</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="DiaChi" value={DiaChi} onChange={handleOnchangeDiaChi} />
+                        <InputForm style={{ width: '500px' }} id="DiaChi" value={DiaChi} onChange={handleOnchangeDiaChi} readOnly />
 
                     </WrapperInput>
                     <WrapperInput>
                         <WrapperLabel htmlFor="QueQuan">Quê quán</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="QueQuan" value={QueQuan} onChange={handleOnchangeQueQuan} />
+                        <InputForm style={{ width: '500px' }} id="QueQuan" value={QueQuan} onChange={handleOnchangeQueQuan} readOnly />
 
                     </WrapperInput>
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="SoDienThoai">Số điện thoại</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="SoDienThoai" value={SoDienThoai} onChange={handleOnchangeSdt} />
+                        <InputForm style={{ width: '500px' }} id="SoDienThoai" value={SoDienThoai} onChange={handleOnchangeSdt} readOnly />
 
                     </WrapperInput>
 
@@ -223,10 +223,10 @@ const LyLich = ({ idQuanNhan }) => {
 
                     <WrapperInput>
                         <WrapperLabel htmlFor="Email">Email</WrapperLabel>
-                        <InputForm style={{ width: '500px' }} id="Email" value={Email} onChange={handleOnchangeEmail} />
+                        <InputForm style={{ width: '500px' }} id="Email" value={Email} onChange={handleOnchangeEmail} readOnly />
 
                     </WrapperInput>
-                    <ButtonComponent
+                    {/* <ButtonComponent
                         onClick={handleUpdate}
                         size={40}
                         styleButton={{
@@ -238,7 +238,7 @@ const LyLich = ({ idQuanNhan }) => {
                         }}
                         textbutton={'Cập nhật'}
                         styleTextButton={{ color: 'rgb(26, 148, 255)', fontSize: '15px', fontWeight: '700' }}
-                    ></ButtonComponent>
+                    ></ButtonComponent> */}
                 </WrapperContentProfile>
             </Loading>
         </div>

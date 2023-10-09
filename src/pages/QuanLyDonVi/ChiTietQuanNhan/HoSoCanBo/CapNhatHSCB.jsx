@@ -30,6 +30,8 @@ import TinhTrangCT from './TinhTrangCT'
 import QuaTrinhHocHam from './QuaTrinhHocHam'
 import QuaTrinhHocVi from './QuaTrinhHocVi'
 import moment from 'moment';
+import QuaTrinhKhenThuong from './QuaTrinhKhenThuong'
+import QuaTrinhKyLuat from './QuaTrinhKyLuat'
 const CapNhatHSCB = () => {
     // const [quannhanObjectId, setQuannhanObjectId] = useState([]);
     const [quannhann, setQuannhan] = useState([]);
@@ -312,7 +314,14 @@ const CapNhatHSCB = () => {
                 <QTHocTapKhac />
             </div>
             <br />
-
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QuaTrinhKhenThuong />
+            </div>
+            <br />
+            <div style={{ width: '1270px', margin: '0 auto', padding: '10px', background: '#fff', borderRadius: "8px", border: "1px solid #ccc" }}>
+                <QuaTrinhKyLuat />
+            </div>
+            <br />
         </div>
     )
 }

@@ -414,9 +414,7 @@ const HoSoCanBo = () => {
   }
   const dataTable = quannhans?.data?.length && quannhans?.data?.map((quannhan) => {
     return { ...quannhan, key: quannhan._id, NgaySinh: convertDateToString(quannhan.NgaySinh) }
-  })
-  const filteredData = quannhans?.data?.filter(item => {
-
+  }).filter(item => {
     const matchesHoTen = item.HoTen.toLowerCase().includes(searchTermHoTen.toLowerCase());
     const matchesQuanNhanId = item.QuanNhanId.includes(searchTermQuanNhanId.toLowerCase());
     return matchesHoTen && matchesQuanNhanId;
@@ -665,9 +663,9 @@ const HoSoCanBo = () => {
   return (
     <div>
       <WrapperHeader>Quản lý quân nhân</WrapperHeader>
-      <div style={{ marginTop: '10px' }}>
+      {/* <div style={{ marginTop: '10px' }}>
         <Button style={{ height: '50px', width: '50px', borderRadius: '6px', borderStyle: 'dashed' }} onClick={() => setIsModalOpen(true)}><PlusOutlined style={{ fontSize: '20px' }} /></Button>
-      </div>
+      </div> */}
       <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ccc', marginTop: '15px' }}>
         <div style={{ margin: '0 auto', float: 'left', padding: '5px' }}>
           <FreeDonVi handleTreeNodeClick={handleTreeNodeClick} treeNodeClickedId={treeNodeClickedId} />

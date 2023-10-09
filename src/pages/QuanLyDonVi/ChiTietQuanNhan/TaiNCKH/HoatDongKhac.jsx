@@ -1254,12 +1254,14 @@ const HoatDongKhac = ({ quannhanId }) => {
     const queryDeTailCapHoiDong = useQuery({ queryKey: ['detailnhomhoatdongs'], queryFn: fetchAllCapHoiDong })
     const { isLoading: isLoadingNhomHoatDongs, data: detailnhomhoatdongs } = queryDeTailCapHoiDong
     console.log("queryNhom nc:", queryNhom.data)
+    console.log("query nc:", queryDeTailCapHoiDong.data)
     const dataTableNhom = detailnhomhoatdongs?.data?.length > 0 && detailnhomhoatdongs?.data?.map((detailnhomhoatdong) => {
         return {
             ...detailnhomhoatdong,
             key: detailnhomhoatdong._id,
         }
     })
+    console.log("datableb nc:", dataTableNhom.data, dataTableNhom)
 
     const handleChangeSelectNhomHoatDongNC = (value) => {
         const selectedNhom = value;
@@ -1267,16 +1269,18 @@ const HoatDongKhac = ({ quannhanId }) => {
         console.log("value nhóm hđ:", selectedNhom);
 
         const filteredDataTable = dataTableNhom.filter((item) => {
-            console.log("item nhóm hđ:", item.NhomNghienCuu, item);
-            return item.NhomNghienCuu === selectedNhom;
+            console.log("item nhóm hđ:", item.TenNhomHoatDongNC, selectedNhom, item);
+            console.log("tem ss:", item.TenNhomHoatDongNC, selectedNhom);
+            return item.TenNhomHoatDongNC === selectedNhom;
+
         });
         console.log("Cấp hội đồng detail:", filteredDataTable);
         const tenLoaiHoatDongOptions = filteredDataTable.map((option) => option.LoaiHoatDong);
 
         setStateNhomNghienCuu((prevState) => ({
             ...prevState,
-            LoaiHoatDong: value,
-            LoaiHoiDong: tenLoaiHoatDongOptions[0],
+            TenNhomHoatDongNC: value,
+            LoaiHoatDong: tenLoaiHoatDongOptions[0],
             tenTenLoaiHoatDongOptions: tenLoaiHoatDongOptions,
         }));
 
@@ -1296,16 +1300,16 @@ const HoatDongKhac = ({ quannhanId }) => {
         console.log("detail nhóm hđ:", selectedNhom);
 
         const filteredDataTable = dataTableNhom.filter((item) => {
-            console.log("item detailnhóm hđ:", item.TenNhomHoatDongNC, item);
+            // console.log("item detailnhóm hđ:", item.TenNhomHoatDongNC, item);
             return item.TenNhomHoatDongNC === selectedNhom;
         });
-        console.log(" detail:", filteredDataTable);
+        console.log(" nhóm nc detail:", filteredDataTable);
         const tenLoaiHoatDongOptions = filteredDataTable.map((option) => option.LoaiHoatDong);
 
         setStateNhomNghienCuuDetails((prevState) => ({
             ...prevState,
-            LoaiHoatDong: value,
-            TenLoaiHoiDong: tenLoaiHoatDongOptions[0],
+            TenNhomHoatDongNC: value,
+            LoaiHoatDong: tenLoaiHoatDongOptions[0],
             tenTenLoaiHoatDongOptions: tenLoaiHoatDongOptions,
         }));
 

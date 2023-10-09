@@ -402,11 +402,11 @@ const NgoaiNgu = () => {
             dataIndex: 'GhiChu',
             key: 'GhiChu',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -615,9 +615,9 @@ const NgoaiNgu = () => {
         <div>
             <div>
                 <WrapperHeader>Ngôn ngữ</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

@@ -17,7 +17,7 @@ import ModalComponent from '../../../../components/ModalComponent/ModalComponent
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTQuanHam = ({ quannhanId}) => {
+const QTQuanHam = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -27,7 +27,7 @@ const QTQuanHam = ({ quannhanId}) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    
+
     const inittial = () => ({
         QuyetDinh: '',
         NgayQuyetDinh: '',
@@ -105,7 +105,7 @@ const QTQuanHam = ({ quannhanId}) => {
 
 
     const fetchGetQuaTrinhQuanHam = async (context) => {
-        
+
         if (quannhanId) {
 
             const res = await QuaTrinhQuanHamService.getQuaTrinhQuanHamByQuanNhanId(quannhanId)
@@ -316,11 +316,11 @@ const QTQuanHam = ({ quannhanId}) => {
             dataIndex: 'GhiChu',
             key: 'GhiChu',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -487,9 +487,9 @@ const QTQuanHam = ({ quannhanId}) => {
         <div>
             <div>
                 <WrapperHeader>Quá trình quân hàm</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

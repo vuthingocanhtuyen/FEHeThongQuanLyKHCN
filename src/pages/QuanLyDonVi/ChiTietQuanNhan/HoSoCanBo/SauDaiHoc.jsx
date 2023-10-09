@@ -15,7 +15,7 @@ import { DeleteOutlined, EditOutlined, SearchOutlined, CheckOutlined, WarningOut
 import ModalComponent from '../../../../components/ModalComponent/ModalComponent'
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
-const SauDaiHoc = ({ quannhanId}) => {
+const SauDaiHoc = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -29,7 +29,7 @@ const SauDaiHoc = ({ quannhanId}) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-    
+
     const quyen = user.isAdmin;
     const inittial = () => ({
         LoaiBang: '',
@@ -154,7 +154,7 @@ const SauDaiHoc = ({ quannhanId}) => {
 
 
     const fetchGetSauDaiHoc = async (context) => {
-        
+
         if (quannhanId) {
 
             const res = await SauDaiHocService.getSauDaiHocByQuanNhanId(quannhanId)
@@ -409,11 +409,11 @@ const SauDaiHoc = ({ quannhanId}) => {
             dataIndex: 'GhiChu',
             key: 'GhiChu',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -609,9 +609,9 @@ const SauDaiHoc = ({ quannhanId}) => {
         <div>
             <div>
                 <WrapperHeader>Sau đại học</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (

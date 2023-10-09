@@ -17,7 +17,7 @@ import ModalComponent from '../../../../components/ModalComponent/ModalComponent
 import DrawerComponent from '../../../../components/DrawerComponent/DrawerComponent'
 import TableComponent from '../../../../components/TableComponent/TableComponent';
 import moment from 'moment';
-const QTCDCMKT = ({ quannhanId}) => {
+const QTCDCMKT = ({ quannhanId }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [rowSelected, setRowSelected] = useState('')
@@ -27,7 +27,7 @@ const QTCDCMKT = ({ quannhanId}) => {
 
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
-   
+
     const inittial = () => ({
         QuyetDinh: '',
         NgayQuyetDinh: '',
@@ -113,7 +113,7 @@ const QTCDCMKT = ({ quannhanId}) => {
 
 
     const fetchGetQTCDCMKT = async (context) => {
-       
+
         if (quannhanId) {
 
             const res = await QTCDCMKTService.getQTCDCMKTByQuanNhanId(quannhanId)
@@ -294,7 +294,7 @@ const QTCDCMKT = ({ quannhanId}) => {
 
     //const { data: qtcdcmktDetails } = useQuery(['hosoquannhan', quannhanId], fetchGetQTCDCMKT, { enabled: !!quannhanId })
     //console.log("qtrinhcongtac:", qtcdcmktDetails)
-    
+
 
 
     const CheckboxAction = () => {
@@ -368,11 +368,11 @@ const QTCDCMKT = ({ quannhanId}) => {
             dataIndex: 'GhiChu',
             key: 'GhiChu',
         },
-        {
-            title: 'Chức năng',
-            dataIndex: 'action',
-            render: renderAction
-        },
+        // {
+        //     title: 'Chức năng',
+        //     dataIndex: 'action',
+        //     render: renderAction
+        // },
 
 
     ];
@@ -556,9 +556,9 @@ const QTCDCMKT = ({ quannhanId}) => {
         <div>
             <div>
                 <WrapperHeader>Chức danh chuyên môn kỹ thuật</WrapperHeader>
-                <div style={{ marginTop: '10px' }}>
+                {/* <div style={{ marginTop: '10px' }}>
                     <Button onClick={() => setIsModalOpen(true)}>Thêm tham số</Button>
-                </div>
+                </div> */}
                 {isLoading ? ( // Hiển thị thông báo đang tải
                     <div>Loading...</div>
                 ) : (
