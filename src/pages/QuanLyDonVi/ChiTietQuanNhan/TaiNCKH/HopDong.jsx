@@ -614,11 +614,11 @@ const HopDong = ({ quannhanId }) => {
             dataIndex: 'Loai',
             key: 'Loai',
         },
-        {
-            title: 'Vai trò',
-            dataIndex: 'VaiTro',
-            key: 'VaiTro',
-        },
+        // {
+        //     title: 'Vai trò',
+        //     dataIndex: 'VaiTro',
+        //     key: 'VaiTro',
+        // },
         {
             title: 'Số tác giả',
             dataIndex: 'SoThanhVien',

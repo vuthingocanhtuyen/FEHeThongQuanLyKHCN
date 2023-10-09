@@ -74,7 +74,7 @@ const SangChe = ({ }) => {
         SangCheId: '',
 
         TenSangChe: '',
-        LoaiDangKy: '',
+        TenLoaiDangKy: '',
         DonViCap: '',
         NhomNghienCuu: '',
         ThoiDiemDangKy: moment(),
@@ -109,9 +109,9 @@ const SangChe = ({ }) => {
     const mutation = useMutationHooks(
 
         (data) => {
-            const { QuanNhanId = quannhanId, SangCheId, TenSangChe, LoaiDangKy, DonViCap, NhomNghienCuu, ThoiDiemDangKy, SoTacGia, CacTacGia, Quy, Nam, FileCM, Tai, TrangThai = 0, edituser, edittime, GhiChu } = data
+            const { QuanNhanId = quannhanId, SangCheId, TenSangChe, TenLoaiDangKy, DonViCap, NhomNghienCuu, ThoiDiemDangKy, SoTacGia, CacTacGia, Quy, Nam, FileCM, Tai, TrangThai = 0, edituser, edittime, GhiChu } = data
             const res = SangCheService.createSangChe({
-                SangCheId, QuanNhanId, TenSangChe, LoaiDangKy, DonViCap, NhomNghienCuu, ThoiDiemDangKy, SoTacGia, CacTacGia, Quy, Nam, FileCM, Tai, TrangThai, edituser, edittime, GhiChu
+                SangCheId, QuanNhanId, TenSangChe, TenLoaiDangKy, DonViCap, NhomNghienCuu, ThoiDiemDangKy, SoTacGia, CacTacGia, Quy, Nam, FileCM, Tai, TrangThai, edituser, edittime, GhiChu
             }).then(res => {
                 try {
                     setsangcheId(res.data._id);
@@ -346,7 +346,7 @@ const SangChe = ({ }) => {
                     SangCheId: res?.data.SangCheId,
 
                     TenSangChe: res?.data.TenSangChe,
-                    LoaiDangKy: res?.data.LoaiDangKy,
+                    TenLoaiDangKy: res?.data.TenLoaiDangKy,
                     DonViCap: res?.data.DonViCap,
                     NhomNghienCuu: res?.data.NhomNghienCuu,
                     ThoiDiemDangKy: res?.data.ThoiDiemDangKy,
@@ -494,7 +494,7 @@ const SangChe = ({ }) => {
                 SangCheId: res?.data.SangCheId,
 
                 TenSangChe: res?.data.TenSangChe,
-                LoaiDangKy: res?.data.LoaiDangKy,
+                TenLoaiDangKy: res?.data.TenLoaiDangKy,
                 DonViCap: res?.data.DonViCap,
                 NhomNghienCuu: res?.data.NhomNghienCuu,
                 ThoiDiemDangKy: res?.data.ThoiDiemDangKy,
@@ -786,7 +786,7 @@ const SangChe = ({ }) => {
             SangCheId: '',
 
             TenSangChe: '',
-            LoaiDangKy: '',
+            TenLoaiDangKy: '',
             DonViCap: '',
             NhomNghienCuu: '',
             ThoiDiemDangKy: '',
@@ -865,7 +865,7 @@ const SangChe = ({ }) => {
             SangCheId: '',
 
             TenSangChe: '',
-            LoaiDangKy: '',
+            TenLoaiDangKy: '',
             DonViCap: '',
             NhomNghienCuu: '',
             ThoiDiemDangKy: '',
@@ -906,7 +906,7 @@ const SangChe = ({ }) => {
             SangCheId: stateSangChe.SangCheId,
 
             TenSangChe: stateSangChe.TenSangChe,
-            LoaiDangKy: stateSangChe.LoaiDangKy,
+            TenLoaiDangKy: stateSangChe.TenLoaiDangKy,
             DonViCap: stateSangChe.DonViCap,
             NhomNghienCuu: stateSangChe.NhomNghienCuu,
             ThoiDiemDangKy: stateSangChe.ThoiDiemDangKy,
@@ -1174,25 +1174,25 @@ const SangChe = ({ }) => {
         });
     };
     // loại đăng ký
-    const fetchAllLoaiDangKy = async () => {
+    const fetchAllTenLoaiDangKy = async () => {
         const res = await LoaiDangKyService.getAllType()
         return res
     }
 
-    const allLoaiDangKy = useQuery({ queryKey: ['all-loaidangky'], queryFn: fetchAllLoaiDangKy })
-    const handleChangeSelectLoaiDangKy = (value) => {
+    const allTenLoaiDangKy = useQuery({ queryKey: ['all-loaidangky'], queryFn: fetchAllTenLoaiDangKy })
+    const handleChangeSelectTenLoaiDangKy = (value) => {
         setStateSangChe({
             ...stateSangChe,
-            LoaiDangKySach: value
+            TenLoaiDangKySach: value
         })
 
     }
 
 
-    const handleChangeSelectLoaiDangKyDetails = (value) => {
+    const handleChangeSelectTenLoaiDangKyDetails = (value) => {
         setStateSangCheDetails({
             ...stateSangCheDetails,
-            LoaiDangKySach: value
+            TenLoaiDangKySach: value
         })
 
     }
@@ -1266,14 +1266,14 @@ const SangChe = ({ }) => {
 
                         <Form.Item
                             label="Loại đăng ký"
-                            name="LoaiDangKy"
+                            name="TenLoaiDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateSangChe.LoaiDangKy} onChange={handleOnchange} name="LoaiDangKy" /> */}
-                            <Select name="LoaiDangKy"
+                            {/* <InputComponent value={stateSangChe.TenLoaiDangKy} onChange={handleOnchange} name="TenLoaiDangKy" /> */}
+                            <Select name="TenLoaiDangKy"
 
-                                onChange={handleChangeSelectLoaiDangKy}
-                                options={renderOptions(allLoaiDangKy?.data?.data)}
+                                onChange={handleChangeSelectTenLoaiDangKy}
+                                options={renderOptions(allTenLoaiDangKy?.data?.data)}
                             />
                         </Form.Item>
                         <Form.Item
@@ -1457,14 +1457,14 @@ const SangChe = ({ }) => {
 
                         <Form.Item
                             label="Loại đăng ký"
-                            name="LoaiDangKy"
+                            name="TenLoaiDangKy"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateSangCheDetails.LoaiDangKy} onChange={handleOnchangeDetails} name="LoaiDangKy" /> */}
-                            <Select name="LoaiDangKy"
+                            {/* <InputComponent value={stateSangCheDetails.TenLoaiDangKy} onChange={handleOnchangeDetails} name="TenLoaiDangKy" /> */}
+                            <Select name="TenLoaiDangKy"
 
-                                onChange={handleChangeSelectLoaiDangKyDetails}
-                                options={renderOptions(allLoaiDangKy?.data?.data)}
+                                onChange={handleChangeSelectTenLoaiDangKyDetails}
+                                options={renderOptions(allTenLoaiDangKy?.data?.data)}
                             />
 
                         </Form.Item>

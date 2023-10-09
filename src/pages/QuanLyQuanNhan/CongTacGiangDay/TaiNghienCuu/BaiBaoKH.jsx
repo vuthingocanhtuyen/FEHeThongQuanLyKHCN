@@ -699,11 +699,11 @@ const BaiBaoKH = ({ }) => {
             key: 'TrangThai',
         },
 
-        {
-            title: 'Ghi chú',
-            dataIndex: 'GhiChu',
-            key: 'GhiChu',
-        },
+        // {
+        //     title: 'Ghi chú',
+        //     dataIndex: 'GhiChu',
+        //     key: 'GhiChu',
+        // },
         {
             title: 'Chức năng',
             dataIndex: 'action',

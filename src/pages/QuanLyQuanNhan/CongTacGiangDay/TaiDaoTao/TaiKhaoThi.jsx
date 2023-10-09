@@ -37,7 +37,7 @@ const TaiKhaoThi = ({ }) => {
         Quy: '',
         Nam: '',
         HocKy: '',
-        HinhThucKhaoThi: '',
+        TenHinhThucKhaoThi: '',
         MaLopHocPhan: '',
         MonHoc: '',
         KhoiLuongCongViec: '',
@@ -59,7 +59,7 @@ const TaiKhaoThi = ({ }) => {
                 Quy,
                 Nam,
                 HocKy,
-                HinhThucKhaoThi,
+                TenHinhThucKhaoThi,
                 MaLopHocPhan,
                 MonHoc,
                 KhoiLuongCongViec,
@@ -72,7 +72,7 @@ const TaiKhaoThi = ({ }) => {
                 Quy,
                 Nam,
                 HocKy,
-                HinhThucKhaoThi,
+                TenHinhThucKhaoThi,
                 MaLopHocPhan,
                 MonHoc,
                 KhoiLuongCongViec,
@@ -268,7 +268,7 @@ const TaiKhaoThi = ({ }) => {
                     Quy: res?.data.Quy,
                     Nam: res?.data.Nam,
                     HocKy: res?.data.HocKy,
-                    HinhThucKhaoThi: res?.data.HinhThucKhaoThi,
+                    TenTenHinhThucKhaoThi: res?.data.TenTenHinhThucKhaoThi,
                     MaLopHocPhan: res?.data.MaLopHocPhan,
                     MonHoc: res?.data.MonHoc,
                     KhoiLuongCongViec: res?.data.KhoiLuongCongViec,
@@ -347,7 +347,7 @@ const TaiKhaoThi = ({ }) => {
                 Quy: res?.data.Quy,
                 Nam: res?.data.Nam,
                 HocKy: res?.data.HocKy,
-                HinhThucKhaoThi: res?.data.HinhThucKhaoThi,
+                TenTenHinhThucKhaoThi: res?.data.TenTenHinhThucKhaoThi,
                 MaLopHocPhan: res?.data.MaLopHocPhan,
                 MonHoc: res?.data.MonHoc,
                 KhoiLuongCongViec: res?.data.KhoiLuongCongViec,
@@ -472,8 +472,8 @@ const TaiKhaoThi = ({ }) => {
         },
         {
             title: 'Hình thức',
-            dataIndex: 'HinhThucKhaoThi',
-            key: 'HinhThucKhaoThi',
+            dataIndex: 'TenHinhThucKhaoThi',
+            key: 'TenHinhThucKhaoThi',
         },
         {
             title: 'Số bài, SV',
@@ -532,7 +532,7 @@ const TaiKhaoThi = ({ }) => {
             Quy: '',
             Nam: '',
             HocKy: '',
-            HinhThucKhaoThi: '',
+            TenHinhThucKhaoThi: '',
             MaLopHocPhan: '',
             MonHoc: '',
             KhoiLuongCongViec: '',
@@ -573,7 +573,7 @@ const TaiKhaoThi = ({ }) => {
             Quy: '',
             Nam: '',
             HocKy: '',
-            HinhThucKhaoThi: '',
+            TenHinhThucKhaoThi: '',
             MaLopHocPhan: '',
             MonHoc: '',
             KhoiLuongCongViec: '',
@@ -593,7 +593,7 @@ const TaiKhaoThi = ({ }) => {
             Quy: stateTaiKhaoThi.Quy,
             Nam: stateTaiKhaoThi.Nam,
             HocKy: stateTaiKhaoThi.HocKy,
-            HinhThucKhaoThi: stateTaiKhaoThi.HinhThucKhaoThi,
+            TenHinhThucKhaoThi: stateTaiKhaoThi.TenHinhThucKhaoThi,
             MaLopHocPhan: stateTaiKhaoThi.MaLopHocPhan,
             MonHoc: stateTaiKhaoThi.MonHoc,
             KhoiLuongCongViec: stateTaiKhaoThi.KhoiLuongCongViec,
@@ -709,14 +709,14 @@ const TaiKhaoThi = ({ }) => {
     const handleChangeSelectDetails = (value) => {
         setStateTaiKhaoThiDetails({
             ...stateTaiKhaoThiDetails,
-            HinhThucKhaoThi: value
+            TenHinhThucKhaoThi: value
         })
         // console.log(stateQuanNhan)
     }
     // const handleChangeSelect1 = (value) => {
     //     setStateTaiKhaoThi({
     //         ...stateTaiKhaoThi,
-    //         HinhThucKhaoThi: value
+    //         TenTenHinhThucKhaoThi: value
     //     })
     //     // console.log(stateQuanNhan)
     // }
@@ -749,7 +749,7 @@ const TaiKhaoThi = ({ }) => {
         } else {
             setStateTaiKhaoThi({
                 ...stateTaiKhaoThi,
-                HinhThucKhaoThi: value
+                TenHinhThucKhaoThi: value
             })
         }
     };
@@ -836,13 +836,13 @@ const TaiKhaoThi = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Hình thức khảo thí"
-                            name="HinhThucKhaoThi"
+                            name="TenHinhThucKhaoThi"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiKhaoThi.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
                         */}
                             <Select
-                                name="HinhThucKhaoThi"
+                                name="TenHinhThucKhaoThi"
                                 onChange={handleChange}
                                 options={renderOptions(allHinhThucKhaoThi?.data?.data)}
                             />
@@ -957,13 +957,13 @@ const TaiKhaoThi = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="Hình thức khảo thí"
-                            name="HinhThucKhaoThi"
+                            name="TenHinhThucKhaoThi"
                             rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             {/* <InputComponent value={stateTaiKhaoThi.NgayBatDau} onChange={handleOnchange} name="NgayBatDau" />
                         */}
                             <Select
-                                name="HinhThucKhaoThi"
+                                name="TenHinhThucKhaoThi"
                                 onChange={handleChangeSelectDetails}
                                 options={renderOptions(allHinhThucKhaoThi?.data?.data)}
                             />

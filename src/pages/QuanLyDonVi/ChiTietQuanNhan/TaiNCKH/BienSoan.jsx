@@ -651,24 +651,24 @@ const BienSoan = ({ quannhanId }) => {
 
         {
             title: 'Loai',
-            dataIndex: 'LoaiDeTai',
-            key: 'LoaiDeTai',
+            dataIndex: 'LoaiTaiLieu',
+            key: 'LoaiTaiLieu',
         },
-        {
-            title: 'Vai trò',
-            dataIndex: 'CacThanhVien',
-            key: 'CacThanhVien',
-        },
+        // {
+        //     title: 'Vai trò',
+        //     dataIndex: 'CacThanhVien',
+        //     key: 'CacThanhVien',
+        // },
         {
             title: 'Số tác giả',
             dataIndex: 'SoTacGia',
             key: 'SoTacGia',
         },
-        {
-            title: 'Giờ chuẩn',
-            dataIndex: 'SoTiet',
-            key: 'SoTiet',
-        },
+        // {
+        //     title: 'Giờ chuẩn',
+        //     dataIndex: 'SoTiet',
+        //     key: 'SoTiet',
+        // },
         {
             title: 'Tải',
             dataIndex: 'Tai',

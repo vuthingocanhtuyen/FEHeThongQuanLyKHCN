@@ -964,13 +964,13 @@ const HuongDanNCKH = ({ }) => {
                                 format="DD/MM/YYYY"
                             />
                         </Form.Item>
-                        <Form.Item
+                        {/* <Form.Item
                             label="Trạng thái"
                             name="TrangThai"
                         //   rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
                             <InputComponent value={stateHuongDanNCKH.TrangThai} onChange={handleOnchange} name="TrangThai" />
-                        </Form.Item>
+                        </Form.Item> */}
 
                         <Form.Item
                             label="File chứng minh"

@@ -639,11 +639,11 @@ const TaiGiangDay = ({ }) => {
             dataIndex: 'LoaiHinhDT',
             key: 'LoaiHinhDT',
         },
-        {
-            title: 'Ghi chú',
-            dataIndex: 'GhiChu',
-            key: 'GhiChu',
-        },
+        // {
+        //     title: 'Ghi chú',
+        //     dataIndex: 'GhiChu',
+        //     key: 'GhiChu',
+        // },
         {
             title: 'Chức năng',
             dataIndex: 'action',

@@ -83,7 +83,7 @@ const DeTaiNCKH = ({ }) => {
         MaDeTai: '',
         LoaiDeTai: '',
         TenDeTai: '',
-        HinhThucKhenThuong: '',
+        TenDanhMucKhenThuong: '',
         KinhPhi: '',
         CNDeTai: '',
         DonViChuTri: '',
@@ -124,9 +124,9 @@ const DeTaiNCKH = ({ }) => {
     const mutation = useMutationHooks(
 
         (data) => {
-            const { QuanNhanId = quannhanId, DeTaiNCKHId, MaDeTai, LoaiDeTai, TenDeTai, HinhThucKhenThuong, KinhPhi, CNDeTai, DonViChuTri, ThoiGianDuKienKT, ThoiGianBatDau, GiaHanLan1, GiaHanLan2, SoThanhVien, CacThanhVien, HinhThucDeTai, ThuocCTDuAn, NgayNghiemThu, MoTaKetThuc, QLDVHV, FileCM, Tai, TrangThai = 0, PhanLoaiKetQua, edituser, edittime, GhiChu } = data
+            const { QuanNhanId = quannhanId, DeTaiNCKHId, MaDeTai, LoaiDeTai, TenDeTai, TenDanhMucKhenThuong, KinhPhi, CNDeTai, DonViChuTri, ThoiGianDuKienKT, ThoiGianBatDau, GiaHanLan1, GiaHanLan2, SoThanhVien, CacThanhVien, HinhThucDeTai, ThuocCTDuAn, NgayNghiemThu, MoTaKetThuc, QLDVHV, FileCM, Tai, TrangThai = 0, PhanLoaiKetQua, edituser, edittime, GhiChu } = data
             const res = DeTaiNCKHService.createDeTaiNCKH({
-                DeTaiNCKHId, QuanNhanId, MaDeTai, LoaiDeTai, TenDeTai, HinhThucKhenThuong, KinhPhi, CNDeTai, DonViChuTri, ThoiGianDuKienKT, ThoiGianBatDau, GiaHanLan1, GiaHanLan2, SoThanhVien, CacThanhVien, HinhThucDeTai, ThuocCTDuAn, NgayNghiemThu, MoTaKetThuc, QLDVHV, FileCM, Tai, TrangThai, PhanLoaiKetQua, edituser, edittime, GhiChu
+                DeTaiNCKHId, QuanNhanId, MaDeTai, LoaiDeTai, TenDeTai, TenDanhMucKhenThuong, KinhPhi, CNDeTai, DonViChuTri, ThoiGianDuKienKT, ThoiGianBatDau, GiaHanLan1, GiaHanLan2, SoThanhVien, CacThanhVien, HinhThucDeTai, ThuocCTDuAn, NgayNghiemThu, MoTaKetThuc, QLDVHV, FileCM, Tai, TrangThai, PhanLoaiKetQua, edituser, edittime, GhiChu
             }).then(res => {
                 try {
                     setdetainckhId(res.data._id);
@@ -357,7 +357,7 @@ const DeTaiNCKH = ({ }) => {
                     LoaiDeTai: res?.data.LoaiDeTai,
                     MaDeTai: res?.data.MaDeTai,
                     TenDeTai: res?.data.TenDeTai,
-                    HinhThucKhenThuong: res?.data.HinhThucKhenThuong,
+                    TenDanhMucKhenThuong: res?.data.TenDanhMucKhenThuong,
                     KinhPhi: res?.data.KinhPhi,
                     CNDeTai: res?.data.CNDeTai,
                     DonViChuTri: res?.data.DonViChuTri,
@@ -513,7 +513,7 @@ const DeTaiNCKH = ({ }) => {
                 LoaiDeTai: res?.data.LoaiDeTai,
                 MaDeTai: res?.data.MaDeTai,
                 TenDeTai: res?.data.TenDeTai,
-                HinhThucKhenThuong: res?.data.HinhThucKhenThuong,
+                TenDanhMucKhenThuong: res?.data.TenDanhMucKhenThuong,
                 KinhPhi: res?.data.KinhPhi,
                 CNDeTai: res?.data.CNDeTai,
                 DonViChuTri: res?.data.DonViChuTri,
@@ -677,15 +677,15 @@ const DeTaiNCKH = ({ }) => {
         },
 
         {
-            title: 'Loai',
+            title: 'Loại',
             dataIndex: 'LoaiDeTai',
             key: 'LoaiDeTai',
         },
-        {
-            title: 'Vai trò',
-            dataIndex: '',
-            key: '',
-        },
+        // {
+        //     title: 'Vai trò',
+        //     dataIndex: 'VaiTro',
+        //     key: 'VaiTro',
+        // },
         {
             title: 'Số tác giả',
             dataIndex: 'SoThanhVien',
@@ -828,7 +828,7 @@ const DeTaiNCKH = ({ }) => {
             LoaiDeTai: '',
             MaDeTai: '',
             TenDeTai: '',
-            HinhThucKhenThuong: '',
+            TenDanhMucKhenThuong: '',
             KinhPhi: '',
             CNDeTai: '',
             DonViChuTri: '',
@@ -914,7 +914,7 @@ const DeTaiNCKH = ({ }) => {
             LoaiDeTai: '',
             MaDeTai: '',
             TenDeTai: '',
-            HinhThucKhenThuong: '',
+            TenDanhMucKhenThuong: '',
             KinhPhi: '',
             CNDeTai: '',
             DonViChuTri: '',
@@ -963,7 +963,7 @@ const DeTaiNCKH = ({ }) => {
             LoaiDeTai: stateDeTaiNCKH.LoaiDeTai,
             MaDeTai: stateDeTaiNCKH.MaDeTai,
             TenDeTai: stateDeTaiNCKH.TenDeTai,
-            HinhThucKhenThuong: stateDeTaiNCKH.HinhThucKhenThuong,
+            TenDanhMucKhenThuong: stateDeTaiNCKH.TenDanhMucKhenThuong,
             KinhPhi: stateDeTaiNCKH.KinhPhi,
             CNDeTai: stateDeTaiNCKH.CNDeTai,
             DonViChuTri: stateDeTaiNCKH.DonViChuTri,
@@ -1247,7 +1247,7 @@ const DeTaiNCKH = ({ }) => {
     const handleChangeSelectHTKhenThuong = (value) => {
         setStateDeTaiNCKH({
             ...stateDeTaiNCKH,
-            HinhThucKhenThuong: value
+            TenDanhMucKhenThuong: value
         })
 
     }
@@ -1256,7 +1256,7 @@ const DeTaiNCKH = ({ }) => {
     const handleChangeSelectHTKhenThuongDetails = (value) => {
         setStateDeTaiNCKHDetails({
             ...stateDeTaiNCKHDetails,
-            HinhThucKhenThuong: value
+            TenDanhMucKhenThuong: value
         })
 
     }
@@ -1537,12 +1537,12 @@ const DeTaiNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="HT khen thưởng"
-                            name="HinhThucKhenThuong"
+                            name="TenDanhMucKhenThuong"
                         //    rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateDeTaiNCKH.HinhThucKhenThuong} onChange={handleOnchange} name="HinhThucKhenThuong" /> */}
+                            {/* <InputComponent value={stateDeTaiNCKH.TenDanhMucKhenThuong} onChange={handleOnchange} name="TenDanhMucKhenThuong" /> */}
                             <Select
-                                name="HinhThucKhenThuong"
+                                name="TenDanhMucKhenThuong"
 
                                 onChange={handleChangeSelectHTKhenThuong}
                                 options={renderOptions(allHTKT?.data?.data)}
@@ -1844,12 +1844,12 @@ const DeTaiNCKH = ({ }) => {
                         </Form.Item>
                         <Form.Item
                             label="HT khen thưởng"
-                            name="HinhThucKhenThuong"
+                            name="TenDanhMucKhenThuong"
                         //  rules={[{ required: true, message: 'Nhập vào chỗ trống!' }]}
                         >
-                            {/* <InputComponent value={stateDeTaiNCKHDetails.HinhThucKhenThuong} onChange={handleOnchangeDetails} name="HinhThucKhenThuong" /> */}
+                            {/* <InputComponent value={stateDeTaiNCKHDetails.TenDanhMucKhenThuong} onChange={handleOnchangeDetails} name="TenDanhMucKhenThuong" /> */}
                             <Select
-                                name="HinhThucKhenThuong"
+                                name="TenDanhMucKhenThuong"
 
                                 onChange={handleChangeSelectHTKhenThuongDetails}
                                 options={renderOptions(allHTKT?.data?.data)}

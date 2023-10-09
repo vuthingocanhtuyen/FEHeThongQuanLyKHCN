@@ -644,11 +644,11 @@ const GiaiThuongNCKH = ({ quannhanId }) => {
             dataIndex: 'LoaiGiaiThuong',
             key: 'LoaiGiaiThuong',
         },
-        {
-            title: 'Vai trò',
-            dataIndex: 'VaiTro',
-            key: 'VaiTro',
-        },
+        // {
+        //     title: 'Vai trò',
+        //     dataIndex: 'VaiTro',
+        //     key: 'VaiTro',
+        // },
         {
             title: 'Số tác giả',
             dataIndex: 'SoTacGia',
